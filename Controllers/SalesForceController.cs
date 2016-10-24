@@ -40,14 +40,14 @@ namespace SalesForceOAuth.Controllers
         [ActionName("GetRedirectURL")]
         public string GetRedirectURL(string ValidationKey)
         {
-            if (ValidationKey == Environment.GetEnvironmentVariable("APISecureKey"))
+            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             { 
                 // Response.Write("started TEsting");
                 var url =
                 Common.FormatAuthUrl(
                     "https://login.salesforce.com/services/oauth2/authorize",
                     ResponseTypes.Code,
-                    "3MVG9HxRZv05HarTzRb2msaMZ2puUcXjnYXV1FQAcWN3zVPJ0BZE65IFJ9TzL8Oar5tOFmSkZlH8iGfvIy2wR",
+                    "3MVG9KI2HHAq33RwXJsqtsEtY.ThMCzS5yZd3S8CzXBArijS0WEQgYACVnQ9SJq0KDdKrQgIxPFNPOIQhuqdK",
                     System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
                 return url;
             }
@@ -60,25 +60,28 @@ namespace SalesForceOAuth.Controllers
         [ActionName("GetAuthorizationToken")]
         public string GetAuthorizationToken(string AuthCode, string ValidationKey)
         {
-            if (ValidationKey == Environment.GetEnvironmentVariable("APISecureKey"))
+            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
-                string _consumerKey = "3MVG9HxRZv05HarTzRb2msaMZ2puUcXjnYXV1FQAcWN3zVPJ0BZE65IFJ9TzL8Oar5tOFmSkZlH8iGfvIy2wR";
-                string _consumerSecret = "7781222679202251199";
+                string _consumerKey = "3MVG9KI2HHAq33RwXJsqtsEtY.ThMCzS5yZd3S8CzXBArijS0WEQgYACVnQ9SJq0KDdKrQgIxPFNPOIQhuqdK";
+                string _consumerSecret = "7849687416745281703";
                 string _callbackUrl = "http://localhost:56786/About.aspx";
                 string _tokenRequestEndpointUrl = "https://login.salesforce.com/services/oauth2/token";
-
                 string code = AuthCode;
-
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 var auth = new AuthenticationClient();
-                auth.WebServerAsync(_consumerKey, _consumerSecret, _callbackUrl, code, _tokenRequestEndpointUrl).Wait();
-
+                try
+                {
+                    auth.WebServerAsync(_consumerKey, _consumerSecret, _callbackUrl, code, _tokenRequestEndpointUrl).Wait();
+                }
+                catch(Exception ex)
+                {
+                    return "Error authenticating" + ex.InnerException; 
+                }
                 var url = string.Format("/?token={0}&api={1}&instance_url={2}&refresh_token={3}",
                     auth.AccessToken,
                     auth.ApiVersion,
                     auth.InstanceUrl,
                     auth.RefreshToken);
-
                 var response = new HttpResponseMessage(HttpStatusCode.Redirect);
                 response.Headers.Location = new Uri(url, UriKind.Relative);
 
@@ -97,7 +100,7 @@ namespace SalesForceOAuth.Controllers
         [ActionName("GetTotalLeads")]
         public async System.Threading.Tasks.Task<List<Lead>> GetAllLeads(string AccessToken, string InstanceUrl, string ApiVersion, string ValidationKey)
         {
-            if (ValidationKey == Environment.GetEnvironmentVariable("APISecureKey"))
+            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 List<Lead> myLeads = new List<Lead> { };
                 try
@@ -123,106 +126,16 @@ namespace SalesForceOAuth.Controllers
             return null; // if not authenticated 
         }
         // GET: api/SalesForce/GetLeadToken?ValidationKey= ffe06298-22a8-4849-a46c-0284b04f2561
-        [HttpGet]
-        [ActionName("GetAddNewLead")]
-        public async System.Threading.Tasks.Task<string> GetAddNewLead(string ParamFirstName, string ParamLastName, string AccessToken, string InstanceUrl, string ApiVersion, string ValidationKey)
-        {
-            if (ValidationKey == Environment.GetEnvironmentVariable("APISecureKey"))
-            { 
-                try
-                {
-                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-
-                    var lead = new Lead { FirstName = ParamFirstName, LastName = ParamLastName, Company = "-"};
-                    SuccessResponse sR = await client.CreateAsync("Lead",lead);
-                    if (sR.Success == true)
-                    {
-                        return "Added Successfully";
-                    }
-                    else
-                        return "Not Added Successfully"; 
-                }
-                catch (Exception ex)
-                {
-                    return ex.InnerException.ToString();
-                }
-            }
-            return "Error: Authenticating App";
-        }
-
-        //[HttpPost]
-        //[ActionName("PostNewLead")]
-        //public async System.Threading.Tasks.Task<string> PostNewLead(LeadData lData)
-        //{
-        //    if (lData.ValidationKey == Environment.GetEnvironmentVariable("APISecureKey"))
-        //    {
-        //        try
-        //        {
-        //            ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
-
-        //            var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = lData.Company };
-        //            SuccessResponse sR = await client.CreateAsync("Lead", lead);
-        //            if (sR.Success == true)
-        //            {
-        //                return "Added Successfully";
-        //            }
-        //            else
-        //                return "Not Added Successfully";
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return ex.InnerException.ToString();
-        //        }
-        //    }
-        //    return "Error: Authenticating App";
-        //}
-
+      
         /// <summary>
         /// The function will post chat messages to lead description
         /// </summary>
         /// <param name="lData">An object data type converted to jason format</param>
         /// <returns></returns>
-        [HttpPost]
-        [ActionName("PostAddLeadMessage")]
-        public async System.Threading.Tasks.Task<string> PostAddLeadMessage(LeadMessageData lData)
-        {
-            if (lData.ValidationKey ==  Environment.GetEnvironmentVariable("APISecureKey"))
-            {
-                try
-                {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
-                    var readLead = await client.QueryAsync<LeadDescription>("SELECT Id, Description From Lead where Id ='" + lData.LeadId + "'");
-                    if (readLead.TotalSize > 0)
-                    {
-                        LeadDescription lDesc = readLead.Records[0];
-                        var lACall = new TaskLogACall { Subject = "WebsiteAlive-Chat", Description = lData.Messsage,WhoId= lData.LeadId, Status="Completed"};
-                        SuccessResponse sR = await client.CreateAsync("Task", lACall);
-
-                        //SuccessResponse sR = await client.UpdateAsync("Lead", lDesc.Id, new { Description = lData.Messsage + "\r\n" + lDesc.Description });
-                        if (sR.Success == true)
-                        {
-                            return "Update Lead Successfully";
-                        }
-                    }
-                    return "Not Added Feed Successfully";
-                }
-                catch (Exception ex)
-                {
-                    return ex.InnerException.ToString();
-                }
-            }
-            return "Error: Authenticating App";
-        }
+        
 
     }
-
-    public class TaskLogACall
-    {
-        public string Subject { get; set; }
-        public string Description { get; set; }
-        public string WhoId { get; set; }
-        public string Status { get; set; }
-    }
+  
     public class SecureInfo
     {
         public string AccessToken { get; set; }
@@ -230,30 +143,12 @@ namespace SalesForceOAuth.Controllers
         public string ApiVersion { get; set; }
         public string ValidationKey { get; set; }
     }
-    public class LeadMessageData: SecureInfo
-    {
-        public string LeadId { get; set; }
-        public string Messsage { get; set; }
-    }
-    public class LeadData : SecureInfo
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Company { get; set; }
-    }
-    public class Lead
-    {
-        public const String SObjectTypeName = "Lead";
-        public String Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Company { get; set; }
-        public string Description { get; set; }
-    }
-    public class LeadDescription
-    {
-        public String Id { get; set; }
-        public string Description { get; set; }
-    }
+    //public class LeadMessageData: SecureInfo
+    //{
+    //    public string LeadId { get; set; }
+    //    public string Messsage { get; set; }
+    //}
+    
+    
+ 
 }
-//00Q0Y0000017bUsUAI
