@@ -251,7 +251,9 @@
     <Compile Include="Controllers\SalesForceController.cs" />
     <Compile Include="Controllers\SFAccountController.cs" />
     <Compile Include="Controllers\SFChatController.cs" />
+    <Compile Include="Controllers\SFContactController.cs" />
     <Compile Include="Controllers\SFLeadController.cs" />
+    <Compile Include="Controllers\SFOpportunityController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
