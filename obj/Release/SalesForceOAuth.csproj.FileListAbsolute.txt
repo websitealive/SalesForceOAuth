@@ -89,3 +89,6 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.pdb
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csprojResolveAssemblyReference.cache
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\MySql.Data.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\MySql.Data.xml
