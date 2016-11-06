@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -19,18 +20,23 @@ namespace SalesForceOAuth
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
-
-            routes.MapRoute(
-                name: "mynewTest",
-                url: "api/SalesForce/GetAddNewLead/{ParamFirstName}",
-                defaults: new { controller = "SalesForce", action = "GetAddNewLead", ParamFirstName = UrlParameter.Optional }
-            );
-
             routes.MapRoute(
                 name: "Default2",
-                url: "api/{controller}/{action}/{id}",
-                defaults: new { controller = "SalesForce", action = "get", id = UrlParameter.Optional }
+                url: "{controller}/{action}/{id}/{format}",
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional , format = RouteParameter.Optional}
             );
+
+            //routes.MapRoute(
+            //    name: "mynewTest",
+            //    url: "api/SalesForce/GetAddNewLead/{ParamFirstName}",
+            //    defaults: new { controller = "SalesForce", action = "GetAddNewLead", ParamFirstName = UrlParameter.Optional }
+            //);
+
+            //routes.MapRoute(
+            //    name: "Default2",
+            //    url: "api/{controller}/{action}/{id}",
+            //    defaults: new { controller = "SalesForce", action = "get", id = UrlParameter.Optional }
+            //);
 
             //routes.MapRoute(
             //    name: "ControllerOnly",

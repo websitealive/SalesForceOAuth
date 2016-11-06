@@ -10,6 +10,10 @@ using System.Configuration;
 using Newtonsoft.Json;
 using MySql.Data.MySqlClient;
 using System.Text;
+using System.Web.Http.Cors;
+using System.Web.Script.Serialization;
+using System.Web.Script.Services;
+using System.Web;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -28,29 +32,54 @@ namespace SalesForceOAuth.Controllers
         /// </summary>
         /// <param name="ValidationKey"></param>
         /// <returns></returns>
+        /// 
+        //[HttpGet]
+        //[ActionName("GetRedirectURL")]
+        //[ScriptMethod(UseHttpGet = true, ResponseFormat =ResponseFormat.Json)]
+        //public void GetRedirectURL(string ValidationKey, string callback)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    JavaScriptSerializer js = new JavaScriptSerializer();
+        //    sb.Append(callback + "(");
+        //    sb.Append(js.Serialize("www.google.com"));
+        //    sb.Append(");");
+
+        //    HttpContext context = HttpContext.Current;
+        //    context.Response.Clear();
+        //    context.Response.ContentType = "application/json";
+        //    context.Response.Write(sb.ToString());
+        //    context.Response.End(); 
+        //}
         [HttpGet]
         [ActionName("GetRedirectURL")]
-        public HttpResponseMessage GetRedirectURL()
+        public HttpResponseMessage GetRedirectURL(string ValidationKey, string callback)
         {
-            string ValidationKey = "", sf_authoize_url = "", sf_clientid = "", sf_callback_url=""; 
+
+            string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
             HttpResponseMessage outputResponse = new HttpResponseMessage();
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("ValidationKey"))
-            {
-                ValidationKey = HttpRequestMessageExtensions.GetHeader(re, "ValidationKey");
-                MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url); 
-            }
-            else
-            {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            }
+
+
+            /*   var re = Request;
+           var headers = re.Headers;
+           if (headers.Contains("ValidationKey"))
+           {
+               ValidationKey = HttpRequestMessageExtensions.GetHeader(re, "ValidationKey");
+               //MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url); 
+
+
+           }
+           else
+           {
+               outputResponse.StatusCode = HttpStatusCode.Unauthorized;
+               outputResponse.Content = new StringContent("Your request isn't authorized!");
+
+               return outputResponse;
+           }*/
 
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 // Response.Write("started TEsting");
+                MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url); 
                 //var url =
                 //Common.FormatAuthUrl(
                 //    "https://login.salesforce.com/services/oauth2/authorize",
@@ -59,8 +88,15 @@ namespace SalesForceOAuth.Controllers
                 //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
 
                 var url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, System.Web.HttpUtility.UrlEncode(sf_callback_url));
+
                 outputResponse.StatusCode = HttpStatusCode.OK;
-                outputResponse.Content = new StringContent(url.ToString(), Encoding.UTF8, "application/json");
+                // outputResponse.Content = new StringContent(url.ToString(), Encoding.UTF8, "application/json");
+                StringBuilder sb = new StringBuilder();
+                JavaScriptSerializer js = new JavaScriptSerializer();
+                sb.Append(callback + "(");
+                sb.Append(js.Serialize(url));
+                sb.Append(");");
+                outputResponse.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
                 return outputResponse;
             }
             else
@@ -70,7 +106,7 @@ namespace SalesForceOAuth.Controllers
                 return outputResponse;
             }
 
-}
+        }
 
         //GET: api/SalesForce/GetAuthorizationToken? ValidationKey = ffe06298 - 22a8-4849-a46c-0284b04f2561
         [HttpGet]
@@ -269,6 +305,10 @@ namespace SalesForceOAuth.Controllers
 
     }
 
+    public class MyValidation
+    {
+        public string ValidationKey { get; set; }
+    }
     public class SecureInfo
     {
         public string AccessToken { get; set; }
