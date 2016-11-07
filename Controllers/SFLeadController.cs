@@ -16,14 +16,17 @@ namespace SalesForceOAuth.Controllers
     public class SFLeadController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(LeadData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead([FromBody] LeadData lData)
         {
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 try
                 {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
+                    string InstanceUrl="", AccessToken ="", ApiVersion = "";
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl); 
+
+                    ForceClient client = new ForceClient(InstanceUrl.Trim(), AccessToken.Trim(), ApiVersion.Trim());
                     var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = "-", Email = lData.Email, Phone = lData.Phone };
                     SuccessResponse sR = await client.CreateAsync("Lead", lead);
                     if (sR.Success == true)
@@ -110,8 +113,10 @@ namespace SalesForceOAuth.Controllers
         }
 
     }
-    public class LeadData : SecureInfo
+    public class LeadData : MyValidation
     {
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Company { get; set; }
