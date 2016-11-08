@@ -24,63 +24,58 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl); 
-
-                    ForceClient client = new ForceClient(InstanceUrl.Trim(), AccessToken.Trim(), ApiVersion.Trim());
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl);
+                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = "-", Email = lData.Email, Phone = lData.Phone };
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     SuccessResponse sR = await client.CreateAsync("Lead", lead);
                     if (sR.Success == true)
                     {
-                        outputResponse.StatusCode = HttpStatusCode.Created;
-                        outputResponse.Content = new StringContent("Lead added successfully!");
-                        return outputResponse;
+                        PostedObjectDetail output = new PostedObjectDetail();
+                        output.Id = sR.Id;
+                        output.ObjectName = "Lead";
+                        output.Message = "Lead added successfully!";
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
                     }
                     else
                     {
-                        outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        outputResponse.Content = new StringContent("Lead could not be added!");
-                        return outputResponse;
+                        return MyAppsDb.ConvertJSONOutput("Internal Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Lead could not be added!");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
-            outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            outputResponse.Content = new StringContent("Your request isn't authorized!");
-            return outputResponse;
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string sObj, string sValue)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string ObjectRef, int GroupId, string ValidationKey, string sObj, string sValue, string callback)
         {
-            string ValidationKey="", InstanceUrl="", AccessToken="", ApiVersion="";
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("ValidationKey") && headers.Contains("InstanceUrl") && headers.Contains("AccessToken") && headers.Contains("ApiVersion"))
-            {
-                ValidationKey = HttpRequestMessageExtensions.GetHeader(re, "ValidationKey"); //headers.GetValues("ValidationKey").First();
-                InstanceUrl = HttpRequestMessageExtensions.GetHeader(re, "InstanceUrl"); //headers.GetValues("InstanceUrl").First();
-                AccessToken = HttpRequestMessageExtensions.GetHeader(re, "AccessToken"); //headers.GetValues("AccessToken").First();
-                ApiVersion = HttpRequestMessageExtensions.GetHeader(re, "ApiVersion"); //headers.GetValues("ApiVersion").First();
-            }
-            else
-            {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            }
+            //test
+            //List<Lead> myLeads = new List<Lead> { };
+            //{
+            //    Lead l = new Lead(); l.Id = "1"; l.FirstName = "naveeed"; l.LastName = "zafar";
+            //    l.Company = "comp"; l.Email = "ch@ch.com"; l.Phone = "0345345"; myLeads.Add(l);
+            //}
+            //{
+            //    Lead l = new Lead(); l.Id = "2"; l.FirstName = "hassan"; l.LastName = "zafar";
+            //    l.Company = "comp"; l.Email = "ch@ch.com"; l.Phone = "0345345"; myLeads.Add(l);
+            //}
+
+            //return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK);
+            //end test
+
+            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 List<Lead> myLeads = new List<Lead> { };
                 try
                 {
+                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     string objectToSearch = sObj;
-                    string objectValue = sValue; 
+                    string objectValue = sValue;
                     QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, FirstName, LastName, Company, Email, Phone From Lead where " + objectToSearch + " like '%" + objectValue + "%'");
                     foreach (dynamic c in cont.Records)
                     {
@@ -90,28 +85,28 @@ namespace SalesForceOAuth.Controllers
                         l.LastName = c.LastName;
                         l.Company = c.Company;
                         l.Email = c.Email;
-                        l.Phone = c.Phone;  
+                        l.Phone = c.Phone;
                         myLeads.Add(l);
                     }
-                    outputResponse.StatusCode = HttpStatusCode.OK;
-                    outputResponse.Content = new StringContent(JsonConvert.SerializeObject(myLeads), Encoding.UTF8, "application/json");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Error occured while searching for Leads");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            } 
+                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            }
         }
 
+    }
+    public class PostedObjectDetail
+    {
+        public string ObjectName { get; set; }
+        public string Id { get; set; }
+        public string Message { get; set; }
     }
     public class LeadData : MyValidation
     {
@@ -139,6 +134,7 @@ namespace SalesForceOAuth.Controllers
         public string Email { get; set; }
         public string Phone { get; set; }
     }
+
     public static class HttpRequestMessageExtensions
     {
 

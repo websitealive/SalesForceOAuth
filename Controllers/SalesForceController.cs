@@ -286,7 +286,7 @@ namespace SalesForceOAuth.Controllers
         }
 
 
-        public static HttpResponseMessage ConvertJSONPOutput(string callback, string message, HttpStatusCode code)
+        public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code)
         {
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
@@ -295,6 +295,16 @@ namespace SalesForceOAuth.Controllers
             sb.Append(callback + "(");
             sb.Append(js.Serialize(message));
             sb.Append(");");
+            response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+            return response;
+        }
+        public static HttpResponseMessage ConvertJSONOutput(object message, HttpStatusCode code)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = code;
+            StringBuilder sb = new StringBuilder();
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            sb.Append(js.Serialize(message));
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
