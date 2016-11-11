@@ -15,67 +15,50 @@ namespace SalesForceOAuth.Controllers
     public class SFContactController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostContact(ContactData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostContact([FromBody] ContactData lData)
         {
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 try
                 {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
+                    string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var cont = new MyContact {AccountId = lData.AccountId, FirstName = lData.FirstName,LastName = lData.LastName,
                         Email = lData.Email  , Phone = lData.Phone };
                     SuccessResponse sR = await client.CreateAsync("Contact", cont);
                     if (sR.Success == true)
                     {
-                        outputResponse.StatusCode = HttpStatusCode.Created;
-                        outputResponse.Content = new StringContent("Contact added successfully!");
-                        return outputResponse;
+                        PostedObjectDetail output = new PostedObjectDetail();
+                        output.Id = sR.Id;
+                        output.ObjectName = "Contact";
+                        output.Message = "Contact added successfully!";
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
                     }
                     else
                     {
-                        outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        outputResponse.Content = new StringContent("Contact could not be added!");
-                        return outputResponse;
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Contact could not be added!");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
-            outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            outputResponse.Content = new StringContent("Your request isn't authorized!");
-            return outputResponse;
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedContacts(string sObj, string sValue)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedContacts(string ObjectRef, int GroupId, string ValidationKey, string sObj, string sValue, string callback)
         {
-            string ValidationKey = "", InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("ValidationKey") && headers.Contains("InstanceUrl") && headers.Contains("AccessToken") && headers.Contains("ApiVersion"))
-            {
-                ValidationKey = HttpRequestMessageExtensions.GetHeader(re, "ValidationKey");
-                InstanceUrl = HttpRequestMessageExtensions.GetHeader(re, "InstanceUrl");
-                AccessToken = HttpRequestMessageExtensions.GetHeader(re, "AccessToken");
-                ApiVersion = HttpRequestMessageExtensions.GetHeader(re, "ApiVersion"); ;
-            }
-            else
-            {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            }
+            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 List<MyContact> myContacts = new List<MyContact> { };
                 try
                 {
+                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     string objectToSearch = sObj;
                     string objectValue = sValue;
@@ -88,27 +71,23 @@ namespace SalesForceOAuth.Controllers
                         mc.AccountId = c.AccountId; mc.Phone = c.Phone;
                         myContacts.Add(mc);
                     }
-                    outputResponse.StatusCode = HttpStatusCode.OK;
-                    outputResponse.Content = new StringContent(JsonConvert.SerializeObject(myContacts), Encoding.UTF8, "application/json");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, myContacts, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Error occured while searching for Contacts");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
+                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
     }
-    public class ContactData : SecureInfo
+    public class ContactData : MyValidation
     {
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
         public string AccountId { get; set; } // for reference
         public string FirstName { get; set; }
         public string LastName { get; set; }

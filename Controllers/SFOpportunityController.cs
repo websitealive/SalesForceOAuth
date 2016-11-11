@@ -15,14 +15,16 @@ namespace SalesForceOAuth.Controllers
     public class SFOpportunityController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostOpportunity(OpportunityData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostOpportunity([FromBody] OpportunityData lData)
         {
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 try
                 {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
+                    string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var opp = new MyOpportunity
                     {
                         AccountId = lData.AccountId,
@@ -34,32 +36,30 @@ namespace SalesForceOAuth.Controllers
                     SuccessResponse sR = await client.CreateAsync("Opportunity", opp);
                     if (sR.Success == true)
                     {
-                        outputResponse.StatusCode = HttpStatusCode.Created;
-                        outputResponse.Content = new StringContent("Opportunity added successfully!");
-                        return outputResponse;
+                        PostedObjectDetail output = new PostedObjectDetail();
+                        output.Id = sR.Id;
+                        output.ObjectName = "Opportunity";
+                        output.Message = "Opportunity added successfully!";
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
                     }
                     else
                     {
-                        outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        outputResponse.Content = new StringContent("Opportunity could not be added!");
-                        return outputResponse;
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Opportunity could not be added!");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
-            outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            outputResponse.Content = new StringContent("Your request isn't authorized!");
-            return outputResponse;
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         
     }
-    public class OpportunityData : SecureInfo
+    public class OpportunityData : MyValidation
     {
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
         public string AccountId { get; set; } // for reference
         public string Name { get; set; }
         public DateTime CloseDate { get; set; }

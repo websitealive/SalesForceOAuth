@@ -20,42 +20,67 @@ namespace SalesForceOAuth.Controllers
             {
                 try
                 {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
+                    string InstanceUrl = "", AccessToken = "", ApiVersion = "", ItemId ="", ItemType= "";
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    int chatId = 0;  
+                    MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType); 
+                    
+                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     TaskLogACall lTemp = new TaskLogACall();
-                    lTemp.Subject = "WebsiteAlive-Chat1";
+                    lTemp.Subject = lData.Subject; //"WebsiteAlive-Chat1";
                     lTemp.Description = lData.Messsage;
-                    if (lData.ItemType == "Lead" || lData.ItemType == "Contact")
-                        lTemp.WhoId = lData.ItemId;
+                    if (ItemType == "Lead" || ItemType == "Contact")
+                        lTemp.WhoId = ItemId;
                     else
-                        lTemp.WhatId = lData.ItemId;
+                        lTemp.WhatId = ItemId;
                     lTemp.Status = "Completed"; 
                     var lACall = lTemp ;
                     SuccessResponse sR = await client.CreateAsync("Task", lACall);
                     if (sR.Success == true)
                     {
-                        outputResponse.StatusCode = HttpStatusCode.Created;
-                        outputResponse.Content = new StringContent( lData.ItemType + " chat added successfully!"); 
-                        return outputResponse;
+                        MyAppsDb.ChatQueueItemAdded(chatId);
+                        PostedObjectDetail output = new PostedObjectDetail();
+                        output.Id = sR.Id;
+                        output.ObjectName = "Chat";
+                        output.Message = "Chat added successfully!";
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
                     } 
                     else
                     {
-                        outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        outputResponse.Content = new StringContent(lData.ItemType + " chat could not be added!");
-                        return outputResponse;
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent(lData.ItemType + " chat could not be added!");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
-            outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            outputResponse.Content = new StringContent("Your request isn't authorized!");
-            return outputResponse;
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
-
+        [HttpGet]
+        public HttpResponseMessage GetTagChat(string objectRef, int groupId, int sessionId, string ValidationKey, string objType, string objId, string callback)
+        {
+            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            {
+                List<Lead> myLeads = new List<Lead> { };
+                try
+                {
+                    MyAppsDb.TagChat(objectRef, groupId, sessionId, objType, objId);
+                    PostedObjectDetail output = new PostedObjectDetail();
+                    output.ObjectName = "TagChat";
+                    output.Message = "Chat Tagged successfully!";
+                    return MyAppsDb.ConvertJSONPOutput(callback, output, HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+            }
+            else
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            }
+        }
     }
     public class TaskLogACall
     {
@@ -65,10 +90,13 @@ namespace SalesForceOAuth.Controllers
         public string WhatId { get; set; }
         public string Status { get; set; }
     }
-    public class MessageData:SecureInfo
+    public class MessageData: MyValidation
     {
-        public string ItemId { get; set; }
-        public string ItemType { get; set; }
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
+        public int SessionId { get; set; }
+        //public string ItemId { get; set; }
+        public string Subject { get; set; }
         public string Messsage { get; set; }
 
     }

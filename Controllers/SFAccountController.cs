@@ -15,70 +15,56 @@ namespace SalesForceOAuth.Controllers
     public class SFAccountController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(AccountData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount([FromBody] AccountData lData)
         {
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 try
                 {
-                    ForceClient client = new ForceClient(lData.InstanceUrl, lData.AccessToken, lData.ApiVersion);
+                    string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
                     SuccessResponse sR = await client.CreateAsync("Account", acc);
                     if (sR.Success == true)
                     {
-                        outputResponse.StatusCode = HttpStatusCode.Created;
-                        outputResponse.Content = new StringContent("Account added successfully!");
-                        return outputResponse;
+                        PostedObjectDetail output = new PostedObjectDetail();
+                        output.Id = sR.Id;
+                        output.ObjectName = "Lead";
+                        output.Message = "Account added successfully!";
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
                     }
                     else
                     {
-                        outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        outputResponse.Content = new StringContent("Account could not be added!");
-                        return outputResponse;
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Account could not be added!");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
-            outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            outputResponse.Content = new StringContent("Your request isn't authorized!");
-            return outputResponse;
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string sObj, string sValue)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string ObjectRef, int GroupId, string ValidationKey,string sValue, string callback)
         {
-            string ValidationKey = "", InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("ValidationKey") && headers.Contains("InstanceUrl") && headers.Contains("AccessToken") && headers.Contains("ApiVersion"))
-            {
-                ValidationKey = HttpRequestMessageExtensions.GetHeader(re, "ValidationKey"); 
-                InstanceUrl = HttpRequestMessageExtensions.GetHeader(re, "InstanceUrl"); 
-                AccessToken = HttpRequestMessageExtensions.GetHeader(re, "AccessToken"); 
-                ApiVersion = HttpRequestMessageExtensions.GetHeader(re, "ApiVersion"); ;
-            }
-            else
-            {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            }
+            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+            
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
+                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                 List<Account> myAccounts = new List<Account> { };
                 try
                 {
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    string objectToSearch = sObj;
                     string objectValue = sValue;
-                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account where " + objectToSearch + " like '%" + objectValue + "%'");
+                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
+                        "where AccountNumber like '%" + sValue + "%' " 
+                        + "OR Name like '%" + sValue + "%' "
+                        + "OR Phone like '%" + sValue + "%'" ); 
                     foreach (dynamic c in cont.Records)
                     {
                         Account l = new Account();
@@ -88,27 +74,23 @@ namespace SalesForceOAuth.Controllers
                         l.Phone = c.Phone;
                         myAccounts.Add(l);
                     }
-                    outputResponse.StatusCode = HttpStatusCode.OK;
-                    outputResponse.Content = new StringContent(JsonConvert.SerializeObject(myAccounts), Encoding.UTF8, "application/json");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, myAccounts, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    outputResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    outputResponse.Content = new StringContent("Error occured while searching for Accounts");
-                    return outputResponse;
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
+                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
     }
-    public class AccountData : SecureInfo
+    public class AccountData : MyValidation
     {
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
         public string AccountNumber { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }

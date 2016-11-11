@@ -246,7 +246,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 conn.Open();
-                string sql = "Update integration_settings Set SFAccessToken = ' " + SFAccessToken + "', SFApiVersion = ' " + SFApiVersion + "',SFInstanceUrl = ' " + SFInstanceUrl + "'";
+                string sql = "Update integration_settings Set SFAccessToken = ' " + SFAccessToken + "', SFApiVersion = ' " + SFApiVersion + "',SFInstanceUrl = ' " + SFInstanceUrl + "', SFATCreationDT=now()";
                 sql += " WHERE ObjectRef = '" + ObjectRef + "' AND GroupId = " + GroupId.ToString();
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 int rows = cmd.ExecuteNonQuery();
@@ -272,9 +272,9 @@ namespace SalesForceOAuth.Controllers
                 {
                     while (rdr.Read())
                     {
-                        SFAccessToken = rdr["SFAccessToken"].ToString();
-                        SFApiVersion = rdr["SFApiVersion"].ToString();
-                        SFInstanceUrl = rdr["SFInstanceUrl"].ToString();
+                        SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                        SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                        SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
                     }
                 }
                 rdr.Close();
@@ -298,6 +298,7 @@ namespace SalesForceOAuth.Controllers
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
+
         public static HttpResponseMessage ConvertJSONOutput(object message, HttpStatusCode code)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -309,6 +310,74 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
+        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sqlDel = "DELETE FROM integration_salesforce_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
+                MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                int rowsDeleted = cmd1.ExecuteNonQuery();
+
+                string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp)";
+                sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now())";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integration_salesforce_queue WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        id = Convert.ToInt32(rdr["id"]); 
+                        itemType = rdr["object_type"].ToString().Trim();
+                        itemId = rdr["object_id"].ToString().Trim();
+                    }
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        public static void ChatQueueItemAdded(int chatId)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "Update integration_salesforce_queue Set status =  1 ";
+                sql += " WHERE id = " + chatId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
     }
 
     public class MyValidation

@@ -26,7 +26,7 @@ namespace SalesForceOAuth.Controllers
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = "-", Email = lData.Email, Phone = lData.Phone };
+                    var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = lData.Company, Email = lData.Email, Phone = lData.Phone };
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     SuccessResponse sR = await client.CreateAsync("Lead", lead);
                     if (sR.Success == true)
@@ -39,44 +39,34 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Internal Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             }
             return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string ObjectRef, int GroupId, string ValidationKey, string sObj, string sValue, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string ObjectRef, int GroupId, string ValidationKey, string sValue, string callback)
         {
-            //test
-            //List<Lead> myLeads = new List<Lead> { };
-            //{
-            //    Lead l = new Lead(); l.Id = "1"; l.FirstName = "naveeed"; l.LastName = "zafar";
-            //    l.Company = "comp"; l.Email = "ch@ch.com"; l.Phone = "0345345"; myLeads.Add(l);
-            //}
-            //{
-            //    Lead l = new Lead(); l.Id = "2"; l.FirstName = "hassan"; l.LastName = "zafar";
-            //    l.Company = "comp"; l.Email = "ch@ch.com"; l.Phone = "0345345"; myLeads.Add(l);
-            //}
-
-            //return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK);
-            //end test
-
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 List<Lead> myLeads = new List<Lead> { };
                 try
-                {
+                { 
                     MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    string objectToSearch = sObj;
                     string objectValue = sValue;
-                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, FirstName, LastName, Company, Email, Phone From Lead where " + objectToSearch + " like '%" + objectValue + "%'");
+                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, FirstName, LastName, Company, Email, Phone From Lead " +
+                        "where FirstName like '%" + sValue + "%' " +
+                        "OR LastName like '%" + sValue + "%' " +
+                        "OR Email like '%" + sValue + "%' " +
+                        "OR Phone like '%" + sValue + "%' " 
+                        );
                     foreach (dynamic c in cont.Records)
                     {
                         Lead l = new Lead();
