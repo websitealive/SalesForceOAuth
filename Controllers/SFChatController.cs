@@ -28,7 +28,7 @@ namespace SalesForceOAuth.Controllers
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     TaskLogACall lTemp = new TaskLogACall();
                     lTemp.Subject = lData.Subject; //"WebsiteAlive-Chat1";
-                    lTemp.Description = lData.Messsage;
+                    lTemp.Description = lData.Messsage.Replace("|", "\r\n") ;
                     if (ItemType == "Lead" || ItemType == "Contact")
                         lTemp.WhoId = ItemId;
                     else

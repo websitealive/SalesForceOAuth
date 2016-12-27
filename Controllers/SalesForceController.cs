@@ -1,19 +1,13 @@
 ﻿using Salesforce.Common;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Salesforce.Common.Models;
-using Salesforce.Force;
 using System.Configuration;
-using Newtonsoft.Json;
 using MySql.Data.MySqlClient;
 using System.Text;
-using System.Web.Http.Cors;
 using System.Web.Script.Serialization;
-using System.Web.Script.Services;
-using System.Web;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -62,6 +56,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url);
+
                     //var url =
                     //Common.FormatAuthUrl(
                     //    "https://login.salesforce.com/services/oauth2/authorize",
@@ -127,6 +122,7 @@ namespace SalesForceOAuth.Controllers
     }
     public class MyAppsDb
     {
+        #region SalesForce Methods
         public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, ref string sf_callback_url)
         {
             string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
@@ -151,6 +147,25 @@ namespace SalesForceOAuth.Controllers
                     Console.WriteLine("No rows found.");
                 }
                 rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "Update integration_settings_dynamics Set DYAccessToken = ' " + access_token + "', SFATCreationDT=now(), resource='" + resource + "'";
+                sql += " WHERE objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
             }
             catch (Exception ex)
             {
@@ -285,7 +300,6 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-
         public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -378,6 +392,148 @@ namespace SalesForceOAuth.Controllers
             }
             conn.Close();
         }
+
+        public static void GetRedirectURLParametersDynamics(ref string dy_authoize_url, ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integrations_constants where id = 1";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        dy_authoize_url = rdr["dy_authorize_url"].ToString();
+                        dy_clientid = rdr["dy_clientid"].ToString();
+                        dy_redirect_url = rdr["dy_redirect_url"].ToString();
+                        dy_resource_url = rdr["dy_resource_url"].ToString();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        public static void GetTokenParametersDynamics(ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url, ref string dy_token_post_url)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integrations_constants where id = 1";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        dy_clientid = rdr["dy_clientid"].ToString();
+                        dy_redirect_url = rdr["dy_redirect_url"].ToString();
+                        dy_resource_url = rdr["dy_resource_url"].ToString();
+                        dy_token_post_url = rdr["dy_token_post_url"].ToString();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        internal static void CreateNewIntegrationSettingForDynamicsUser(string objectRef, int groupId, string refreshToken, string accessToken, string resource)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sqlDel = "DELETE FROM integration_settings_dynamics WHERE objectRef = '" + objectRef + "' AND groupId =" + groupId.ToString();
+                MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                int rowsDeleted = cmd1.ExecuteNonQuery();
+
+                string sql = "insert into integration_settings_dynamics(objectRef, groupId, DYRefreshToken, DYRTCreationDT, DYAccessToken, DYATCreationDT, resource)";
+                sql += " values ('" + objectRef + "'," + groupId + ", '" + refreshToken.Trim() + "', now(), '" + accessToken.Trim() + "', now(),'" + resource+"')";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        internal static void GetCurrentRefreshTokenDynamics(string objectRef, int groupId, ref string DYRefreshToken, ref string DYResourceURL)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT DYRefreshToken, resource FROM integration_settings_dynamics where objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        DYRefreshToken = rdr["DYRefreshToken"].ToString();
+                        DYResourceURL = rdr["resource"].ToString();
+                    }
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        internal static void GetAPICredentialsDynamics(string objectRef, int groupId, ref string DYAccessToken, ref string DYApiVersion, ref string DYInstanceUrl, ref string resource)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        DYAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                        DYApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                        DYInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                        resource = rdr["resource"].ToString().Trim();
+                    }
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+        #endregion SalesForce Methods
     }
 
     public class MyValidation

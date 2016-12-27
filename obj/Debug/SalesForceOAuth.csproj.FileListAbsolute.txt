@@ -97,3 +97,7 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Cors.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\WebApiContrib.Formatting.Jsonp.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\WebApiContrib.Formatting.Jsonp.pdb
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.xml
