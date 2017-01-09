@@ -233,6 +233,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Web API Helper Code\Authentication.cs" />
+    <Compile Include="Web API Helper Code\Configuration.cs" />
     <Content Include="App_Code\Db.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -270,6 +272,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DYAccountController.cs" />
+    <Compile Include="Controllers\DYChatController.cs" />
+    <Compile Include="Controllers\DYLeadController.cs" />
     <Compile Include="Controllers\DynamicsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SalesForceController.cs" />
