@@ -17,70 +17,53 @@ namespace SalesForceOAuth.Controllers
     public class DynamicsController : ApiController
     {
         [HttpGet]
-        [ActionName("GetRedirectURL")]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetRedirectURL(string ValidationKey, string callback)
+        [ActionName("GetAccessToken")]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ValidationKey, string ObjectRef, string GroupId, string callback)
         {
-
-            string dy_authoize_url = "", dy_clientid = "", dy_redirect_url = "", dy_resource_url = "";
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
                 try
                 {
-                    //MyAppsDb.GetRedirectURLParametersDynamics(ref dy_authoize_url, ref dy_clientid, ref dy_redirect_url, ref dy_resource_url);
-                    dy_clientid = "1579d88e-bb6c-40ec-81ef-556c87319214";
-                    dy_redirect_url = "http://localhost:56786/Contact";
-                    dy_resource_url = "https://websitealiveus.crm.dynamics.com/";
-                    dy_authoize_url = "https://login.microsoftonline.com/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize";
-                    StringBuilder url = new StringBuilder();
-                    //= https://WEBSITEALIVEUS.crm.dynamics.com/; Username=; Password=Unstoppable.1o; " />
-                    //   UserCredential cred = new UserCredential("dev@WEBSITEALIVEUS.onmicrosoft.com", "Unstoppable.1o");
-                    //setting up configuration file 
-                    string username = "dev@WEBSITEALIVEUS.onmicrosoft.com";
-                    string redirecturl = "http://localhost:56786/Contact", serviceurl = "https://WEBSITEALIVEUS.crm.dynamics.com/";
-                    var password = "Unstoppable.1o";
-                    string clientId = "2a9ce073-9a16-4ea8-a306-2b601537a46c"; 
-                    var passwordSecure = new System.Security.SecureString();
-                    foreach (char c in password) passwordSecure.AppendChar(c);
-                    Web_API_Helper_Code.Configuration _config = null;
-                    _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, redirecturl, serviceurl, clientId);
-                    string authority = "https://login.windows.net/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize/"; 
-                    // authentication class 
-                    Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
-                   
-                    AuthenticationResult res = await _auth.AcquireToken(); 
-                    
-
-                    //HttpMessageHandler _clientHandler = null;
-                    //AuthenticationContext _context = null;
-                    //string _authority = "https://login.windows.net/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize";
-                    //_clientHandler = new OAuthMessageHandler(this, new HttpClientHandler());
-                    //_context = new AuthenticationContext(Authority, false);
+                    //Test Code
+                    //string accessToken = ""; 
+                    //string username = "dev@WEBSITEALIVEUS.onmicrosoft.com";
+                    //string serviceURL = "https://WEBSITEALIVEUS.crm.dynamics.com/";
+                    //string userPassword = "Unstoppable.1o";
+                    //string clientId = "2a9ce073-9a16-4ea8-a306-2b601537a46c";
+                    //DYTokenStatus userTokenStatus = DYTokenStatus.TOKENEXPIRED;
+                    //string authority = "https://login.windows.net/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize/";
+                    //End Test Code 
+                    //Live Code 
+                    string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
+                    DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
+                    DYTokenStatus userTokenStatus;
+                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
+                    //end Live Code 
 
 
-                    //var credentials = new UserPasswordCredential("dev@WEBSITEALIVEUS.onmicrosoft.com", "Unstoppable.1o");
-                    //_context.AcquireTokenAsync("https://WEBSITEALIVEUS.crm.dynamics.com/", dy_clientid, credentials); 
-
-
-
-
-                    //url.Append(dy_authoize_url).Append("?client_id=").Append(dy_clientid);
-                    //url.Append("&response_type=code"); 
-                    //url.Append("&redirect_uri=").Append(System.Web.HttpUtility.UrlEncode(dy_redirect_url));
-                    //url.Append("&response_mode=query");
-                    //url.Append("&resource=").Append(System.Web.HttpUtility.UrlEncode(dy_resource_url));
-                    //url.Append("&prompt=admin_consent");
-                    //javascript attempt
-                    // https://login.microsoftonline.com/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize?
-
-                    //url.Append(dy_authoize_url).Append("?client_id=").Append(dy_clientid);
-                    //url.Append("&response_type=code");
-                    //url.Append("&redirect_uri=").Append(System.Web.HttpUtility.UrlEncode(dy_redirect_url));
-                    //url.Append("&resource=").Append(System.Web.HttpUtility.UrlEncode(dy_resource_url));
-                    //url.Append("&state=b749b6b4-643a-4d71-8909-b976697f881e&nonce=258a431d-e3e7-4a24-a045-c49fbb1b1dcd");
-
-                    return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK);
-
+                    if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
+                    {
+                        return MyAppsDb.ConvertJSONPOutput(callback, accessToken, HttpStatusCode.OK);
+                    }
+                    else if (userTokenStatus == DYTokenStatus.USERNOTFOUND) // if a user account is not found 
+                    {
+                        return MyAppsDb.ConvertJSONPOutput(callback, "User not registered to use this application.", HttpStatusCode.NotFound); 
+                    }
+                    else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
+                    {
+                        var passwordSecure = new System.Security.SecureString();
+                        foreach (char c in userPassword) passwordSecure.AppendChar(c);
+                        Web_API_Helper_Code.Configuration _config = null;
+                        _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, serviceURL, clientId);
+                       
+                        // authentication class 
+                        Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
+                        AuthenticationResult res = await _auth.AcquireToken();
+                        DateTime expiryDT = res.ExpiresOn.DateTime; 
+                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT); 
+                        return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -193,6 +176,10 @@ namespace SalesForceOAuth.Controllers
         string ext_expires_in { get; set; }
         string not_before { get; set; }
       
+    }
+    public enum DYTokenStatus
+    {
+        USERNOTFOUND = -1, SUCCESSS = 1 ,TOKENEXPIRED = 2,
     }
    
 }

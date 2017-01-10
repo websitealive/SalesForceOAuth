@@ -22,6 +22,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
         /// <param name="config">A populated configuration object.</param>
         public Authentication(Configuration config, string authority)
         {
+
             _authority = authority; 
             if (config == null)
                 throw new Exception("Configuration cannot be null.");
@@ -95,8 +96,8 @@ namespace SalesForceOAuth.Web_API_Helper_Code
             {
                 try
                 {
-                    var credentials = new UserPasswordCredential(_config.Username, _config.Password);
-                    return await _context.AcquireTokenAsync("https://WEBSITEALIVEUS.crm.dynamics.com", _config.ClientId, credentials);
+                    var credentials = new UserPasswordCredential(_config.Username, _config.Password); 
+                    return await _context.AcquireTokenAsync(_config.ServiceUrl, _config.ClientId, credentials);
                     //if (response.AccessToken.Contains("a"))
                     //    return null; 
                 }

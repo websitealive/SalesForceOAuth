@@ -21,10 +21,15 @@ namespace SalesForceOAuth.Controllers
             HttpResponseMessage outputResponse = new HttpResponseMessage();
             if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
-                string InstanceUrl = "", AccessToken = "", ApiVersion = "", resource = "";
-                MyAppsDb.GetAPICredentialsDynamics(lData.ObjectRef,lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref resource);
+                string AccessToken = "";
                 try
                 {
+                    HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
+                    if (msg.StatusCode == HttpStatusCode.OK)
+                    { AccessToken = msg.Content.ReadAsStringAsync().Result; }
+                    else
+                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
@@ -67,12 +72,17 @@ namespace SalesForceOAuth.Controllers
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string ObjectRef, int GroupId, string ValidationKey, string sValue, string callback)
         {
-            string InstanceUrl = "", AccessToken = "", ApiVersion = "", Resource = "";
+            string AccessToken = "";
             if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
             {
-                MyAppsDb.GetAPICredentialsDynamics(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref Resource);
                 try
                 {
+                    HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef, GroupId.ToString(), "internal");
+                    if (msg.StatusCode == HttpStatusCode.OK)
+                    { AccessToken = msg.Content.ReadAsStringAsync().Result; }
+                    else
+                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+
                     HttpClient client = new HttpClient();
                     client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
@@ -81,7 +91,7 @@ namespace SalesForceOAuth.Controllers
                     client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
                     client.DefaultRequestHeaders.Add("OData-Version", "4.0");
                     StringBuilder requestURI = new StringBuilder();
-                    requestURI.Append("/api/data/v8.0/accounts?$select=accountnumber,name,emailaddress1,address1_telephone1,address1_city");
+                    requestURI.Append("/api/data/v8.0/accounts?$select=accountnumber,name,emailaddress1,address1_telephone1,address1_city,crmtaskassigneduniqueid");
                     requestURI.Append("&$top=50");
                     if (!sValue.Equals(""))
                     {
@@ -151,6 +161,7 @@ namespace SalesForceOAuth.Controllers
         public string address1_city { get; set; }
         public string address1_telephone1 { get; set; }
         public string emailaddress1 { get; set; }
+        public string crmtaskassigneduniqueid { get; set; }
     }
     
     public class DYAccountOutput: DYAccount

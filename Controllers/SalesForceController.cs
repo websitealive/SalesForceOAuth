@@ -161,7 +161,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 conn.Open();
-                string sql = "Update integration_settings_dynamics Set DYAccessToken = ' " + access_token + "', SFATCreationDT=now(), resource='" + resource + "'";
+                string sql = "Update integration_settings_dynamics Set DYAccessToken = '" + access_token + "', SFATCreationDT=now(), resource='" + resource + "'";
                 sql += " WHERE objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 int rows = cmd.ExecuteNonQuery();
@@ -302,6 +302,10 @@ namespace SalesForceOAuth.Controllers
 
         public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code)
         {
+            if(callback.Equals("internal"))
+            {
+                return ConvertStringOutput(message.ToString(), code); 
+            }
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
             StringBuilder sb = new StringBuilder();
@@ -321,6 +325,13 @@ namespace SalesForceOAuth.Controllers
             JavaScriptSerializer js = new JavaScriptSerializer();
             sb.Append(js.Serialize(message));
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+            return response;
+        }
+        public static HttpResponseMessage ConvertStringOutput(string message, HttpStatusCode code)
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = code;
+            response.Content = new StringContent(message, Encoding.UTF8, "application/json");
             return response;
         }
 
@@ -563,7 +574,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 conn.Open();
-                string sql = "SELECT * FROM integration_dynamics_queue WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
+                string sql = "SELECT * FROM integration_dynamics_queue WHERE status=1 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 if (rdr.HasRows)
@@ -583,6 +594,95 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
+        public static DYTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword, 
+            ref string clientId, ref string serviceURL, ref DateTime tokenExpiryDT, ref string authority)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        username = rdr["username"].ToString().Trim();
+                        userPassword = rdr["userpassword"].ToString().Trim();
+                        clientId = rdr["clientid"].ToString().Trim();
+                        serviceURL = rdr["serviceurl"].ToString().Trim();
+                        authority = rdr["authority"].ToString().Trim();
+                        string date = rdr["tokenexpirydt"].ToString(); 
+                        // if no expiry date there
+                        if (date.Equals(""))
+                        {
+                            return DYTokenStatus.TOKENEXPIRED;
+                        }
+                        tokenExpiryDT = Convert.ToDateTime(rdr["tokenexpirydt"].ToString()).AddHours(1);
+                        if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
+                        {
+                            accessToken = rdr["accesstoken"].ToString().Trim();
+                            return DYTokenStatus.SUCCESSS;
+                        }
+                        else
+                        {
+                            return DYTokenStatus.TOKENEXPIRED; 
+                        }
+                    }
+                    return DYTokenStatus.USERNOTFOUND;
+                }
+                else
+                {
+                    return DYTokenStatus.USERNOTFOUND;
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                return DYTokenStatus.USERNOTFOUND;
+            }
+            conn.Close();
+        }
+
+        public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "Update integration_settings_dynamics Set accesstoken = '" + accessToken + "', tokenexpirydt = now()";
+                sql += " WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+
+        public static void ChatQueueItemAddedDynamics(int chatId)
+        {
+            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "Update integration_dynamics_queue Set status =  1 ";
+                sql += " WHERE id = " + chatId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                int rows = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
         #endregion SalesForce Methods
     }
 
