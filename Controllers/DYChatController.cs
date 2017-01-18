@@ -15,14 +15,34 @@ namespace SalesForceOAuth.Controllers
     public class DYChatController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            string AccessToken = "";
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
                 try 
                 {
-                    string AccessToken = "",  ItemType = "Account";
+                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    string outputPayload;
+                    try
+                    {
+                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    }
+                    catch (Exception ex)
+                    {
+                        return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    }
+                    JObject values = JObject.Parse(outputPayload); // parse as array  
+                    MessageData lData = new MessageData();
+                    lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                    lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                    lData.Message = values.GetValue("Message").ToString();
+                    lData.Subject = values.GetValue("Subject").ToString();
+                    lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                    #region dynamics api call
+                    string ItemType = "Account";
                     //string ItemId = "/accounts(b123e935-92cc-e611-8104-c4346bac5238)"; 
                     //string ItemId = "/leads(b56264dc-7332-e611-80e5-5065f38b31c1)"; 
                     string ItemId = ""; 
@@ -31,7 +51,8 @@ namespace SalesForceOAuth.Controllers
                     ItemId = "/" + ItemType + "(" + ItemId + ")";
                     try
                     {
-                        HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
+                        //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
+                        HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(lData.ObjectRef, lData.GroupId.ToString());
                         if (msg.StatusCode == HttpStatusCode.OK)
                         { AccessToken = msg.Content.ReadAsStringAsync().Result; }
                         else
@@ -53,7 +74,7 @@ namespace SalesForceOAuth.Controllers
                         //aData.regardingobjectid_account = ItemId; "primarycontactid@odata.bind":"/accounts("+ ItemId + ")"
                         JObject aData = new JObject();
                         aData.Add("subject", lData.Subject);
-                        aData.Add("description", lData.Messsage);
+                        aData.Add("description", lData.Message);
                         if(ItemId.Contains("account"))
                             aData.Add("regardingobjectid_account_task@odata.bind", ItemId);
                         else
@@ -80,7 +101,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                     }
-                    
+                    #endregion dynamics api call
 
                 }
                 catch (Exception ex)
@@ -91,27 +112,48 @@ namespace SalesForceOAuth.Controllers
             return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string objectRef, int groupId, int sessionId, string ValidationKey, string objType, string objId, string callback)
+        public HttpResponseMessage GetTagChat()
         {
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            string ObjectRef = "", ObjType = "", ObjId = "";
+            int GroupId = 0, SessionId = 0; 
+            if (headers.Contains("Authorization"))
             {
-               // List<Lead> myLeads = new List<Lead> { };
+                #region JWT Token 
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
                 try
                 {
-                    MyAppsDb.TagChatDynamics(objectRef, groupId, sessionId, objType, objId);
-                    PostedObjectDetail output = new PostedObjectDetail();
-                    output.ObjectName = "TagChat";
-                    output.Message = "Chat Tagged successfully!";
-                    return MyAppsDb.ConvertJSONPOutput(callback, output, HttpStatusCode.OK);
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                #endregion JWT Token
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
+                SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                ObjectRef = values.GetValue("ObjectRef").ToString();
+                ObjType = values.GetValue("ObjType").ToString();
+                ObjId = values.GetValue("ObjId").ToString();
+                try
+                {
+                    MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, ObjType, ObjId);
+                    PostedObjectDetail output = new PostedObjectDetail();
+                    output.ObjectName = "TagChat";
+                    output.Message = "Chat Tagged successfully!";
+                    return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
         //pubic searchChat()

@@ -101,3 +101,4 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\JWT.dll

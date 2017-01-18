@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
 using System;
@@ -16,15 +17,37 @@ namespace SalesForceOAuth.Controllers
     public class DYLeadController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead([FromBody] DYLeadPostData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            string AccessToken = "";
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
-                string AccessToken = "";
                 try
                 {
-                    HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
+                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    string outputPayload;
+                    try
+                    {
+                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    }
+                    catch (Exception ex)
+                    {
+                        return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    }
+                    JObject values = JObject.Parse(outputPayload); // parse as array  
+                    DYLeadPostData lData = new DYLeadPostData();
+                    lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                    lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                    lData.City = values.GetValue("City").ToString();
+                    lData.Phone = values.GetValue("Phone").ToString();
+                    lData.Companyname = values.GetValue("Companyname").ToString();
+                    lData.Email = values.GetValue("Email").ToString();
+                    lData.Subject = values.GetValue("Subject").ToString();
+                    #region dynamics api call
+                    //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(lData.ObjectRef, lData.GroupId.ToString());
                     if (msg.StatusCode == HttpStatusCode.OK)
                     { AccessToken = msg.Content.ReadAsStringAsync().Result; }
                     else
@@ -61,6 +84,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         return MyAppsDb.ConvertJSONOutput("Dynamics Error: " + response.StatusCode, HttpStatusCode.InternalServerError);
                     }
+                    #endregion dynamics api call
                 }
                 catch (Exception ex)
                 {
@@ -71,18 +95,39 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string ObjectRef, int GroupId, string ValidationKey, string sValue, string callback  )
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads()
         {
             string AccessToken = "";
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            string GroupId = "", ObjectRef = "", SValue = "";
+            if (headers.Contains("Authorization"))
             {
                 try
                 {
-                    HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef,GroupId.ToString(), "internal");
+                    #region JWT Token 
+                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    string outputPayload;
+                    try
+                    {
+                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    }
+                    catch (Exception ex)
+                    {
+                        return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    }
+                    #endregion JWT Token
+                    JObject values = JObject.Parse(outputPayload); // parse as array  
+                    GroupId = values.GetValue("GroupId").ToString();
+                    ObjectRef = values.GetValue("ObjectRef").ToString();
+                    SValue = values.GetValue("SValue").ToString();
+                    #region dynamics api call 
+                    //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef,GroupId.ToString(), "internal");
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(ObjectRef, GroupId);
                     if (msg.StatusCode == HttpStatusCode.OK)
                     {   AccessToken = msg.Content.ReadAsStringAsync().Result;   }
                     else
-                    {   return MyAppsDb.ConvertJSONPOutput(callback, msg.Content.ReadAsStringAsync().Result, msg.StatusCode);   }
+                    {   return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode);   }
 
                     //end Test 
                     HttpClient client = new HttpClient();
@@ -95,11 +140,11 @@ namespace SalesForceOAuth.Controllers
                     StringBuilder requestURI = new StringBuilder();
                     requestURI.Append("/api/data/v8.0/leads?$select=companyname,emailaddress1,address1_telephone1,subject,address1_city");
                     requestURI.Append("&$top=50");
-                    if (!sValue.Equals(""))
+                    if (!SValue.Equals(""))
                     {
-                        requestURI.Append("&$filter=contains(companyname, '" + sValue + "')or contains(subject, '" + sValue + "')");
-                        requestURI.Append("or contains(emailaddress1, '" + sValue + "')or contains(address1_city, '" + sValue + "')");
-                        requestURI.Append("or contains(address1_telephone1, '" + sValue + "')");
+                        requestURI.Append("&$filter=contains(companyname, '" + SValue + "')or contains(subject, '" + SValue + "')");
+                        requestURI.Append("or contains(emailaddress1, '" + SValue + "')or contains(address1_city, '" + SValue + "')");
+                        requestURI.Append("or contains(address1_telephone1, '" + SValue + "')");
                     }
                     HttpResponseMessage response = client.GetAsync(requestURI.ToString()).Result;
                     List<DYLead> myLeads = new List<DYLead> { };
@@ -120,16 +165,17 @@ namespace SalesForceOAuth.Controllers
                         }
 
                     }
-                    return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK);
+                    #endregion dynamics api call 
+                    return MyAppsDb.ConvertJSONOutput(myLeads, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
 

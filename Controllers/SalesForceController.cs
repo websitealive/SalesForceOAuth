@@ -27,23 +27,6 @@ namespace SalesForceOAuth.Controllers
         /// <param name="ValidationKey"></param>
         /// <returns></returns>
         /// 
-        //[HttpGet]
-        //[ActionName("GetRedirectURL")]
-        //[ScriptMethod(UseHttpGet = true, ResponseFormat =ResponseFormat.Json)]
-        //public void GetRedirectURL(string ValidationKey, string callback)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    JavaScriptSerializer js = new JavaScriptSerializer();
-        //    sb.Append(callback + "(");
-        //    sb.Append(js.Serialize("www.google.com"));
-        //    sb.Append(");");
-
-        //    HttpContext context = HttpContext.Current;
-        //    context.Response.Clear();
-        //    context.Response.ContentType = "application/json";
-        //    context.Response.Write(sb.ToString());
-        //    context.Response.End(); 
-        //}
         [HttpGet]
         [ActionName("GetRedirectURL")]
         public HttpResponseMessage GetRedirectURL(string ValidationKey, string callback)

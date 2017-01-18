@@ -10,45 +10,50 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using SalesForceOAuth.Web_API_Helper_Code; 
-
+using SalesForceOAuth.Web_API_Helper_Code;
+using JWT; 
 namespace SalesForceOAuth.Controllers
 {
     public class DynamicsController : ApiController
     {
+
         [HttpGet]
         [ActionName("GetAccessToken")]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ValidationKey, string ObjectRef, string GroupId, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            string GroupId = "", ObjectRef = ""; 
+            if (headers.Contains("Authorization") )
             {
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload; 
                 try
                 {
-                    //Test Code
-                    //string accessToken = ""; 
-                    //string username = "dev@WEBSITEALIVEUS.onmicrosoft.com";
-                    //string serviceURL = "https://WEBSITEALIVEUS.crm.dynamics.com/";
-                    //string userPassword = "Unstoppable.1o";
-                    //string clientId = "2a9ce073-9a16-4ea8-a306-2b601537a46c";
-                    //DYTokenStatus userTokenStatus = DYTokenStatus.TOKENEXPIRED;
-                    //string authority = "https://login.windows.net/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize/";
-                    //End Test Code 
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                }
+                catch(Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                GroupId = values.GetValue("GroupId").ToString();
+                ObjectRef = values.GetValue("ObjectRef").ToString();
+                try
+                {
                     //Live Code 
                     string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
                     DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
                     DYTokenStatus userTokenStatus;
                     userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
                     //end Live Code 
-
-
                     if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback, accessToken, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONOutput(accessToken, HttpStatusCode.OK);
                     }
                     else if (userTokenStatus == DYTokenStatus.USERNOTFOUND) // if a user account is not found 
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback, "User not registered to use this application.", HttpStatusCode.NotFound); 
+                        return MyAppsDb.ConvertJSONOutput("User not registered to use this application.", HttpStatusCode.NotFound);
                     }
                     else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
                     {
@@ -56,25 +61,89 @@ namespace SalesForceOAuth.Controllers
                         foreach (char c in userPassword) passwordSecure.AppendChar(c);
                         Web_API_Helper_Code.Configuration _config = null;
                         _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, serviceURL, clientId);
-                       
+
                         // authentication class 
                         Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
                         AuthenticationResult res = await _auth.AcquireToken();
-                        DateTime expiryDT = res.ExpiresOn.DateTime; 
-                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT); 
-                        return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK);
+                        DateTime expiryDT = res.ExpiresOn.DateTime;
+                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
+                        return MyAppsDb.ConvertJSONOutput(res.AccessToken.ToString(), HttpStatusCode.OK);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                HttpResponseMessage outputResponse = new HttpResponseMessage();
+                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
+                outputResponse.Content = new StringContent("Your request isn't authorized!");
+                return outputResponse;
             }
         }
+
+
+        //[HttpGet]
+        //[ActionName("GetAccessToken")]
+        //public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ValidationKey, string ObjectRef, string GroupId, string callback)
+        //{
+        //    HttpResponseMessage outputResponse = new HttpResponseMessage();
+        //    if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+        //    {
+        //        try
+        //        {
+        //            //Test Code
+        //            //string accessToken = ""; 
+        //            //string username = "dev@WEBSITEALIVEUS.onmicrosoft.com";
+        //            //string serviceURL = "https://WEBSITEALIVEUS.crm.dynamics.com/";
+        //            //string userPassword = "Unstoppable.1o";
+        //            //string clientId = "2a9ce073-9a16-4ea8-a306-2b601537a46c";
+        //            //DYTokenStatus userTokenStatus = DYTokenStatus.TOKENEXPIRED;
+        //            //string authority = "https://login.windows.net/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/authorize/";
+        //            //End Test Code 
+        //            //Live Code 
+        //            string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
+        //            DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
+        //            DYTokenStatus userTokenStatus;
+        //            userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
+        //            //end Live Code 
+
+
+        //            if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
+        //            {
+        //                return MyAppsDb.ConvertJSONPOutput(callback, accessToken, HttpStatusCode.OK);
+        //            }
+        //            else if (userTokenStatus == DYTokenStatus.USERNOTFOUND) // if a user account is not found 
+        //            {
+        //                return MyAppsDb.ConvertJSONPOutput(callback, "User not registered to use this application.", HttpStatusCode.NotFound);
+        //            }
+        //            else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
+        //            {
+        //                var passwordSecure = new System.Security.SecureString();
+        //                foreach (char c in userPassword) passwordSecure.AppendChar(c);
+        //                Web_API_Helper_Code.Configuration _config = null;
+        //                _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, serviceURL, clientId);
+
+        //                // authentication class 
+        //                Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
+        //                AuthenticationResult res = await _auth.AcquireToken();
+        //                DateTime expiryDT = res.ExpiresOn.DateTime;
+        //                MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
+        //                return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK);
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+        //    }
+        //}
 
 
         //GET: api/SalesForce/GetAuthorizationToken? ValidationKey = ffe06298 - 22a8-4849-a46c-0284b04f2561
