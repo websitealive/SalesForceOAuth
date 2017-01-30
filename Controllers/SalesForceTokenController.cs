@@ -16,24 +16,24 @@ namespace SalesForceOAuth.Controllers
         //GET: api/SalesForce/GetAuthorizationToken
         [HttpGet]
         [ActionName("GetAuthorizationToken")]
-        public HttpResponseMessage GetAuthorizationToken()
+        public HttpResponseMessage GetAuthorizationToken(string token, string callback)
         {
             //string ObjectRef, int GroupId, string AuthCode, string IsNew, string callback, string ValidationKey, 
-            var re = Request;
-            var headers = re.Headers;
+            //var re = Request;
+            //var headers = re.Headers;
             string ObjectRef = "", AuthCode = "", IsNew = "";
             int GroupId = 0; 
-            if (headers.Contains("Authorization"))
-            {
-                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            //if (headers.Contains("Authorization"))
+            //{
+               // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 GroupId = Convert.ToInt32(values.GetValue("GroupId"));
@@ -60,18 +60,18 @@ namespace SalesForceOAuth.Controllers
                         MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
                     }
 
-                    return MyAppsDb.ConvertJSONOutput("API information updated!", HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback,"API information updated!", HttpStatusCode.OK);
 
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback ,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-            }
-            else
-            {
-                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            }
+            //}
+            //else
+            //{
+            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            //}
         }
 
     }

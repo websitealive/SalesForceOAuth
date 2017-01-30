@@ -17,18 +17,18 @@ namespace SalesForceOAuth.Controllers
     public class DYAccountController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount()
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(string token)
         {
             string AccessToken = "";
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("Authorization"))
-            {
-                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            //var re = Request;
+            //var headers = re.Headers;
+            //if (headers.Contains("Authorization"))
+            //{
+                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
@@ -88,29 +88,29 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
-            }
-            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            //}
+            //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts()
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string callback)
         {
             //string ObjectRef, int GroupId, string ValidationKey, string sValue, string callback)
             string AccessToken = "";
-            var re = Request;
-            var headers = re.Headers;
+            //var re = Request;
+            //var headers = re.Headers;
             string GroupId = "", ObjectRef = "", SValue="";
-            if (headers.Contains("Authorization"))
-            {
+            //if (headers.Contains("Authorization"))
+            //{
                 string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 GroupId = values.GetValue("GroupId").ToString();
@@ -164,17 +164,17 @@ namespace SalesForceOAuth.Controllers
 
                     }
                     #endregion dynamics api call 
-                    return MyAppsDb.ConvertJSONOutput(myAccounts, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-            }
-            else
-            {
-                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            }
+            //}
+            //else
+            //{
+            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            //}
         }
 
     }

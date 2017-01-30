@@ -19,23 +19,23 @@ namespace SalesForceOAuth.Controllers
         /// GET: api/SalesForce/GetRedirectURL
         [HttpGet]
         [ActionName("GetRedirectURL")]
-        public HttpResponseMessage GetRedirectURL(string callback)
+        public HttpResponseMessage GetRedirectURL(string token, string callback)
         {
-            var re = Request;
-            var headers = re.Headers;
-            if (headers.Contains("Authorization"))
-            {
+            //var re = Request;
+            //var headers = re.Headers;
+            //if (headers.Contains("Authorization"))
+            //{
                 try
                 {
-                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                     string outputPayload;
                     try
                     {
-                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                        outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                     }
                     catch (Exception ex)
                     {
-                        return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                     }
                     string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
                     MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url);
@@ -43,7 +43,7 @@ namespace SalesForceOAuth.Controllers
                     //var url =
                     //Common.FormatAuthUrl(
                     //    "https://login.salesforce.com/services/oauth2/authorize",
-                    //    ResponseTypes.Code,
+                    //    ResponseTypes.Code,s
                     //    "3MVG9KI2HHAq33RwXJsqtsEtY.ThMCzS5yZd3S8CzXBArijS0WEQgYACVnQ9SJq0KDdKrQgIxPFNPOIQhuqdK",
                     //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
 
@@ -52,13 +52,13 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch(Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-           }
-            else
-            {
-               return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            }
+           //}
+           // else
+           // {
+           //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+           // }
         }
 
     }

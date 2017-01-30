@@ -19,22 +19,22 @@ namespace SalesForceOAuth.Controllers
 
         [HttpGet]
         [ActionName("GetAccessToken")]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken()
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string token, string callback)
         {
-            var re = Request;
-            var headers = re.Headers;
+            //var re = Request;
+            //var headers = re.Headers;
             string GroupId = "", ObjectRef = ""; 
-            if (headers.Contains("Authorization") )
-            {
-                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            //if (headers.Contains("Authorization") )
+            //{
+                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload; 
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch(Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 GroupId = values.GetValue("GroupId").ToString();
@@ -49,11 +49,11 @@ namespace SalesForceOAuth.Controllers
                     //end Live Code 
                     if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
                     {
-                        return MyAppsDb.ConvertJSONOutput(accessToken, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK);
                     }
                     else if (userTokenStatus == DYTokenStatus.USERNOTFOUND) // if a user account is not found 
                     {
-                        return MyAppsDb.ConvertJSONOutput("User not registered to use this application.", HttpStatusCode.NotFound);
+                        return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound);
                     }
                     else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
                     {
@@ -67,21 +67,21 @@ namespace SalesForceOAuth.Controllers
                         AuthenticationResult res = await _auth.AcquireToken();
                         DateTime expiryDT = res.ExpiresOn.DateTime;
                         MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
-                        return MyAppsDb.ConvertJSONOutput(res.AccessToken.ToString(), HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONPOutput(callback,res.AccessToken.ToString(), HttpStatusCode.OK);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-            }
-            else
-            {
-                HttpResponseMessage outputResponse = new HttpResponseMessage();
-                outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-                outputResponse.Content = new StringContent("Your request isn't authorized!");
-                return outputResponse;
-            }
+            //}
+            //else
+            //{
+            //    HttpResponseMessage outputResponse = new HttpResponseMessage();
+            //    outputResponse.StatusCode = HttpStatusCode.Unauthorized;
+            //    outputResponse.Content = new StringContent("Your request isn't authorized!");
+            //    return outputResponse;
+            //}
         }
 
 
