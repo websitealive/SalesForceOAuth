@@ -67,12 +67,12 @@ namespace SalesForceOAuth.Controllers
                     } 
                     else
                     {
-                        return MyAppsDb.ConvertJSONPOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);

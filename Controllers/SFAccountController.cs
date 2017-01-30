@@ -22,7 +22,7 @@ namespace SalesForceOAuth.Controllers
             //var headers = re.Headers;
             //if (headers.Contains("Authorization"))
             //{
-                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
                 try
                 {

@@ -17,7 +17,7 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(string token)
         {
-            //string AccessToken = "";
+            string AccessToken = "";
             //var re = Request;
             //var headers = re.Headers;
             //if (headers.Contains("Authorization"))

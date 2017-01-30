@@ -106,11 +106,11 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     #region JWT Token 
-                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                     string outputPayload;
                     try
                     {
-                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                        outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                     }
                     catch (Exception ex)
                     {

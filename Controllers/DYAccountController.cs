@@ -102,7 +102,7 @@ namespace SalesForceOAuth.Controllers
             string GroupId = "", ObjectRef = "", SValue="";
             //if (headers.Contains("Authorization"))
             //{
-                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+              //  string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
                 try
                 {
