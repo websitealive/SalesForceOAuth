@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
 using System;
@@ -15,17 +16,37 @@ namespace SalesForceOAuth.Controllers
     public class SFContactController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostContact([FromBody] ContactData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostContact()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
+                try
+                {
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                ContactData lData = new ContactData();
+                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                lData.FirstName = values.GetValue("FirstName").ToString();
+                lData.LastName = values.GetValue("LastName").ToString();
+                lData.Email = values.GetValue("Email").ToString();
+                lData.Phone = values.GetValue("Phone").ToString();
+                lData.AccountId = values.GetValue("AccountId").ToString();
                 try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    var cont = new MyContact {AccountId = lData.AccountId, FirstName = lData.FirstName,LastName = lData.LastName,
+                    var cont = new MyContact {AccountId = lData.AccountId, FirstName = lData.FirstName, LastName = lData.LastName,
                         Email = lData.Email  , Phone = lData.Phone };
                     SuccessResponse sR = await client.CreateAsync("Contact", cont);
                     if (sR.Success == true)
@@ -50,20 +71,42 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedContacts(string ObjectRef, int GroupId, string ValidationKey, string sObj, string sValue, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedContacts()
         {
-            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
+                string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+                string ObjectRef = "", SValue = "";
+                int GroupId = 0;
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
+                try
+                {
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                ObjectRef = values.GetValue("ObjectRef").ToString();
+                SValue = values.GetValue("SValue").ToString();
                 List<MyContact> myContacts = new List<MyContact> { };
                 try
                 {
                     MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    string objectToSearch = sObj;
-                    string objectValue = sValue;
+
                     QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(
-                        "SELECT Id, FirstName, LastName, Email, Phone, AccountId From Contact where " +  objectToSearch + " like '%" + objectValue + "%'");
+                        "SELECT Id, FirstName, LastName, Email, Phone, AccountId From Contact " +
+                        "where FirstName like '%" + SValue + "%' " +
+                        "OR LastName like '%" + SValue + "%' " +
+                        "OR Email like '%" + SValue + "%' " +
+                        "OR Phone like '%" + SValue + "%' "
+                        );
                     foreach (dynamic c in cont.Records)
                     {
                         MyContact mc = new MyContact();
@@ -71,16 +114,16 @@ namespace SalesForceOAuth.Controllers
                         mc.AccountId = c.AccountId; mc.Phone = c.Phone;
                         myContacts.Add(mc);
                     }
-                    return MyAppsDb.ConvertJSONPOutput(callback, myContacts, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONOutput(myContacts, HttpStatusCode.OK);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
     }

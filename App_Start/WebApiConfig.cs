@@ -15,8 +15,11 @@ namespace SalesForceOAuth
             // Configure Web API to use only bearer token authentication.
             config.SuppressDefaultHostAuthentication();
             config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
-            var cors = new EnableCorsAttribute(origins: "http://www-dev0.websitealive.com,http://dev0.websitealive.com,http://www.websitealive,http://localhost:56786", headers: "*", methods: "*"); 
-            config.EnableCors(cors);
+
+            //var cors = new EnableCorsAttribute(origins: "http://www-dev0.websitealive.com,https://dev0.websitealive.com,http://localhost:56786,", headers: "*", methods: "*"); 
+            //config.EnableCors(cors);
+
+            config.EnableCors();
 
 
             var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().FirstOrDefault();

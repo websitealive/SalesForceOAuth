@@ -1,4 +1,5 @@
-﻿using Salesforce.Common.Models;
+﻿using Newtonsoft.Json.Linq;
+using Salesforce.Common.Models;
 using Salesforce.Force;
 using System;
 using System.Collections.Generic;
@@ -13,14 +14,33 @@ namespace SalesForceOAuth.Controllers
     public class SFChatController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage(); 
-            if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            string AccessToken = "";
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
                 try
                 {
-                    string InstanceUrl = "", AccessToken = "", ApiVersion = "", ItemId ="", ItemType= "";
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                MessageData lData = new MessageData();
+                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                lData.Message = values.GetValue("Message").ToString();
+                lData.Subject = values.GetValue("Subject").ToString();
+                lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                try
+                {
+                    string InstanceUrl = "", ApiVersion = "", ItemId ="", ItemType= "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                     int chatId = 0;  
                     MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType); 
@@ -58,27 +78,49 @@ namespace SalesForceOAuth.Controllers
             return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string objectRef, int groupId, int sessionId, string ValidationKey, string objType, string objId, string callback)
+        public HttpResponseMessage GetTagChat()
         {
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            string ObjectRef = "", ObjType = "", ObjId = "";
+            int GroupId = 0, SessionId = 0;
+            if (headers.Contains("Authorization"))
             {
-                List<Lead> myLeads = new List<Lead> { };
+                #region JWT Token 
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
                 try
                 {
-                    MyAppsDb.TagChat(objectRef, groupId, sessionId, objType, objId);
-                    PostedObjectDetail output = new PostedObjectDetail();
-                    output.ObjectName = "TagChat";
-                    output.Message = "Chat Tagged successfully!";
-                    return MyAppsDb.ConvertJSONPOutput(callback, output, HttpStatusCode.OK);
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                #endregion JWT Token
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                ObjectRef = values.GetValue("ObjectRef").ToString();
+                ObjType = values.GetValue("ObjType").ToString();
+                ObjId = values.GetValue("ObjId").ToString();
+                List<Lead> myLeads = new List<Lead> { };
+                try
+                {
+                    MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId);
+                    PostedObjectDetail output = new PostedObjectDetail();
+                    output.ObjectName = "TagChat";
+                    output.Message = "Chat Tagged successfully!";
+                    return MyAppsDb.ConvertJSONOutput( output, HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
     }

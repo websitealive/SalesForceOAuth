@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
 using System;
@@ -15,11 +16,31 @@ namespace SalesForceOAuth.Controllers
     public class SFOpportunityController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostOpportunity([FromBody] OpportunityData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostOpportunity()
         {
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (lData.ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
+                string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string outputPayload;
+                try
+                {
+                    outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                }
+                JObject values = JObject.Parse(outputPayload); // parse as array  
+                OpportunityData lData = new OpportunityData();
+                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                lData.AccountId = values.GetValue("AccountId").ToString();
+                lData.Amount = Convert.ToDecimal(values.GetValue("Amount").ToString());
+                lData.CloseDate = Convert.ToDateTime( values.GetValue("CloseDate").ToString());
+                lData.Name  = values.GetValue("Name").ToString();
+                lData.StageName  = values.GetValue("StageName").ToString();
                 try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";

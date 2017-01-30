@@ -8,36 +8,36 @@ using System.Configuration;
 using MySql.Data.MySqlClient;
 using System.Text;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace SalesForceOAuth.Controllers
 {
-    public class Contact
-    {
-        public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-    }
+    
     public class SalesForceController : ApiController
     {
         /// <summary>
         /// GET: api/SalesForce/GetRedirectURL
-        /// ValidationKey in header
-        /// This is the first step of OAuth, getting the URL to redirect to. 
-        /// </summary>
-        /// <param name="ValidationKey"></param>
-        /// <returns></returns>
-        /// 
         [HttpGet]
         [ActionName("GetRedirectURL")]
-        public HttpResponseMessage GetRedirectURL(string ValidationKey, string callback)
+        public HttpResponseMessage GetRedirectURL(string callback)
         {
-
-            string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
+            var re = Request;
+            var headers = re.Headers;
+            if (headers.Contains("Authorization"))
             {
                 try
                 {
+                    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                    string outputPayload;
+                    try
+                    {
+                        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    }
+                    catch (Exception ex)
+                    {
+                        return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    }
+                    string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
                     MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url);
 
                     //var url =
@@ -48,61 +48,22 @@ namespace SalesForceOAuth.Controllers
                     //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
 
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, System.Web.HttpUtility.UrlEncode(sf_callback_url));
-                    return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK);
                 }
                 catch(Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
                 }
            }
             else
             {
-               return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
+               return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
             }
         }
 
-        
-        //GET: api/SalesForce/GetAuthorizationToken? ValidationKey = ffe06298 - 22a8-4849-a46c-0284b04f2561
-        [HttpGet]
-        [ActionName("GetAuthorizationToken")]
-        public HttpResponseMessage GetAuthorizationToken(string ObjectRef, int GroupId, string AuthCode , string ValidationKey, string IsNew, string callback)
-        {
-            string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
-            HttpResponseMessage outputResponse = new HttpResponseMessage();
-            if (ValidationKey == ConfigurationManager.AppSettings["APISecureKey"])
-            {
-                MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_callback_url, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var auth = new AuthenticationClient();
-                try
-                {
-                    if (IsNew.Equals("Y"))
-                    {
-                        auth.WebServerAsync(sf_consumer_key, sf_consumer_secret, sf_callback_url, AuthCode, sf_token_req_end_point).Wait();
-                        MyAppsDb.CreateNewIntegrationSettingForUser(ObjectRef, GroupId, auth.RefreshToken, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
-                    }
-                    else
-                    {
-                        string SFRefreshToken="";
-                        MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
-                        auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).Wait();
-                        MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl); 
-                    }
-
-                    return MyAppsDb.ConvertJSONPOutput(callback, "API information updated!", HttpStatusCode.OK);
-
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
-                }
-            }
-            else
-            {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            }
-        }
     }
+
+
     public class MyAppsDb
     {
         #region SalesForce Methods
@@ -667,6 +628,13 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
         #endregion SalesForce Methods
+    }
+
+    public class Contact
+    {
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 
     public class MyValidation
