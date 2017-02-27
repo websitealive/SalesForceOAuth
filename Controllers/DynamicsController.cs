@@ -19,11 +19,11 @@ namespace SalesForceOAuth.Controllers
 
         [HttpGet]
         [ActionName("GetAccessToken")]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string token, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string token, string ObjectRef, int GroupId, string callback)
         {
             //var re = Request;
             //var headers = re.Headers;
-            string GroupId = "", ObjectRef = ""; 
+           
             //if (headers.Contains("Authorization") )
             //{
                 //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
@@ -36,16 +36,17 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = values.GetValue("GroupId").ToString();
-                ObjectRef = values.GetValue("ObjectRef").ToString();
+
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //GroupId = values.GetValue("GroupId").ToString();
+                //ObjectRef = values.GetValue("ObjectRef").ToString();
                 try
                 {
                     //Live Code 
                     string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
                     DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
                     DYTokenStatus userTokenStatus;
-                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
+                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId.ToString(), ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
                     //end Live Code 
                     if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
                     {
@@ -66,7 +67,7 @@ namespace SalesForceOAuth.Controllers
                         Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
                         AuthenticationResult res = await _auth.AcquireToken();
                         DateTime expiryDT = res.ExpiresOn.DateTime;
-                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
+                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId.ToString(), res.AccessToken.ToString(), expiryDT);
                         return MyAppsDb.ConvertJSONPOutput(callback,res.AccessToken.ToString(), HttpStatusCode.OK);
                     }
                 }

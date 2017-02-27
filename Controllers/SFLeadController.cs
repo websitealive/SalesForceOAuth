@@ -17,7 +17,7 @@ namespace SalesForceOAuth.Controllers
     public class SFLeadController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(string token)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(LeadData lData)
         {
             //var re = Request;
             //var headers = re.Headers;
@@ -27,21 +27,21 @@ namespace SalesForceOAuth.Controllers
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
                     return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                LeadData lData = new LeadData();
-                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-                lData.FirstName = values.GetValue("FirstName").ToString();
-                lData.LastName = values.GetValue("LastName").ToString();
-                lData.Email = values.GetValue("Email").ToString();
-                lData.Phone = values.GetValue("Phone").ToString();
-                lData.Company = values.GetValue("Company").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+               // LeadData lData = new LeadData();
+                //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                //lData.FirstName = values.GetValue("FirstName").ToString();
+                //lData.LastName = values.GetValue("LastName").ToString();
+                //lData.Email = values.GetValue("Email").ToString();
+                //lData.Phone = values.GetValue("Phone").ToString();
+                //lData.Company = values.GetValue("Company").ToString();
                 try
                 {
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
@@ -71,14 +71,14 @@ namespace SalesForceOAuth.Controllers
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string token, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string token, string ObjectRef, int GroupId,string SValue , string callback)
         {
             //var re = Request;
             //var headers = re.Headers;
             //if (headers.Contains("Authorization"))
             //{
-                string ObjectRef = "", SValue = "";
-                int GroupId = 0;
+               // string ObjectRef = "", SValue = "";
+                //int groupId = Convert.ToInt32(GroupId);
                 string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
@@ -90,10 +90,10 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                ObjectRef = values.GetValue("ObjectRef").ToString();
-                SValue = values.GetValue("SValue").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                //ObjectRef = values.GetValue("ObjectRef").ToString();
+                //SValue = values.GetValue("SValue").ToString();
 
                 try
                 {
@@ -140,6 +140,7 @@ namespace SalesForceOAuth.Controllers
     }
     public class LeadData : MyValidation
     {
+        public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
         public string FirstName { get; set; }

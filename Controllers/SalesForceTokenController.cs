@@ -16,13 +16,13 @@ namespace SalesForceOAuth.Controllers
         //GET: api/SalesForce/GetAuthorizationToken
         [HttpGet]
         [ActionName("GetAuthorizationToken")]
-        public HttpResponseMessage GetAuthorizationToken(string token, string callback)
+        public HttpResponseMessage GetAuthorizationToken(string token,string ObjectRef,string AuthCode, int GroupId, string IsNew, string callback)
         {
             //string ObjectRef, int GroupId, string AuthCode, string IsNew, string callback, string ValidationKey, 
             //var re = Request;
             //var headers = re.Headers;
-            string ObjectRef = "", AuthCode = "", IsNew = "";
-            int GroupId = 0; 
+            //string ObjectRef = "", AuthCode = "", IsNew = "";
+            //int GroupId = 0; 
             //if (headers.Contains("Authorization"))
             //{
                // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
@@ -35,11 +35,12 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = Convert.ToInt32(values.GetValue("GroupId"));
-                ObjectRef = values.GetValue("ObjectRef").ToString();
-                AuthCode = values.GetValue("AuthCode").ToString();
-                IsNew = values.GetValue("IsNew").ToString();
+            //JObject values = JObject.Parse(outputPayload); // parse as array  
+            //GroupId = Convert.ToInt32(GroupId);
+            //ObjectRef = values.GetValue("ObjectRef").ToString();
+            //AuthCode = values.GetValue("AuthCode").ToString();
+            //IsNew = values.GetValue("IsNew").ToString();
+            //int groupId = Convert.ToInt32(GroupId);
 
                 string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
                 MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_callback_url, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);

@@ -17,7 +17,7 @@ namespace SalesForceOAuth.Controllers
     public class DYAccountController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(string token)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(DYAccountPostData lData)
         {
             string AccessToken = "";
             //var re = Request;
@@ -28,20 +28,20 @@ namespace SalesForceOAuth.Controllers
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
                     return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                DYAccountPostData lData = new DYAccountPostData(); 
-                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-                lData.Name = values.GetValue("Name").ToString(); 
-                lData.Phone = values.GetValue("Phone").ToString();
-                lData.AccountNumber = values.GetValue("AccountNumber").ToString();
-                lData.Description = values.GetValue("Description").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //DYAccountPostData lData = new DYAccountPostData(); 
+                //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                //lData.Name = values.GetValue("Name").ToString(); 
+                //lData.Phone = values.GetValue("Phone").ToString();
+                //lData.AccountNumber = values.GetValue("AccountNumber").ToString();
+                //lData.Description = values.GetValue("Description").ToString();
                 try
                 {
                     #region dynamics api call
@@ -93,13 +93,13 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string callback)
         {
             //string ObjectRef, int GroupId, string ValidationKey, string sValue, string callback)
             string AccessToken = "";
             //var re = Request;
             //var headers = re.Headers;
-            string GroupId = "", ObjectRef = "", SValue="";
+          //  string GroupId = "", ObjectRef = "", SValue="";
             //if (headers.Contains("Authorization"))
             //{
               //  string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
@@ -112,15 +112,15 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = values.GetValue("GroupId").ToString();
-                ObjectRef = values.GetValue("ObjectRef").ToString();
-                SValue = values.GetValue("SValue").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //GroupId = values.GetValue("GroupId").ToString();
+                //ObjectRef = values.GetValue("ObjectRef").ToString();
+                //SValue = values.GetValue("SValue").ToString();
                 try
                 {
                     //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef, GroupId.ToString(), "internal");
                     #region dynamics api call 
-                    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(ObjectRef, GroupId); 
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(ObjectRef, GroupId.ToString()); 
                     if (msg.StatusCode == HttpStatusCode.OK)
                     { AccessToken = msg.Content.ReadAsStringAsync().Result; }
                     else
@@ -181,6 +181,7 @@ namespace SalesForceOAuth.Controllers
 
     public class DYAccountPostData : MyValidation
     {
+        public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
         public string AccountNumber { get; set; }

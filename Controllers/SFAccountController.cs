@@ -16,7 +16,7 @@ namespace SalesForceOAuth.Controllers
     public class SFAccountController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(string token)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(AccountData lData)
         {
             //var re = Request;
             //var headers = re.Headers;
@@ -26,19 +26,19 @@ namespace SalesForceOAuth.Controllers
                 string outputPayload;
                 try
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
                 catch (Exception ex)
                 {
                     return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                AccountData lData = new AccountData();
-                lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-                lData.Name = values.GetValue("Name").ToString();
-                lData.Phone = values.GetValue("Phone").ToString();
-                lData.AccountNumber = values.GetValue("AccountNumber").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //AccountData lData = new AccountData();
+                //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                //lData.Name = values.GetValue("Name").ToString();
+                //lData.Phone = values.GetValue("Phone").ToString();
+                //lData.AccountNumber = values.GetValue("AccountNumber").ToString();
                 try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
@@ -68,14 +68,14 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string callback)
         {
             //var re = Request;
             //var headers = re.Headers;
             //if (headers.Contains("Authorization"))
             //{
-                string ObjectRef = "", SValue = "";
-                int GroupId = 0; 
+                //string ObjectRef = "", SValue = "";
+                //int GroupId = 0; 
                 string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                 //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
@@ -87,10 +87,10 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                 }
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
-                ObjectRef = values.GetValue("ObjectRef").ToString();
-                SValue = values.GetValue("SValue").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
+                //ObjectRef = values.GetValue("ObjectRef").ToString();
+                //SValue = values.GetValue("SValue").ToString();
 
                 MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                 List<Account> myAccounts = new List<Account> { };
@@ -124,8 +124,15 @@ namespace SalesForceOAuth.Controllers
             //}
         }
     }
+
+    public class PostToken
+    {
+        public string token { get; set; }
+    }
+
     public class AccountData : MyValidation
     {
+        public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
         public string AccountNumber { get; set; }

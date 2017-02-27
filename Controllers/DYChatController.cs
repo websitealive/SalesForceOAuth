@@ -15,7 +15,7 @@ namespace SalesForceOAuth.Controllers
     public class DYChatController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(string token)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
         {
             string AccessToken = "";
             //var re = Request;
@@ -28,19 +28,19 @@ namespace SalesForceOAuth.Controllers
                     string outputPayload;
                     try
                     {
-                        outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                        outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
                     }
                     catch (Exception ex)
                     {
                         return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
                     }
-                    JObject values = JObject.Parse(outputPayload); // parse as array  
-                    MessageData lData = new MessageData();
-                    lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                    lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-                    lData.Message = values.GetValue("Message").ToString();
-                    lData.Subject = values.GetValue("Subject").ToString();
-                    lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                    //JObject values = JObject.Parse(outputPayload); // parse as array  
+                    //MessageData lData = new MessageData();
+                    //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
+                    //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
+                    //lData.Message = values.GetValue("Message").ToString();
+                    //lData.Subject = values.GetValue("Subject").ToString();
+                    //lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
                     #region dynamics api call
                     string ItemType = "Account";
                     //string ItemId = "/accounts(b123e935-92cc-e611-8104-c4346bac5238)"; 
@@ -112,12 +112,12 @@ namespace SalesForceOAuth.Controllers
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string token, string callback)
+        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback)
         {
             //var re = Request;
             //var headers = re.Headers;
-            string ObjectRef = "", ObjType = "", ObjId = "";
-            int GroupId = 0, SessionId = 0; 
+            //string ObjectRef = "", ObjType = "", ObjId = "";
+            //int GroupId = 0, SessionId = 0; 
             //if (headers.Contains("Authorization"))
             //{
                 #region JWT Token 
@@ -132,12 +132,12 @@ namespace SalesForceOAuth.Controllers
                     return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                 }
                 #endregion JWT Token
-                JObject values = JObject.Parse(outputPayload); // parse as array  
-                GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
-                SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
-                ObjectRef = values.GetValue("ObjectRef").ToString();
-                ObjType = values.GetValue("ObjType").ToString();
-                ObjId = values.GetValue("ObjId").ToString();
+                //JObject values = JObject.Parse(outputPayload); // parse as array  
+                //GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
+                //SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+                //ObjectRef = values.GetValue("ObjectRef").ToString();
+                //ObjType = values.GetValue("ObjType").ToString();
+                //ObjId = values.GetValue("ObjId").ToString();
                 try
                 {
                     MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, ObjType, ObjId);
