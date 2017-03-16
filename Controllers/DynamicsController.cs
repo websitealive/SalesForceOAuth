@@ -45,14 +45,14 @@ namespace SalesForceOAuth.Controllers
                     //Live Code 
                     string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
                     DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
-                    DYTokenStatus userTokenStatus;
+                    CRMTokenStatus userTokenStatus;
                     userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId.ToString(), ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
                     //end Live Code 
-                    if (userTokenStatus == DYTokenStatus.SUCCESSS) // if a valid token is available
+                    if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
                     {
                         return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK);
                     }
-                    else if (userTokenStatus == DYTokenStatus.USERNOTFOUND) // if a user account is not found 
+                    else if (userTokenStatus == CRMTokenStatus.USERNOTFOUND) // if a user account is not found 
                     {
                         return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound);
                     }
@@ -247,9 +247,9 @@ namespace SalesForceOAuth.Controllers
         string not_before { get; set; }
       
     }
-    public enum DYTokenStatus
+    public enum CRMTokenStatus
     {
         USERNOTFOUND = -1, SUCCESSS = 1 ,TOKENEXPIRED = 2,
     }
-   
+    
 }

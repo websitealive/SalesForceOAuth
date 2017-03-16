@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Salesforce.Common;
 using Salesforce.Common.Models;
 using Salesforce.Force;
 using System;
@@ -38,16 +39,23 @@ namespace SalesForceOAuth.Controllers
                 //lData.Message = values.GetValue("Message").ToString();
                 //lData.Subject = values.GetValue("Subject").ToString();
                 //lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
+
                 if(lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
-                { 
+                {
+                    //Access token update
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
+
+                    if (msg.StatusCode != HttpStatusCode.OK)
+                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+
                     try
                     {
                         string InstanceUrl = "", ApiVersion = "", ItemId ="", ItemType= "";
                         MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                         int chatId = 0;  
                         MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType); 
-                    
                         ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                         TaskLogACall lTemp = new TaskLogACall();
                         lTemp.Subject = lData.Subject; //"WebsiteAlive-Chat1";
                         lTemp.Description = lData.Message.Replace("|", "\r\n") ;
@@ -136,6 +144,7 @@ namespace SalesForceOAuth.Controllers
     }
     public class MessageData: MyValidation
     {
+        public string siteRef { get; set; }
         public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }

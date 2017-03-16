@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
@@ -20,12 +21,12 @@ namespace SalesForceOAuth.App_Code
             private MySqlDataReader reader;
 
             //
-            private string connectiondetails = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            private string connectiondetails = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
 
-
-            public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid,ref string sf_callback_url)
+        
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid,ref string sf_callback_url)
             {
-                string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+                string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
                 MySqlConnection conn = new MySqlConnection(connStr);
                 try
                 {
@@ -56,7 +57,7 @@ namespace SalesForceOAuth.App_Code
 
             public static void GetTokenParameters(ref string sf_callback_url, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {

@@ -241,6 +241,7 @@
     <Compile Include="Web API Helper Code\Authentication.cs" />
     <Compile Include="Web API Helper Code\Configuration.cs" />
     <Compile Include="Web API Helper Code\Dynamics.cs" />
+    <Compile Include="Web API Helper Code\Salesforce.cs" />
     <Content Include="App_Code\Db.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />

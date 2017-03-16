@@ -19,7 +19,7 @@ namespace SalesForceOAuth.Controllers
         /// GET: api/SalesForce/GetRedirectURL
         [HttpGet]
         [ActionName("GetRedirectURL")]
-        public HttpResponseMessage GetRedirectURL(string token, string callback)
+        public HttpResponseMessage GetRedirectURL(string token, string callback, string siteRef)
         {
             //var re = Request;
             //var headers = re.Headers;
@@ -38,7 +38,9 @@ namespace SalesForceOAuth.Controllers
                         return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
                     }
                     string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url);
+                    sf_callback_url = siteRef; 
+                    //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid);
 
                     //var url =
                     //Common.FormatAuthUrl(
@@ -47,7 +49,7 @@ namespace SalesForceOAuth.Controllers
                     //    "3MVG9KI2HHAq33RwXJsqtsEtY.ThMCzS5yZd3S8CzXBArijS0WEQgYACVnQ9SJq0KDdKrQgIxPFNPOIQhuqdK",
                     //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
 
-                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, System.Web.HttpUtility.UrlEncode(sf_callback_url));
+                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
                     return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK);
                 }
                 catch(Exception ex)
@@ -67,9 +69,9 @@ namespace SalesForceOAuth.Controllers
     public class MyAppsDb
     {
         #region SalesForce Methods
-        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, ref string sf_callback_url)
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -83,7 +85,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         sf_authoize_url = rdr["sf_authoize_url"].ToString();
                         sf_clientid = rdr["sf_clientid"].ToString();
-                        sf_callback_url = rdr["sf_callback_url"].ToString();
+                        //sf_callback_url = rdr["sf_callback_url"].ToString();
                     }
                 }
                 else
@@ -100,7 +102,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -117,9 +119,10 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-        public static void GetTokenParameters(ref string sf_clientid, ref string sf_callback_url, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point)
+        public static void GetTokenParameters(ref string sf_clientid, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -132,7 +135,7 @@ namespace SalesForceOAuth.Controllers
                     while (rdr.Read())
                     {
                         sf_clientid = rdr["sf_clientid"].ToString();
-                        sf_callback_url = rdr["sf_callback_url"].ToString();
+                       // sf_callback_url = rdr["sf_callback_url"].ToString();
                         sf_consumer_key = rdr["sf_consumer_key"].ToString();
                         sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
                         sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
@@ -152,7 +155,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void CreateNewIntegrationSettingForUser(string ObjectRef,int GroupId, string SFRefreshToken, string SFAccessToken, string SFApiVersion, string SFInstanceUrl)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -175,7 +178,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetCurrentRefreshToken(string objectRef, int GroupId,  ref string SFRefreshToken)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -200,7 +203,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void UpdateIntegrationSettingForUser(string ObjectRef, int GroupId,  string SFAccessToken, string SFApiVersion, string SFInstanceUrl)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -219,7 +222,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetAPICredentials(string ObjectRef, int GroupId,ref  string SFAccessToken,ref string SFApiVersion,ref string SFInstanceUrl)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -282,7 +285,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -305,7 +308,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -332,7 +335,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void ChatQueueItemAdded(int chatId)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -351,7 +354,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetRedirectURLParametersDynamics(ref string dy_authoize_url, ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -383,7 +386,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetTokenParametersDynamics(ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url, ref string dy_token_post_url)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -415,7 +418,7 @@ namespace SalesForceOAuth.Controllers
 
         internal static void CreateNewIntegrationSettingForDynamicsUser(string objectRef, int groupId, string refreshToken, string accessToken, string resource)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -438,7 +441,7 @@ namespace SalesForceOAuth.Controllers
 
         internal static void GetCurrentRefreshTokenDynamics(string objectRef, int groupId, ref string DYRefreshToken, ref string DYResourceURL)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -464,7 +467,7 @@ namespace SalesForceOAuth.Controllers
 
         internal static void GetAPICredentialsDynamics(string objectRef, int groupId, ref string DYAccessToken, ref string DYApiVersion, ref string DYInstanceUrl, ref string resource)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -492,7 +495,7 @@ namespace SalesForceOAuth.Controllers
 
         internal static void TagChatDynamics(string objectRef, int groupId, int sessionId, string objType, string objId)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -514,7 +517,7 @@ namespace SalesForceOAuth.Controllers
         }
         public static void GetTaggedChatDynamicsId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -539,10 +542,11 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-        public static DYTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword, 
+        public static CRMTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword, 
             ref string clientId, ref string serviceURL, ref DateTime tokenExpiryDT, ref string authority)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+            //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -563,37 +567,37 @@ namespace SalesForceOAuth.Controllers
                         // if no expiry date there
                         if (date.Equals(""))
                         {
-                            return DYTokenStatus.TOKENEXPIRED;
+                            return CRMTokenStatus.TOKENEXPIRED;
                         }
                         tokenExpiryDT = Convert.ToDateTime(rdr["tokenexpirydt"].ToString()).AddHours(1);
                         if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
                         {
                             accessToken = rdr["accesstoken"].ToString().Trim();
-                            return DYTokenStatus.SUCCESSS;
+                            return CRMTokenStatus.SUCCESSS;
                         }
                         else
                         {
-                            return DYTokenStatus.TOKENEXPIRED; 
+                            return CRMTokenStatus.TOKENEXPIRED; 
                         }
                     }
-                    return DYTokenStatus.USERNOTFOUND;
+                    return CRMTokenStatus.USERNOTFOUND;
                 }
                 else
                 {
-                    return DYTokenStatus.USERNOTFOUND;
+                    return CRMTokenStatus.USERNOTFOUND;
                 }
                 rdr.Close();
             }
             catch (Exception ex)
             {
-                return DYTokenStatus.USERNOTFOUND;
+                return CRMTokenStatus.USERNOTFOUND;
             }
             conn.Close();
         }
 
         public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -612,7 +616,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void ChatQueueItemAddedDynamics(int chatId)
         {
-            string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -622,6 +626,86 @@ namespace SalesForceOAuth.Controllers
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 int rows = cmd.ExecuteNonQuery();
 
+            }
+            catch (Exception ex)
+            {
+            }
+            conn.Close();
+        }
+        //string sql = "insert into integration_settings(ObjectRef, GroupId, SFRefreshToken,SFRTCreationDT,SFAccessToken, SFApiVersion, SFInstanceUrl, SFATCreationDT)";
+        //sql += " values ('" + ObjectRef + "',"+ GroupId + ", '" + SFRefreshToken + "', now(), '"+ SFAccessToken + "', '" + SFApiVersion + "', '" + SFInstanceUrl + "', now())";
+             
+        public static CRMTokenStatus GetAccessTokenSalesForce(string objectRef, int groupId, ref string accessToken)
+        {
+            //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT  * FROM integration_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        string date = rdr["SFATCreationDT"].ToString();
+                        // if no expiry date there
+                        if (date.Equals(""))
+                        {
+                            return CRMTokenStatus.TOKENEXPIRED;
+                        }
+                        DateTime tokenExpiryDT = Convert.ToDateTime(rdr["SFATCreationDT"].ToString()).AddHours(1); // add 55 mins
+                        if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
+                        {
+                            accessToken = rdr["SFAccessToken"].ToString().Trim();
+                            return CRMTokenStatus.SUCCESSS;
+                        }
+                        else
+                        {
+                            return CRMTokenStatus.TOKENEXPIRED;
+                        }
+                    }
+                    rdr.Close(); conn.Close();
+                    return CRMTokenStatus.USERNOTFOUND;
+                }
+                else
+                {
+                    rdr.Close(); conn.Close();
+                    return CRMTokenStatus.USERNOTFOUND;
+                }
+            }
+            catch (Exception ex)
+            {
+                conn.Close();
+                return CRMTokenStatus.USERNOTFOUND;
+            }
+            
+        }
+
+        public static void GetRedirectURLParametersCallBack(ref string sf_callback_url, int id)
+        {
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integration_salesforce_sites where id = " + id.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        sf_callback_url = rdr["sf_callback_url"].ToString();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                rdr.Close();
             }
             catch (Exception ex)
             {

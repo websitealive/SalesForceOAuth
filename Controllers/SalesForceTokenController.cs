@@ -16,7 +16,7 @@ namespace SalesForceOAuth.Controllers
         //GET: api/SalesForce/GetAuthorizationToken
         [HttpGet]
         [ActionName("GetAuthorizationToken")]
-        public HttpResponseMessage GetAuthorizationToken(string token,string ObjectRef,string AuthCode, int GroupId, string IsNew, string callback)
+        public HttpResponseMessage GetAuthorizationToken(string token,string ObjectRef,string AuthCode, int GroupId, string IsNew, string siteRef ,string callback)
         {
             //string ObjectRef, int GroupId, string AuthCode, string IsNew, string callback, string ValidationKey, 
             //var re = Request;
@@ -43,7 +43,9 @@ namespace SalesForceOAuth.Controllers
             //int groupId = Convert.ToInt32(GroupId);
 
                 string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
-                MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_callback_url, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
+                //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
+                sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
+                MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 var auth = new AuthenticationClient();
                 try
