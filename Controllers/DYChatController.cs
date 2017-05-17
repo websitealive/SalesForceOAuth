@@ -59,7 +59,7 @@ namespace SalesForceOAuth.Controllers
                         { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
 
                         HttpClient client = new HttpClient();
-                        client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
+                        client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
                         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
                         client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
@@ -80,7 +80,7 @@ namespace SalesForceOAuth.Controllers
                         else
                             aData.Add("regardingobjectid_lead_task@odata.bind", ItemId);
                         StringContent content = new StringContent(aData.ToString(), Encoding.UTF8, "application/json");
-                        HttpResponseMessage response = client.PostAsync(requestURI.ToString(), content).Result;
+                        HttpResponseMessage response = client.PostAsync(requestURI.ToString(), content).Result ;
                         if (response.IsSuccessStatusCode)
                         {
                             var output = response.Headers.Location.OriginalString;
@@ -162,7 +162,7 @@ namespace SalesForceOAuth.Controllers
         //    string InstanceUrl = "", AccessToken = "", ApiVersion = "", Resource = "";
         //    MyAppsDb.GetAPICredentialsDynamics(objectRef, groupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref Resource);
         //    HttpClient client = new HttpClient();
-        //    client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
+        //    client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
         //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
         //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
         //    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");

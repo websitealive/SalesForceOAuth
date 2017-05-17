@@ -45,7 +45,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
 
                         // authentication class 
                         Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
-                        AuthenticationResult res = await _auth.AcquireToken();
+                        AuthenticationResult res = await _auth.AcquireToken().ConfigureAwait(false); 
                         DateTime expiryDT = res.ExpiresOn.DateTime;
                         MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
                         return MyAppsDb.ConvertStringOutput(res.AccessToken.ToString(), HttpStatusCode.OK);

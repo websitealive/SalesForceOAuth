@@ -54,7 +54,7 @@ namespace SalesForceOAuth.Controllers
                     { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
 
                     HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
+                    client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
                     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
@@ -131,7 +131,7 @@ namespace SalesForceOAuth.Controllers
 
                     //end Test 
                     HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri("https://WEBSITEALIVEUS.crm.dynamics.com");
+                    client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
                     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
                     client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");

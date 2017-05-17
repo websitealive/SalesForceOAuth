@@ -65,7 +65,7 @@ namespace SalesForceOAuth.Controllers
                             lTemp.WhatId = ItemId;
                         lTemp.Status = "Completed"; 
                         var lACall = lTemp ;
-                        SuccessResponse sR = await client.CreateAsync("Task", lACall);
+                        SuccessResponse sR = await client.CreateAsync("Task", lACall).ConfigureAwait(false);
                         if (sR.Success == true)
                         {
                             MyAppsDb.ChatQueueItemAdded(chatId);

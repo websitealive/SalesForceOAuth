@@ -16,7 +16,7 @@ namespace SalesForceOAuth.Controllers
         //GET: api/SalesForce/GetAuthorizationToken
         [HttpGet]
         [ActionName("GetAuthorizationToken")]
-        public HttpResponseMessage GetAuthorizationToken(string token,string ObjectRef,string AuthCode, int GroupId, string IsNew, string siteRef ,string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetAuthorizationToken(string token, string ObjectRef, string AuthCode, int GroupId, string IsNew, string siteRef, string callback)
         {
             //string ObjectRef, int GroupId, string AuthCode, string IsNew, string callback, string ValidationKey, 
             //var re = Request;
@@ -25,16 +25,16 @@ namespace SalesForceOAuth.Controllers
             //int GroupId = 0; 
             //if (headers.Contains("Authorization"))
             //{
-               // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                string outputPayload;
-                try
-                {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
-                }
+            // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
+            }
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             //GroupId = Convert.ToInt32(GroupId);
             //ObjectRef = values.GetValue("ObjectRef").ToString();
@@ -42,34 +42,41 @@ namespace SalesForceOAuth.Controllers
             //IsNew = values.GetValue("IsNew").ToString();
             //int groupId = Convert.ToInt32(GroupId);
 
-                string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
-                //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
-                sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
+            string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
+            //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
+            sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
+            try
+            {
                 MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var auth = new AuthenticationClient();
-                try
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+            }
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            var auth = new AuthenticationClient();
+            try
+            {
+                if (IsNew.Equals("Y"))
                 {
-                    if (IsNew.Equals("Y"))
-                    {
-                        auth.WebServerAsync(sf_consumer_key, sf_consumer_secret, sf_callback_url, AuthCode, sf_token_req_end_point).Wait();
-                        MyAppsDb.CreateNewIntegrationSettingForUser(ObjectRef, GroupId, auth.RefreshToken, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
-                    }
-                    else
-                    {
-                        string SFRefreshToken = "";
-                        MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
-                        auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).Wait();
-                        MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
-                    }
-
-                    return MyAppsDb.ConvertJSONPOutput(callback,"API information updated!", HttpStatusCode.OK);
-
+                    await auth.WebServerAsync(sf_consumer_key, sf_consumer_secret, sf_callback_url, AuthCode, sf_token_req_end_point).ConfigureAwait(false);
+                    MyAppsDb.CreateNewIntegrationSettingForUser(ObjectRef, GroupId, auth.RefreshToken, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback ,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    string SFRefreshToken = "";
+                    MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
+                    await auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).ConfigureAwait(false);
+                    MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
                 }
+                return MyAppsDb.ConvertJSONPOutput(callback, "API information updated!", HttpStatusCode.OK);
+
+            }
+            catch (Exception ex)
+            {
+                //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Error: " + ex.Message);
+                return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
+            }
             //}
             //else
             //{

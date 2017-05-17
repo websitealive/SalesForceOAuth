@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace SalesForceOAuth.Controllers
@@ -51,9 +53,10 @@ namespace SalesForceOAuth.Controllers
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                    
                     var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = lData.Company, Email = lData.Email, Phone = lData.Phone };
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    SuccessResponse sR = await client.CreateAsync("Lead", lead);
+                    SuccessResponse sR = await client.CreateAsync("Lead", lead).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
                         PostedObjectDetail output = new PostedObjectDetail();
@@ -115,7 +118,7 @@ namespace SalesForceOAuth.Controllers
                         "OR LastName like '%" + SValue + "%' " +
                         "OR Email like '%" + SValue + "%' " +
                         "OR Phone like '%" + SValue + "%' " 
-                        );
+                        ).ConfigureAwait(false);
                     foreach (dynamic c in cont.Records)
                     {
                         Lead l = new Lead();
@@ -131,7 +134,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
                 }
             //}
             //else
@@ -174,6 +177,26 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+    }
+    public class HttpActionResult : IHttpActionResult
+    {
+        private readonly string _message;
+        private readonly HttpStatusCode _statusCode;
+
+        public HttpActionResult(HttpStatusCode statusCode, string message)
+        {
+            _statusCode = statusCode;
+            _message = message;
+        }
+
+        public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+        {
+            HttpResponseMessage response = new HttpResponseMessage(_statusCode)
+            {
+                Content = new StringContent(_message)
+            };
+            return Task.FromResult(response);
+        }
     }
 
     public static class HttpRequestMessageExtensions

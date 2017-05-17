@@ -52,7 +52,7 @@ namespace SalesForceOAuth.Controllers
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                SuccessResponse sR = await client.CreateAsync("Account", acc);
+                SuccessResponse sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
                         PostedObjectDetail output = new PostedObjectDetail();
@@ -103,17 +103,19 @@ namespace SalesForceOAuth.Controllers
             //ObjectRef = values.GetValue("ObjectRef").ToString();
             //SValue = values.GetValue("SValue").ToString();
 
-            MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+            
             List<Account> myAccounts = new List<Account> { };
             try
             {
+                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                
                 string objectValue = SValue;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
                     "where AccountNumber like '%" + SValue + "%' " 
                     + "OR Name like '%" + SValue + "%' "
-                    + "OR Phone like '%" + SValue + "%'" ); 
+                    + "OR Phone like '%" + SValue + "%'" ).ConfigureAwait(false); 
                 foreach (dynamic c in cont.Records)
                 {
                     Account l = new Account();
@@ -127,7 +129,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
             }
             //}
             //else

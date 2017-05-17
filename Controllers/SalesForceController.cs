@@ -96,6 +96,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -115,6 +116,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -149,6 +151,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -172,6 +175,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw; 
             }
             conn.Close();
         }
@@ -197,6 +201,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -216,6 +221,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -243,7 +249,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                string s = ex.Message; 
+                throw;
             }
             conn.Close();
         }
@@ -302,6 +308,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -329,6 +336,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -348,6 +356,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -380,6 +389,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -412,6 +422,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -435,6 +446,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -461,6 +473,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -512,6 +525,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -522,7 +536,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 conn.Open();
-                string sql = "SELECT * FROM integration_dynamics_queue WHERE status=1 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
+                string sql = "SELECT * FROM integration_dynamics_queue WHERE status<>1 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
                 MySqlCommand cmd = new MySqlCommand(sql, conn);
                 MySqlDataReader rdr = cmd.ExecuteReader();
                 if (rdr.HasRows)
@@ -538,6 +552,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -590,7 +605,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return CRMTokenStatus.USERNOTFOUND;
+                throw;
             }
             conn.Close();
         }
@@ -610,6 +625,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -629,6 +645,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }
@@ -679,7 +696,7 @@ namespace SalesForceOAuth.Controllers
             catch (Exception ex)
             {
                 conn.Close();
-                return CRMTokenStatus.USERNOTFOUND;
+                throw;
             }
             
         }
@@ -709,6 +726,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                throw;
             }
             conn.Close();
         }

@@ -97,8 +97,8 @@ namespace SalesForceOAuth.Controllers
         //        {
         //            //Test Code
         //            //string accessToken = ""; 
-        //            //string username = "dev@WEBSITEALIVEUS.onmicrosoft.com";
-        //            //string serviceURL = "https://WEBSITEALIVEUS.crm.dynamics.com/";
+        //            //string username = "dev@websitealive.onmicrosoft.com";
+        //            //string serviceURL = "https://websitealive.crm.dynamics.com/";
         //            //string userPassword = "Unstoppable.1o";
         //            //string clientId = "2a9ce073-9a16-4ea8-a306-2b601537a46c";
         //            //DYTokenStatus userTokenStatus = DYTokenStatus.TOKENEXPIRED;
@@ -160,7 +160,7 @@ namespace SalesForceOAuth.Controllers
         //        // MyAppsDb.GetTokenParametersDynamics(ref dy_clientid, ref dy_redirect_url, ref dy_resource_url, ref dy_token_post_url);
         //        dy_clientid = "1579d88e-bb6c-40ec-81ef-556c87319214";
         //        dy_redirect_url = "http://localhost:56786/Contact";
-        //        dy_resource_url = "https://websitealiveus.crm.dynamics.com";
+        //        dy_resource_url = "https://websitealive.crm.dynamics.com";
         //        dy_token_post_url = "/9025f8ca-d280-4bef-9c50-01623cd86f9b/oauth2/token"; // "https://login.microsoftonline.com";
         //        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         //        var auth = new AuthenticationClient();
@@ -203,7 +203,7 @@ namespace SalesForceOAuth.Controllers
         //                        "&resource=" + System.Web.HttpUtility.UrlEncode(dy_resource_url) +
         //                        "&client_secret=g3P1ZtRjtZ3hKbw2xP6xcCVJWZfdkRLXG3j3NF4XVLc=",
         //                        Encoding.UTF8, "application/x-www-form-urlencoded");
-        //                //dy_token_post_url = "/WEBSITEALIVEUS.onmicrosoft.com/oauth2/token"; 
+        //                //dy_token_post_url = "/websitealive.onmicrosoft.com/oauth2/token"; 
         //                HttpResponseMessage response = client.PostAsync(dy_token_post_url, content).Result;
         //                if (response.IsSuccessStatusCode)
         //                {
