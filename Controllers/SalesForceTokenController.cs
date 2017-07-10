@@ -33,7 +33,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForceToken-GetAuthorizationToken", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             //GroupId = Convert.ToInt32(GroupId);
@@ -51,7 +51,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SalesForceToken-GetAuthorizationToken", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var auth = new AuthenticationClient();
@@ -69,19 +69,15 @@ namespace SalesForceOAuth.Controllers
                     await auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).ConfigureAwait(false);
                     MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
                 }
-                return MyAppsDb.ConvertJSONPOutput(callback, "API information updated!", HttpStatusCode.OK);
+                return MyAppsDb.ConvertJSONPOutput(callback, "API information updated!", HttpStatusCode.OK,false);
 
             }
             catch (Exception ex)
             {
                 //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Error: " + ex.Message);
-                return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback,ex, "SalesForceToken-GetAuthorizationToken", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
-            //}
-            //else
-            //{
-            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            //}
+
         }
 
     }

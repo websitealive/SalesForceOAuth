@@ -34,7 +34,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch(Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
 
                 //JObject values = JObject.Parse(outputPayload); // parse as array  
@@ -50,11 +50,11 @@ namespace SalesForceOAuth.Controllers
                     //end Live Code 
                     if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK,false);
                     }
                     else if (userTokenStatus == CRMTokenStatus.USERNOTFOUND) // if a user account is not found 
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound);
+                        return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound,false);
                     }
                     else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
                     {
@@ -68,12 +68,12 @@ namespace SalesForceOAuth.Controllers
                         AuthenticationResult res = await _auth.AcquireToken();
                         DateTime expiryDT = res.ExpiresOn.DateTime;
                         MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId.ToString(), res.AccessToken.ToString(), expiryDT);
-                        return MyAppsDb.ConvertJSONPOutput(callback,res.AccessToken.ToString(), HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK,false);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             //}
             //else

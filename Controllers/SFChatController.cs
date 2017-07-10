@@ -46,7 +46,7 @@ namespace SalesForceOAuth.Controllers
                     HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
 
                     if (msg.StatusCode != HttpStatusCode.OK)
-                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
 
                     try
                     {
@@ -73,29 +73,24 @@ namespace SalesForceOAuth.Controllers
                             output.Id = sR.Id;
                             output.ObjectName = "Chat";
                             output.Message = "Chat added successfully!";
-                            return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                            return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
                         } 
                         else
                         {
-                            return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                            return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError,true);
                     }
                 }
-                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,true);
         }
         [HttpGet]
         public HttpResponseMessage GetTagChat(string token,string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //string ObjectRef = "", ObjType = "", ObjId = "";
-            //int GroupId = 0, SessionId = 0;
-            //if (headers.Contains("Authorization"))
-            //{
+           
                 #region JWT Token 
                 //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
                 string outputPayload;
@@ -105,15 +100,9 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYChat-GetTagChat", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 #endregion JWT Token
-                //JObject values = JObject.Parse(outputPayload); // parse as array  
-                //GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                //SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
-                //ObjectRef = values.GetValue("ObjectRef").ToString();
-                //ObjType = values.GetValue("ObjType").ToString();
-                //ObjId = values.GetValue("ObjId").ToString();
                 List<Lead> myLeads = new List<Lead> { };
                 try
                 {
@@ -121,11 +110,11 @@ namespace SalesForceOAuth.Controllers
                     PostedObjectDetail output = new PostedObjectDetail();
                     output.ObjectName = "TagChat";
                     output.Message = "Chat Tagged successfully!";
-                    return MyAppsDb.ConvertJSONPOutput(callback , output, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback , output, HttpStatusCode.OK,false);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFChat-GetTagChat", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             //}
             //else

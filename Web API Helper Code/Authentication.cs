@@ -96,7 +96,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
             {
                 try
                 {
-                    var credentials = new UserPasswordCredential(_config.Username, _config.Password); 
+                    var credentials = new UserCredential() ;// = new UserPasswordCredential(_config.Username, _config.Password); 
                     return await _context.AcquireTokenAsync(_config.ServiceUrl, _config.ClientId, credentials);
                     //if (response.AccessToken.Contains("a"))
                     //    return null; 

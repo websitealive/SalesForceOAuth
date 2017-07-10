@@ -33,12 +33,12 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
-                }
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
             //Access token update
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             // LeadData lData = new LeadData();
             //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
@@ -63,17 +63,17 @@ namespace SalesForceOAuth.Controllers
                         output.Id = sR.Id;
                         output.ObjectName = "Lead";
                         output.Message = "Lead added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
-                }
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.InternalServerError);
+            }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
@@ -86,21 +86,21 @@ namespace SalesForceOAuth.Controllers
             //{
                // string ObjectRef = "", SValue = "";
                 //int groupId = Convert.ToInt32(GroupId);
-                string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-               // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                string outputPayload;
-                try
-                {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
-                }
+            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+            // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLeads-GetSearchedLeads", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
             //Access token update
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef)); 
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             //GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
             //ObjectRef = values.GetValue("ObjectRef").ToString();
@@ -130,11 +130,11 @@ namespace SalesForceOAuth.Controllers
                         l.Phone = c.Phone;
                         myLeads.Add(l);
                     }
-                    return MyAppsDb.ConvertJSONPOutput(callback,myLeads, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback,myLeads, HttpStatusCode.OK,false);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             //}
             //else

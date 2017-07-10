@@ -30,7 +30,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFContact-PostContact", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 ContactData lData = new ContactData();
@@ -55,19 +55,19 @@ namespace SalesForceOAuth.Controllers
                         output.Id = sR.Id;
                         output.ObjectName = "Contact";
                         output.Message = "Contact added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFContact-PostContact", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             }
-            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,false);
         }
 
         [HttpGet]
@@ -88,7 +88,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "DYConfig-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
@@ -114,16 +114,16 @@ namespace SalesForceOAuth.Controllers
                         mc.AccountId = c.AccountId; mc.Phone = c.Phone;
                         myContacts.Add(mc);
                     }
-                    return MyAppsDb.ConvertJSONOutput(myContacts, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONOutput(myContacts, HttpStatusCode.OK,false);
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SF-PostContact", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
-                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,true);
             }
         }
     }

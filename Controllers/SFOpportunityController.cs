@@ -30,7 +30,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                   return MyAppsDb.ConvertJSONOutput(ex, "SFOpportunity-PostOpportunity", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 OpportunityData lData = new OpportunityData();
@@ -61,19 +61,19 @@ namespace SalesForceOAuth.Controllers
                         output.Id = sR.Id;
                         output.ObjectName = "Opportunity";
                         output.Message = "Opportunity added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SF-PostOpportunity", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             }
-            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,true);
         }
         
     }

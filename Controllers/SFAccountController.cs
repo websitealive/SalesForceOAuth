@@ -30,13 +30,13 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
 
             //Access token update
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
 
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             //AccountData lData = new AccountData();
@@ -59,16 +59,16 @@ namespace SalesForceOAuth.Controllers
                         output.Id = sR.Id;
                         output.ObjectName = "Account";
                         output.Message = "Account added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK);
+                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
@@ -77,12 +77,6 @@ namespace SalesForceOAuth.Controllers
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string siteRef, string callback)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-                //string ObjectRef = "", SValue = "";
-                //int GroupId = 0; 
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
             string outputPayload;
@@ -92,12 +86,12 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
+               return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             //Access token update
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef));
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
+            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
             //JObject values = JObject.Parse(outputPayload); // parse as array  
             //GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
             //ObjectRef = values.GetValue("ObjectRef").ToString();
@@ -125,11 +119,11 @@ namespace SalesForceOAuth.Controllers
                     l.Phone = c.Phone;
                     myAccounts.Add(l);
                 }
-                return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK);
+                return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK,true);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.Message, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
             //}
             //else

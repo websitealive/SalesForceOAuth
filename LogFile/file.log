@@ -1,0 +1,7 @@
+29/06/2017 19:18:26 ==> Confirguration Error, check information for objectref=dev0 and groupid=7
+29/06/2017 19:51:27 ==> FunctionGetConfigurationStatus:Unhandled exception --Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/06/2017 19:53:02 ==> Function: GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/06/2017 20:07:56 ==> Function: GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name

@@ -30,7 +30,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError,true);
             }
             //end Live Code 
             if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
@@ -56,12 +56,12 @@ namespace SalesForceOAuth.Web_API_Helper_Code
                     MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
                     auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).Wait();
                     MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
-                    return MyAppsDb.ConvertJSONOutput("API information updated!", HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONOutput("API information updated!", HttpStatusCode.OK,false);
 
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SalesForce-GetAccessToken", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
             }
         }

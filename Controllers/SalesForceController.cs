@@ -9,6 +9,7 @@ using MySql.Data.MySqlClient;
 using System.Text;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json.Linq;
+using SalesForceOAuth.Web_API_Helper_Code;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -35,7 +36,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback,ex.InnerException, HttpStatusCode.InternalServerError);
+                        return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                     }
                     string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
                     sf_callback_url = siteRef; 
@@ -50,11 +51,11 @@ namespace SalesForceOAuth.Controllers
                     //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
 
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
-                    return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK,false);
                 }
                 catch(Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, "Internal Error: " + ex.InnerException, HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForce-GetRedirectURL", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
            //}
            // else
@@ -254,9 +255,14 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-        public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code)
+        public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code, bool logError)
         {
-            if(callback.Equals("internal"))
+            //log exception if true
+            if (logError)
+            {
+                LogError(message.ToString());
+            }
+            if (callback.Equals("internal"))
             {
                 return ConvertStringOutput(message.ToString(), code); 
             }
@@ -270,9 +276,17 @@ namespace SalesForceOAuth.Controllers
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
+        
+        
 
-        public static HttpResponseMessage ConvertJSONOutput(object message, HttpStatusCode code)
+
+        public static HttpResponseMessage ConvertJSONOutput(object message, HttpStatusCode code, bool logError)
         {
+            //log exception if true
+            if (logError)
+            {
+                LogError(message.ToString()); 
+            }
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
             StringBuilder sb = new StringBuilder();
@@ -610,6 +624,42 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
+        public static int GetDynamicsCredentials(string objectRef, int groupId, ref string applicationURL, ref string userName, ref string password, ref string authType)
+        {
+            //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        applicationURL = rdr["ApplicationURL"].ToString().Trim();
+                        userName = rdr["UserName"].ToString().Trim();
+                        password = rdr["Password"].ToString().Trim();
+                        authType = rdr["AuthType"].ToString().Trim();
+                        return 1;
+                    }
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            conn.Close();
+        }
+
         public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT)
         {
             string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
@@ -730,6 +780,64 @@ namespace SalesForceOAuth.Controllers
             }
             conn.Close();
         }
+
+        internal static void LogException(string function, string errorTitle, Exception ex)
+        {
+            CreateLogFiles log = new CreateLogFiles();
+            string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
+            string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
+            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+        }
+
+        internal static void LogError(string message)
+        {
+            CreateLogFiles log = new CreateLogFiles();
+            log.ErrorLog(message);
+        }
+        public static HttpResponseMessage ConvertJSONPOutput(string callback, Exception ex, string function, string errorTitle, HttpStatusCode code)
+        {
+            //log exception
+            CreateLogFiles log = new CreateLogFiles();
+            string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
+            string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
+            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+            //output message
+            string outMsg = errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message;
+            if (callback.Equals("internal"))
+            {
+                return ConvertStringOutput(outMsg.ToString(), code);
+            }
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = code;
+            StringBuilder sb = new StringBuilder();
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            sb.Append(callback + "(");
+            sb.Append(js.Serialize(outMsg));
+            sb.Append(");");
+            response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+            return response;
+        }
+
+
+        internal static HttpResponseMessage ConvertJSONOutput(Exception ex, string function, string errorTitle, HttpStatusCode code)
+        {
+            //log exception
+            CreateLogFiles log = new CreateLogFiles();
+            string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
+            string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
+            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+            //output message
+            HttpResponseMessage response = new HttpResponseMessage();
+            response.StatusCode = code;
+            StringBuilder sb = new StringBuilder();
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            string outMsg = errorTitle +"--Internal exception : " + InnerException + ", Exception Message: " + Message; 
+            sb.Append(js.Serialize(outMsg));
+            response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+            return response;
+        }
+
+        
         #endregion SalesForce Methods
     }
 

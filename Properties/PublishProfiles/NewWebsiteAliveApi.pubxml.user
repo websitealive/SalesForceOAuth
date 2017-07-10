@@ -85,16 +85,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/26/2016 23:14:07</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
-      <publishTime>02/03/2015 08:32:26</publishTime>
+      <publishTime>03/02/2015 08:32:26</publishTime>
     </File>
     <File Include="bin/EntityFramework.SqlServer.dll">
-      <publishTime>02/03/2015 08:32:26</publishTime>
+      <publishTime>03/02/2015 08:32:26</publishTime>
     </File>
     <File Include="bin/JWT.dll">
       <publishTime>05/15/2015 10:15:52</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
-      <publishTime>07/12/2015 14:04:38</publishTime>
+      <publishTime>12/07/2015 14:04:38</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.DependencyCollector.dll">
       <publishTime>06/06/2016 11:40:16</publishTime>
@@ -115,22 +115,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/06/2016 06:42:24</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
-      <publishTime>03/04/2015 17:07:22</publishTime>
+      <publishTime>04/03/2015 17:07:22</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.EntityFramework.dll">
-      <publishTime>03/04/2015 17:07:22</publishTime>
+      <publishTime>04/03/2015 17:07:22</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Owin.dll">
-      <publishTime>03/04/2015 17:07:22</publishTime>
+      <publishTime>04/03/2015 17:07:22</publishTime>
     </File>
     <File Include="bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll">
       <publishTime>06/15/2015 02:06:24</publishTime>
     </File>
+    <File Include="bin/Microsoft.Crm.Sdk.Proxy.dll">
+      <publishTime>12/21/2016 13:48:06</publishTime>
+    </File>
     <File Include="bin/Microsoft.IdentityModel.Clients.ActiveDirectory.dll">
-      <publishTime>01/11/2016 11:39:34</publishTime>
+      <publishTime>11/17/2016 14:18:08</publishTime>
     </File>
     <File Include="bin/Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll">
       <publishTime>01/11/2016 11:39:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll">
+      <publishTime>11/17/2016 14:18:08</publishTime>
+    </File>
+    <File Include="bin/Microsoft.IdentityModel.dll">
+      <publishTime>07/26/2012 14:12:58</publishTime>
     </File>
     <File Include="bin/Microsoft.Owin.dll">
       <publishTime>02/13/2015 12:16:30</publishTime>
@@ -161,6 +170,18 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
       <publishTime>04/23/2012 15:23:58</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Xrm.Sdk.Deployment.dll">
+      <publishTime>11/03/2016 15:22:56</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Xrm.Sdk.dll">
+      <publishTime>12/21/2016 13:48:06</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Xrm.Sdk.Workflow.dll">
+      <publishTime>11/03/2016 15:35:24</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Xrm.Tooling.Connector.dll">
+      <publishTime>04/11/2017 17:43:24</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>06/17/2016 18:28:04</publishTime>
@@ -214,7 +235,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/27/2016 10:41:14</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>05/05/2017 18:49:29</publishTime>
+      <publishTime>06/22/2017 22:26:31</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>01/28/2015 03:02:42</publishTime>
@@ -241,7 +262,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/28/2015 03:02:18</publishTime>
     </File>
     <File Include="bin/System.Web.Optimization.dll">
-      <publishTime>11/02/2014 14:26:04</publishTime>
+      <publishTime>02/11/2014 14:26:04</publishTime>
     </File>
     <File Include="bin/System.Web.Razor.dll">
       <publishTime>01/28/2015 03:02:32</publishTime>
@@ -259,7 +280,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/13/2015 08:55:50</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
-      <publishTime>10/09/2013 17:28:38</publishTime>
+      <publishTime>09/10/2013 17:28:38</publishTime>
     </File>
     <File Include="Content/bootstrap.css">
       <publishTime>09/26/2016 23:13:27</publishTime>
@@ -289,7 +310,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/26/2016 23:13:24</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>01/16/2017 22:31:52</publishTime>
+      <publishTime>05/25/2017 18:57:43</publishTime>
     </File>
     <File Include="Scripts/ai.0.22.19-build00125.js">
       <publishTime>09/26/2016 23:14:08</publishTime>
@@ -352,7 +373,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/26/2016 23:13:24</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/01/0001 00:00:00</publishTime>
+      <publishTime>06/08/2017 03:17:41</publishTime>
     </File>
   </ItemGroup>
 </Project>

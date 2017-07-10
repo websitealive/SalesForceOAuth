@@ -30,7 +30,6 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AspNet.Identity.Owin.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
-C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Host.SystemWeb.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Cookies.dll
@@ -68,7 +67,6 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.ApplicationInsights.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.xml
-C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\MySql.Data.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Newtonsoft.Json.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Cors.xml
@@ -101,4 +99,15 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
-C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojResolveAssemblyReference.cache
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Crm.Sdk.Proxy.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Deployment.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Workflow.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Tooling.Connector.dll
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Crm.Sdk.Proxy.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Deployment.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Workflow.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Tooling.Connector.xml
+C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll
