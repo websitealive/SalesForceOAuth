@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web.Http;
+using System.ServiceModel.Description;
+using Microsoft.Xrm.Sdk; 
 namespace SalesForceOAuth.Controllers
 {
     public class DYChatController : ApiController
@@ -18,16 +20,10 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
         {
-            string outputPayload;
-            try
+            if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
             {
-                outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
-            }
-            catch (Exception ex)
-            {
-                return MyAppsDb.ConvertJSONOutput(ex, "DyChat-PostAddMessage", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
-            }
-            try 
+                #region code for post add message    
+                try 
             {
                 //Test system
                 //string ApplicationURL = "https://naveedzafar30.crm11.dynamics.com", userName = "naveedzafar30@naveedzafar30.onmicrosoft.com",
@@ -140,10 +136,16 @@ namespace SalesForceOAuth.Controllers
                 //}
                 #endregion dynamics api call
 
+                }
+                catch (Exception ex)
+                {
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFChat-PostChat", "Unhandled exception", HttpStatusCode.InternalServerError);
+                }
+                #endregion code for post add message
             }
-            catch (Exception ex)
+            else
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFChat-PostChat", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.InternalServerError,true);
             }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);

@@ -30,13 +30,14 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "DyAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
-
             try
             {
                 //Connect to SDK 
                 //Test system
                 //string ApplicationURL = "https://naveedzafar30.crm11.dynamics.com", userName = "naveedzafar30@naveedzafar30.onmicrosoft.com",
                 //    password = "Getthat$$$5", authType = "Office365";
+                //string ApplicationURL = "https://websitealive.crmgate.pk/websitealive", userName = "naveed@crmgate.local",
+                //    password = "@Abc.123", authType = "IFD";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType);
@@ -189,8 +190,8 @@ namespace SalesForceOAuth.Controllers
                     outData = crmSvc.GetEntityDataBySearchParams("account", searchFilters, CrmServiceClient.LogicalSearchOperator.Or, outputList);
                     List<DYAccount> myAccounts = new List<DYAccount> { };
 
-                  
-                    if (outData.Count > 0 )
+
+                    if (outData != null)
                     {
                         foreach (var pair in outData)
                         {

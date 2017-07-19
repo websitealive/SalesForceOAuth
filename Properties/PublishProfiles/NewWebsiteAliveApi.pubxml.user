@@ -235,7 +235,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/27/2016 10:41:14</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>06/22/2017 22:26:31</publishTime>
+      <publishTime>07/18/2017 01:36:22</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>01/28/2015 03:02:42</publishTime>

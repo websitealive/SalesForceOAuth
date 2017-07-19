@@ -51,6 +51,8 @@ namespace SalesForceOAuth.Controllers
                     //create Account object
                     Dictionary<string, CrmDataTypeWrapper> inData = new Dictionary<string, CrmDataTypeWrapper>();
                     inData.Add("companyname", new CrmDataTypeWrapper(lData.Companyname, CrmFieldType.String));
+                    inData.Add("firstname", new CrmDataTypeWrapper(lData.Firstname, CrmFieldType.String));
+                    inData.Add("lastname", new CrmDataTypeWrapper(lData.Lastname, CrmFieldType.String));
                     inData.Add("address1_city", new CrmDataTypeWrapper(lData.City, CrmFieldType.String));
                     inData.Add("address1_telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
                     inData.Add("emailaddress1", new CrmDataTypeWrapper(lData.Email, CrmFieldType.String));
@@ -177,11 +179,21 @@ namespace SalesForceOAuth.Controllers
                     condition3.FieldName = "emailaddress1";
                     condition3.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
                     condition3.FieldValue = SValue;
+                    CrmServiceClient.CrmFilterConditionItem condition4 = new CrmServiceClient.CrmFilterConditionItem();
+                    condition4.FieldName = "firstname";
+                    condition4.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
+                    condition4.FieldValue = SValue;
+                    CrmServiceClient.CrmFilterConditionItem condition5 = new CrmServiceClient.CrmFilterConditionItem();
+                    condition5.FieldName = "lastname";
+                    condition5.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
+                    condition5.FieldValue = SValue;
                     //search filters
                     CrmServiceClient.CrmSearchFilter filter1 = new CrmServiceClient.CrmSearchFilter();
                     filter1.SearchConditions.Add(condition1);
                     filter1.SearchConditions.Add(condition2);
                     filter1.SearchConditions.Add(condition3);
+                    filter1.SearchConditions.Add(condition4);
+                    filter1.SearchConditions.Add(condition5);
                     filter1.FilterOperator = Microsoft.Xrm.Sdk.Query.LogicalOperator.Or;
                     //searchFilters list
                     List<CrmServiceClient.CrmSearchFilter> searchFilters = new List<CrmServiceClient.CrmSearchFilter>();
@@ -190,12 +202,12 @@ namespace SalesForceOAuth.Controllers
 
                     //list of columns required in the output 
                     List<string> outputList = new List<string>();
-                    outputList.Add("leadid"); outputList.Add("address1_city"); outputList.Add("subject");
-                    outputList.Add("telephone1"); outputList.Add("emailaddress1"); outputList.Add("companyname");
+                    outputList.Add("leadid"); outputList.Add("address1_city"); outputList.Add("subject"); outputList.Add("lastname");
+                    outputList.Add("telephone1"); outputList.Add("emailaddress1"); outputList.Add("companyname"); outputList.Add("firstname");
                     //search function call 
                     outData = crmSvc.GetEntityDataBySearchParams("lead", searchFilters, CrmServiceClient.LogicalSearchOperator.Or, outputList);
                     List<DYLead> myLeads = new List<DYLead> { };
-                    if (outData.Count > 0)
+                    if (outData != null)
                     {
                         foreach (var pair in outData)
                         {
@@ -203,6 +215,9 @@ namespace SalesForceOAuth.Controllers
                             foreach (var fields in pair.Value)
                             {
                                 if (fields.Key == "subject") { l.subject = fields.Value.ToString(); }
+                                else if (fields.Key == "leadid") { l.leadid = fields.Value.ToString(); }
+                                else if (fields.Key == "firstname") { l.firstname = fields.Value.ToString(); }
+                                else if (fields.Key == "lastname") { l.lastname = fields.Value.ToString(); }
                                 else if (fields.Key == "address1_city") { l.address1_city = fields.Value.ToString(); }
                                 else if (fields.Key == "telephone1") { l.address1_telephone1 = fields.Value.ToString(); }
                                 else if (fields.Key == "emailaddress1") { l.emailaddress1 = fields.Value.ToString(); }
@@ -281,6 +296,8 @@ namespace SalesForceOAuth.Controllers
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
         public string Companyname { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
         public string Subject { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
@@ -299,6 +316,8 @@ namespace SalesForceOAuth.Controllers
     public class DYLead
     {
         public string leadid { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
         public string companyname { get; set; }
         public string subject { get; set; }
         public string emailaddress1 { get; set; }
