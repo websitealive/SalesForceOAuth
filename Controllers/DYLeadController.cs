@@ -1,4 +1,7 @@
-﻿using Microsoft.Xrm.Tooling.Connector;
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
@@ -10,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Web.Http;
 
@@ -135,12 +139,6 @@ namespace SalesForceOAuth.Controllers
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string token, string ObjectRef, int GroupId, string SValue, string callback)
         {
-            // string AccessToken = "";
-            // //var re = Request;
-            // //var headers = re.Headers;
-            //// string GroupId = "", ObjectRef = "", SValue = "";
-            // //if (headers.Contains("Authorization"))
-            // //{
             string outputPayload;
             try
             {
@@ -154,85 +152,80 @@ namespace SalesForceOAuth.Controllers
             {
                 //Connect to SDK 
                 //Test system
-                //string ApplicationURL = "https://naveedzafar30.crm11.dynamics.com", userName = "naveedzafar30@naveedzafar30.onmicrosoft.com",
+                //string ApplicationURL = "https://alan365.crm.dynamics.com", userName = "alan@alan365.onmicrosoft.com",
                 //    password = "Getthat$$$5", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType);
 
-                string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
-                connectionString += "RequireNewInstance=true;";
-                CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
-                if (crmSvc != null && crmSvc.IsReady)
+
+                Uri organizationUri;
+                Uri homeRealmUri;
+                ClientCredentials credentials = new ClientCredentials();
+                ClientCredentials deviceCredentials = new ClientCredentials();
+                credentials.UserName.UserName = userName;
+                credentials.UserName.Password = password;
+                deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
+                deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
+                organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
+                homeRealmUri = null;
+                using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
-                    Dictionary<string, Dictionary<string, object>> outData = new Dictionary<string, Dictionary<string, object>>();
-                    //search conditions 
-                    CrmServiceClient.CrmFilterConditionItem condition1 = new CrmServiceClient.CrmFilterConditionItem();
-                    condition1.FieldName = "subject";
-                    condition1.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
-                    condition1.FieldValue = SValue;
-                    CrmServiceClient.CrmFilterConditionItem condition2 = new CrmServiceClient.CrmFilterConditionItem();
-                    condition2.FieldName = "companyname";
-                    condition2.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
-                    condition2.FieldValue = SValue;
-                    CrmServiceClient.CrmFilterConditionItem condition3 = new CrmServiceClient.CrmFilterConditionItem();
-                    condition3.FieldName = "emailaddress1";
-                    condition3.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
-                    condition3.FieldValue = SValue;
-                    CrmServiceClient.CrmFilterConditionItem condition4 = new CrmServiceClient.CrmFilterConditionItem();
-                    condition4.FieldName = "firstname";
-                    condition4.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
-                    condition4.FieldValue = SValue;
-                    CrmServiceClient.CrmFilterConditionItem condition5 = new CrmServiceClient.CrmFilterConditionItem();
-                    condition5.FieldName = "lastname";
-                    condition5.FieldOperator = Microsoft.Xrm.Sdk.Query.ConditionOperator.BeginsWith;
-                    condition5.FieldValue = SValue;
-                    //search filters
-                    CrmServiceClient.CrmSearchFilter filter1 = new CrmServiceClient.CrmSearchFilter();
-                    filter1.SearchConditions.Add(condition1);
-                    filter1.SearchConditions.Add(condition2);
-                    filter1.SearchConditions.Add(condition3);
-                    filter1.SearchConditions.Add(condition4);
-                    filter1.SearchConditions.Add(condition5);
-                    filter1.FilterOperator = Microsoft.Xrm.Sdk.Query.LogicalOperator.Or;
-                    //searchFilters list
-                    List<CrmServiceClient.CrmSearchFilter> searchFilters = new List<CrmServiceClient.CrmSearchFilter>();
-                    searchFilters.Add(filter1);
+                    List<DYLead> listToReturn = new List<DYLead>();
+                    IOrganizationService objser = (IOrganizationService)proxyservice;
+                    //filter name 
+                    ConditionExpression filterOwnRcd = new ConditionExpression();
+                    filterOwnRcd.AttributeName = "fullname";
+                    filterOwnRcd.Operator = ConditionOperator.Like;
+                    filterOwnRcd.Values.Add("%" + SValue + "%");
+                    //filter email
+                    ConditionExpression filterOwnRcd2 = new ConditionExpression();
+                    filterOwnRcd2.AttributeName = "emailaddress1";
+                    filterOwnRcd2.Operator = ConditionOperator.Like;
+                    filterOwnRcd2.Values.Add("%" + SValue + "%");
+                    //filter subject
+                    ConditionExpression filterOwnRcd3 = new ConditionExpression();
+                    filterOwnRcd3.AttributeName = "subject";
+                    filterOwnRcd3.Operator = ConditionOperator.Like;
+                    filterOwnRcd3.Values.Add("%" + SValue + "%");
 
 
-                    //list of columns required in the output 
-                    List<string> outputList = new List<string>();
-                    outputList.Add("leadid"); outputList.Add("address1_city"); outputList.Add("subject"); outputList.Add("lastname");
-                    outputList.Add("telephone1"); outputList.Add("emailaddress1"); outputList.Add("companyname"); outputList.Add("firstname");
-                    //search function call 
-                    outData = crmSvc.GetEntityDataBySearchParams("lead", searchFilters, CrmServiceClient.LogicalSearchOperator.Or, outputList);
-                    List<DYLead> myLeads = new List<DYLead> { };
-                    if (outData != null)
+                    FilterExpression filter1 = new FilterExpression();
+                    filter1.Conditions.Add(filterOwnRcd);
+                    filter1.Conditions.Add(filterOwnRcd2);
+                    filter1.Conditions.Add(filterOwnRcd3);
+                    filter1.FilterOperator = LogicalOperator.Or;
+                    QueryExpression query = new QueryExpression("lead");
+                    query.ColumnSet.AddColumns("leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname");
+                   query.Criteria.AddFilter(filter1);
+
+                    EntityCollection result1 = objser.RetrieveMultiple(query);
+                    if (result1.Entities.Count > 0)
                     {
-                        foreach (var pair in outData)
+
+                        foreach (var z in result1.Entities)
                         {
-                            DYLead l = new DYLead();
-                            foreach (var fields in pair.Value)
-                            {
-                                if (fields.Key == "subject") { l.subject = fields.Value.ToString(); }
-                                else if (fields.Key == "leadid") { l.leadid = fields.Value.ToString(); }
-                                else if (fields.Key == "firstname") { l.firstname = fields.Value.ToString(); }
-                                else if (fields.Key == "lastname") { l.lastname = fields.Value.ToString(); }
-                                else if (fields.Key == "address1_city") { l.address1_city = fields.Value.ToString(); }
-                                else if (fields.Key == "telephone1") { l.address1_telephone1 = fields.Value.ToString(); }
-                                else if (fields.Key == "emailaddress1") { l.emailaddress1 = fields.Value.ToString(); }
-                                else if (fields.Key == "companyname") { l.companyname = fields.Value.ToString(); }
-                            }
-                            myLeads.Add(l);
+                            DYLead info = new DYLead();
+                            if (z.Attributes.Contains("leadid"))
+                                info.leadid = z.Attributes["leadid"].ToString();
+                            if (z.Attributes.Contains("address1_city"))
+                                info.address1_city = z.Attributes["address1_city"].ToString();
+                            if (z.Attributes.Contains("subject"))
+                                info.subject = z.Attributes["subject"].ToString();
+                            if (z.Attributes.Contains("lastname"))
+                                info.lastname = z.Attributes["lastname"].ToString();
+                            if (z.Attributes.Contains("emailaddress1"))
+                                info.emailaddress1 = z.Attributes["emailaddress1"].ToString();
+                            if (z.Attributes.Contains("companyname"))
+                                info.companyname = z.Attributes["companyname"].ToString();
+                            if (z.Attributes.Contains("firstname"))
+                                info.firstname = z.Attributes["firstname"].ToString();
+                            listToReturn.Add(info);
                         }
                     }
-                    return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK,false);
+                    return MyAppsDb.ConvertJSONPOutput(callback, listToReturn, HttpStatusCode.OK, false);
                 }
-                else
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback,"Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.InternalServerError,true);
-                }
-                #region dynamics api call 
+              #region dynamics api call 
                 ////HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef,GroupId.ToString(), "internal");
                 //HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(ObjectRef, GroupId.ToString());
                 //if (msg.StatusCode == HttpStatusCode.OK)
@@ -288,6 +281,16 @@ namespace SalesForceOAuth.Controllers
         }
 
 
+    }
+    public class DynamicUser
+    {
+        public string token { get; set; }
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
+        public string OrganizationURL { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string AuthType { get; set; }
     }
 
     public class DYLeadPostData : MyValidation

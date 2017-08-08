@@ -24,3 +24,11 @@ Parameter name: Organization Name
 Parameter name: Organization Name
 14/07/2017 15:01:42 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
 14/07/2017 15:03:18 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+20/07/2017 00:40:03 ==> Your request isn't authorized!
+20/07/2017 00:45:35 ==> No Chat in queue to publish
+03/08/2017 19:49:25 ==> No Chat in queue to publish
+03/08/2017 19:51:14 ==> No Chat in queue to publish
+03/08/2017 20:35:43 ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: There is already an open DataReader associated with this Connection which must be closed first.
+08/08/2017 18:36:01 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'new_websitealive' was not found in the MetadataCache.
+08/08/2017 18:37:40 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'New_AliveChat' was not found in the MetadataCache.
+08/08/2017 18:39:57 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'new_alivechat' entity doesn't contain attribute with Name = 'new_websitealivechat'.
