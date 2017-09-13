@@ -18,14 +18,6 @@ namespace SalesForceOAuth.Controllers
         [ActionName("GetAuthorizationToken")]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetAuthorizationToken(string token, string ObjectRef, string AuthCode, int GroupId, string IsNew, string siteRef, string callback)
         {
-            //string ObjectRef, int GroupId, string AuthCode, string IsNew, string callback, string ValidationKey, 
-            //var re = Request;
-            //var headers = re.Headers;
-            //string ObjectRef = "", AuthCode = "", IsNew = "";
-            //int GroupId = 0; 
-            //if (headers.Contains("Authorization"))
-            //{
-            // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
             string outputPayload;
             try
             {
@@ -35,19 +27,12 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForceToken-GetAuthorizationToken", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
-            //JObject values = JObject.Parse(outputPayload); // parse as array  
-            //GroupId = Convert.ToInt32(GroupId);
-            //ObjectRef = values.GetValue("ObjectRef").ToString();
-            //AuthCode = values.GetValue("AuthCode").ToString();
-            //IsNew = values.GetValue("IsNew").ToString();
-            //int groupId = Convert.ToInt32(GroupId);
-
             string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
-            //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
+            string urlReferrer = Request.RequestUri.Authority.ToString();
             sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
             try
             {
-                MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
+                MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point, urlReferrer, ObjectRef);
             }
             catch (Exception ex)
             {
@@ -60,14 +45,14 @@ namespace SalesForceOAuth.Controllers
                 if (IsNew.Equals("Y"))
                 {
                     await auth.WebServerAsync(sf_consumer_key, sf_consumer_secret, sf_callback_url, AuthCode, sf_token_req_end_point).ConfigureAwait(false);
-                    MyAppsDb.CreateNewIntegrationSettingForUser(ObjectRef, GroupId, auth.RefreshToken, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
+                    MyAppsDb.CreateNewIntegrationSettingForUser(ObjectRef, GroupId, auth.RefreshToken, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl,urlReferrer);
                 }
                 else
                 {
                     string SFRefreshToken = "";
-                    MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
+                    MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken,urlReferrer);
                     await auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).ConfigureAwait(false);
-                    MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
+                    MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl,urlReferrer);
                 }
                 return MyAppsDb.ConvertJSONPOutput(callback, "API information updated!", HttpStatusCode.OK,false);
 

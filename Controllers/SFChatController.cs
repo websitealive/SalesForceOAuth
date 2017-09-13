@@ -18,42 +18,20 @@ namespace SalesForceOAuth.Controllers
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
         {
             string AccessToken = "";
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-               // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                //string outputPayload;
-                //try
-                //{
-                //    outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                //}
-                //catch (Exception ex)
-                //{
-                //    return MyAppsDb.ConvertJSONOutput(ex.InnerException, HttpStatusCode.InternalServerError);
-                //}
-                //JObject values = JObject.Parse(outputPayload); // parse as array  
-                //MessageData lData = new MessageData();
-                //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-                //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-                //lData.Message = values.GetValue("Message").ToString();
-                //lData.Subject = values.GetValue("Subject").ToString();
-                //lData.SessionId = Convert.ToInt32(values.GetValue("SessionId").ToString());
-
-                if(lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
                 {
                     //Access token update
-                    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
-
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
                     if (msg.StatusCode != HttpStatusCode.OK)
                     { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
 
                     try
                     {
                         string InstanceUrl = "", ApiVersion = "", ItemId ="", ItemType= "";
-                        MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                        MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                         int chatId = 0;  
-                        MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType); 
+                        MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType,urlReferrer); 
                         ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                         TaskLogACall lTemp = new TaskLogACall();
@@ -68,7 +46,7 @@ namespace SalesForceOAuth.Controllers
                         SuccessResponse sR = await client.CreateAsync("Task", lACall).ConfigureAwait(false);
                         if (sR.Success == true)
                         {
-                            MyAppsDb.ChatQueueItemAdded(chatId);
+                            MyAppsDb.ChatQueueItemAdded(chatId,urlReferrer, lData.ObjectRef);
                             PostedObjectDetail output = new PostedObjectDetail();
                             output.Id = sR.Id;
                             output.ObjectName = "Chat";
@@ -90,37 +68,32 @@ namespace SalesForceOAuth.Controllers
         [HttpGet]
         public HttpResponseMessage GetTagChat(string token,string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback)
         {
-           
-                #region JWT Token 
-                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                string outputPayload;
-                try
-                {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYChat-GetTagChat", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
-                }
-                #endregion JWT Token
-                List<Lead> myLeads = new List<Lead> { };
-                try
-                {
-                    MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId);
-                    PostedObjectDetail output = new PostedObjectDetail();
-                    output.ObjectName = "TagChat";
-                    output.Message = "Chat Tagged successfully!";
-                    return MyAppsDb.ConvertJSONPOutput(callback , output, HttpStatusCode.OK,false);
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFChat-GetTagChat", "Unhandled exception", HttpStatusCode.InternalServerError);
-                }
-            //}
-            //else
-            //{
-            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            //}
+            #region JWT Token 
+            //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYChat-GetTagChat", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            #endregion JWT Token
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            List<Lead> myLeads = new List<Lead> { };
+            try
+            {
+                MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId, urlReferrer);
+                PostedObjectDetail output = new PostedObjectDetail();
+                output.ObjectName = "TagChat";
+                output.Message = "Chat Tagged successfully!";
+                return MyAppsDb.ConvertJSONPOutput(callback , output, HttpStatusCode.OK,false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFChat-GetTagChat", "Unhandled exception", HttpStatusCode.InternalServerError);
+            }
         }
     }
     public class TaskLogACall

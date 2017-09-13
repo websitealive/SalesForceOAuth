@@ -44,7 +44,8 @@ namespace SalesForceOAuth.Controllers
                 //    password = "@Abc.123", authType = "IFD";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
-                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType);
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef,lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
                 connectionString += "RequireNewInstance=true;";
@@ -154,7 +155,8 @@ namespace SalesForceOAuth.Controllers
                 //    password = "Getthat$$$5", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
-                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType);
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 Uri organizationUri;
                 Uri homeRealmUri;

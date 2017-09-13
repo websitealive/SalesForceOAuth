@@ -19,14 +19,15 @@ namespace SalesForceOAuth.Web_API_Helper_Code
 {
     public class Salesforce
     {
-        public static async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ObjectRef, int GroupId, string siteRef)
+        public static async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ObjectRef, int GroupId, string siteRef,string urlReferrer)
         {
             //get current access token 
             string accessToken = "";
             CRMTokenStatus userTokenStatus;
+
             try
             {
-                userTokenStatus = MyAppsDb.GetAccessTokenSalesForce(ObjectRef, GroupId, ref accessToken);
+                userTokenStatus = MyAppsDb.GetAccessTokenSalesForce(ObjectRef, GroupId, ref accessToken,urlReferrer);
             }
             catch (Exception ex)
             {
@@ -48,14 +49,14 @@ namespace SalesForceOAuth.Web_API_Helper_Code
                     string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
                     //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
                     sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
-                    MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point);
+                    MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point,urlReferrer, ObjectRef);
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     var auth = new AuthenticationClient();
                 
                     string SFRefreshToken = "";
-                    MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken);
+                    MyAppsDb.GetCurrentRefreshToken(ObjectRef, GroupId, ref SFRefreshToken,urlReferrer);
                     auth.TokenRefreshAsync(sf_clientid, SFRefreshToken, sf_consumer_secret, sf_token_req_end_point).Wait();
-                    MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl);
+                    MyAppsDb.UpdateIntegrationSettingForUser(ObjectRef, GroupId, auth.AccessToken, auth.ApiVersion, auth.InstanceUrl,urlReferrer);
                     return MyAppsDb.ConvertJSONOutput("API information updated!", HttpStatusCode.OK,false);
 
                 }

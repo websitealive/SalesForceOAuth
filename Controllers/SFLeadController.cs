@@ -21,37 +21,24 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(LeadData lData)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-              //  string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                string outputPayload;
-                try
-                {
-                    outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             //Access token update
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef),urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
             { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
-            //JObject values = JObject.Parse(outputPayload); // parse as array  
-            // LeadData lData = new LeadData();
-            //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-            //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-            //lData.FirstName = values.GetValue("FirstName").ToString();
-            //lData.LastName = values.GetValue("LastName").ToString();
-            //lData.Email = values.GetValue("Email").ToString();
-            //lData.Phone = values.GetValue("Phone").ToString();
-            //lData.Company = values.GetValue("Company").ToString();
             try
                 {
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     
                     var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = lData.Company, Email = lData.Email, Phone = lData.Phone };
@@ -74,20 +61,11 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
-            //}
-            //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string token, string ObjectRef, int GroupId,string SValue, string siteRef, string callback)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-               // string ObjectRef = "", SValue = "";
-                //int groupId = Convert.ToInt32(GroupId);
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            // string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
             string outputPayload;
             try
             {
@@ -98,18 +76,14 @@ namespace SalesForceOAuth.Controllers
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLeads-GetSearchedLeads", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             //Access token update
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef)); 
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef),urlReferrer); 
             if (msg.StatusCode != HttpStatusCode.OK)
             { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
-            //JObject values = JObject.Parse(outputPayload); // parse as array  
-            //GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-            //ObjectRef = values.GetValue("ObjectRef").ToString();
-            //SValue = values.GetValue("SValue").ToString();
-
             try
                 {
                     List<Lead> myLeads = new List<Lead> { };
-                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     string objectValue = SValue;
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11; 
@@ -136,13 +110,7 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
-            //}
-            //else
-            //{
-            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-            //}
         }
-
     }
     public class PostedObjectDetail
     {

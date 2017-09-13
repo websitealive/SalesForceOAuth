@@ -18,11 +18,6 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(AccountData lData)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
             string outputPayload;
             try
             {
@@ -32,23 +27,17 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
-
             //Access token update
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef));
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef),urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
-
-            //JObject values = JObject.Parse(outputPayload); // parse as array  
-            //AccountData lData = new AccountData();
-            //lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-            //lData.ObjectRef = values.GetValue("ObjectRef").ToString();
-            //lData.Name = values.GetValue("Name").ToString();
-            //lData.Phone = values.GetValue("Phone").ToString();
-            //lData.AccountNumber = values.GetValue("AccountNumber").ToString();
+            {
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);
+            }
             try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -89,19 +78,16 @@ namespace SalesForceOAuth.Controllers
                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             //Access token update
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef));
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef),urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
-            //JObject values = JObject.Parse(outputPayload); // parse as array  
-            //GroupId = Convert.ToInt32( values.GetValue("GroupId").ToString());
-            //ObjectRef = values.GetValue("ObjectRef").ToString();
-            //SValue = values.GetValue("SValue").ToString();
-
-            
+            {
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);
+            }
             List<Account> myAccounts = new List<Account> { };
             try
             {
-                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 
                 string objectValue = SValue;

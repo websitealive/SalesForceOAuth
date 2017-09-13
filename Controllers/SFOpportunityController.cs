@@ -23,6 +23,7 @@ namespace SalesForceOAuth.Controllers
             if (headers.Contains("Authorization"))
             {
                 string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
+                string urlReferrer = Request.RequestUri.Authority.ToString();
                 string outputPayload;
                 try
                 {
@@ -44,7 +45,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var opp = new MyOpportunity
                     {

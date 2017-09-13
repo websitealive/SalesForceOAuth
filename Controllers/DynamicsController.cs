@@ -16,73 +16,55 @@ namespace SalesForceOAuth.Controllers
 {
     public class DynamicsController : ApiController
     {
-
         [HttpGet]
         [ActionName("GetAccessToken")]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string token, string ObjectRef, int GroupId, string callback)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-           
-            //if (headers.Contains("Authorization") )
-            //{
-                //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                string outputPayload; 
-                try
+            string outputPayload; 
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch(Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                //Live Code 
+                string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
+                DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
+                CRMTokenStatus userTokenStatus;
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId.ToString(), ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority,urlReferrer);
+                //end Live Code 
+                if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
                 {
-                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                    return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK,false);
                 }
-                catch(Exception ex)
+                else if (userTokenStatus == CRMTokenStatus.USERNOTFOUND) // if a user account is not found 
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound,false);
                 }
+                else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
+                {
+                    var passwordSecure = new System.Security.SecureString();
+                    foreach (char c in userPassword) passwordSecure.AppendChar(c);
+                    Web_API_Helper_Code.Configuration _config = null;
+                    _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, serviceURL, clientId);
 
-                //JObject values = JObject.Parse(outputPayload); // parse as array  
-                //GroupId = values.GetValue("GroupId").ToString();
-                //ObjectRef = values.GetValue("ObjectRef").ToString();
-                try
-                {
-                    //Live Code 
-                    string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
-                    DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
-                    CRMTokenStatus userTokenStatus;
-                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId.ToString(), ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
-                    //end Live Code 
-                    if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
-                    {
-                        return MyAppsDb.ConvertJSONPOutput(callback,accessToken, HttpStatusCode.OK,false);
-                    }
-                    else if (userTokenStatus == CRMTokenStatus.USERNOTFOUND) // if a user account is not found 
-                    {
-                        return MyAppsDb.ConvertJSONPOutput(callback,"User not registered to use this application.", HttpStatusCode.NotFound,false);
-                    }
-                    else // if user acccount found but token is expired, code to refresh token  ---- DYTokenStatus.TOKENEXPIRED
-                    {
-                        var passwordSecure = new System.Security.SecureString();
-                        foreach (char c in userPassword) passwordSecure.AppendChar(c);
-                        Web_API_Helper_Code.Configuration _config = null;
-                        _config = new Web_API_Helper_Code.Configuration(username, passwordSecure, serviceURL, clientId);
-
-                        // authentication class 
-                        Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
-                        AuthenticationResult res = await _auth.AcquireToken();
-                        DateTime expiryDT = res.ExpiresOn.DateTime;
-                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId.ToString(), res.AccessToken.ToString(), expiryDT);
-                        return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK,false);
-                    }
+                    // authentication class 
+                    Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
+                    AuthenticationResult res = await _auth.AcquireToken();
+                    DateTime expiryDT = res.ExpiresOn.DateTime;
+                    MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId.ToString(), res.AccessToken.ToString(), expiryDT,urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, res.AccessToken.ToString(), HttpStatusCode.OK,false);
                 }
-                catch (Exception ex)
-                {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Unhandled exception", HttpStatusCode.InternalServerError);
-                }
-            //}
-            //else
-            //{
-            //    HttpResponseMessage outputResponse = new HttpResponseMessage();
-            //    outputResponse.StatusCode = HttpStatusCode.Unauthorized;
-            //    outputResponse.Content = new StringContent("Your request isn't authorized!");
-            //    return outputResponse;
-            //}
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dynamics-GetAccessToken", "Unhandled exception", HttpStatusCode.InternalServerError);
+            }
         }
 
 

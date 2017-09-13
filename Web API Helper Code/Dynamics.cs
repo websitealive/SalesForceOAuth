@@ -18,7 +18,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
 {
     public class Dynamics
     {
-        public static async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ObjectRef, string GroupId)
+        public static async System.Threading.Tasks.Task<HttpResponseMessage> GetAccessToken(string ObjectRef, string GroupId,string urlReferrer)
         {
                 try
                 {
@@ -26,7 +26,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
                     string accessToken = "", username = "", serviceURL = "", userPassword = "", clientId = "", authority = "";
                     DateTime tokenExpiryDT = DateTime.Now.AddDays(-1);
                     CRMTokenStatus userTokenStatus;
-                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority);
+                    userTokenStatus = MyAppsDb.GetAccessTokenDynamics(ObjectRef, GroupId, ref accessToken, ref username, ref userPassword, ref clientId, ref serviceURL, ref tokenExpiryDT, ref authority,urlReferrer);
                     //end Live Code 
                     if (userTokenStatus == CRMTokenStatus.SUCCESSS) // if a valid token is available
                     {
@@ -47,7 +47,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
                         Web_API_Helper_Code.Authentication _auth = new Authentication(_config, authority);
                         AuthenticationResult res = await _auth.AcquireToken().ConfigureAwait(false); 
                         DateTime expiryDT = res.ExpiresOn.DateTime;
-                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT);
+                        MyAppsDb.UpdateAccessTokenDynamics(ObjectRef, GroupId, res.AccessToken.ToString(), expiryDT, urlReferrer);
                         return MyAppsDb.ConvertStringOutput(res.AccessToken.ToString(), HttpStatusCode.OK);
                     }
                 }

@@ -32,6 +32,7 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONOutput(ex, "SFContact-PostContact", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
+                string urlReferrer = Request.RequestUri.Authority.ToString();
                 JObject values = JObject.Parse(outputPayload); // parse as array  
                 ContactData lData = new ContactData();
                 lData.GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
@@ -44,7 +45,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     var cont = new MyContact {AccountId = lData.AccountId, FirstName = lData.FirstName, LastName = lData.LastName,
                         Email = lData.Email  , Phone = lData.Phone };
@@ -95,9 +96,10 @@ namespace SalesForceOAuth.Controllers
                 ObjectRef = values.GetValue("ObjectRef").ToString();
                 SValue = values.GetValue("SValue").ToString();
                 List<MyContact> myContacts = new List<MyContact> { };
+                string urlReferrer = Request.RequestUri.Authority.ToString();
                 try
                 {
-                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl);
+                    MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
 
                     QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(

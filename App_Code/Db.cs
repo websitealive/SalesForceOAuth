@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
+using SalesForceOAuth.Controllers; 
 
 namespace SalesForceOAuth.App_Code
 {
@@ -21,12 +22,12 @@ namespace SalesForceOAuth.App_Code
             private MySqlDataReader reader;
 
             //
-            private string connectiondetails = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            private string connectiondetails = "";
 
         
-        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid,ref string sf_callback_url)
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid,ref string sf_callback_url, string urlReferrer, string objectRef)
             {
-                string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+                string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
                 MySqlConnection conn = new MySqlConnection(connStr);
                 try
                 {
@@ -55,9 +56,9 @@ namespace SalesForceOAuth.App_Code
                 conn.Close();
         }
 
-            public static void GetTokenParameters(ref string sf_callback_url, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point)
+        public static void GetTokenParameters(ref string sf_callback_url, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point,string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {

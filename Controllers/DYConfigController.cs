@@ -36,7 +36,8 @@ namespace SalesForceOAuth.Controllers
                 //    password = "Getthat$$$5", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
-                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType);
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -110,6 +111,7 @@ namespace SalesForceOAuth.Controllers
                 deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                 organizationUri = new Uri(lData.OrganizationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
+                string urlReferrer = Request.RequestUri.Authority.ToString();
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
 
@@ -133,7 +135,7 @@ namespace SalesForceOAuth.Controllers
                     if (result1.Entities.Count > 0)
                     {
                         string outStr = "Managed Solution Found - Configuration Complete";
-                        int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType);
+                        int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
                         if (output == 1)
                             return MyAppsDb.ConvertJSONOutput("Managed Solution Found - Credentials recorded successfully!", HttpStatusCode.OK, false);
                         else

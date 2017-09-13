@@ -20,48 +20,31 @@ namespace SalesForceOAuth.Controllers
         /// GET: api/SalesForce/GetRedirectURL
         [HttpGet]
         [ActionName("GetRedirectURL")]
-        public HttpResponseMessage GetRedirectURL(string token, string callback, string siteRef)
+        public HttpResponseMessage GetRedirectURL(string token, string callback, string siteRef, string objectRef)
         {
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
+            try
+            {
+                string outputPayload;
                 try
                 {
-                    //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                    string outputPayload;
-                    try
-                    {
-                        outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
-                    }
-                    catch (Exception ex)
-                    {
-                        return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
-                    }
-                    string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-                    sf_callback_url = siteRef; 
-                    //MyAppsDb.GetRedirectURLParametersCallBack(ref sf_callback_url, siteRef);
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid);
-
-                    //var url =
-                    //Common.FormatAuthUrl(
-                    //    "https://login.salesforce.com/services/oauth2/authorize",
-                    //    ResponseTypes.Code,s
-                    //    "3MVG9KI2HHAq33RwXJsqtsEtY.ThMCzS5yZd3S8CzXBArijS0WEQgYACVnQ9SJq0KDdKrQgIxPFNPOIQhuqdK",
-                    //    System.Web.HttpUtility.UrlEncode("http://localhost:56786/About.aspx"));
-
-                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
-                    return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK,false);
+                    outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForce-GetRedirectURL", "Unhandled exception", HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
-           //}
-           // else
-           // {
-           //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
-           // }
+                string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
+                sf_callback_url = siteRef;
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+
+                string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
+                return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK,false);
+            }
+            catch(Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForce-GetRedirectURL", "Unhandled exception", HttpStatusCode.InternalServerError);
+            }
         }
 
     }
@@ -70,12 +53,12 @@ namespace SalesForceOAuth.Controllers
     public class MyAppsDb
     {
         #region SalesForce Methods
-        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid)
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
-            using (MySqlConnection conn = new MySqlConnection(connStr))
-            {
-                try
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef );
+            try
+            { 
+                using (MySqlConnection conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
@@ -96,16 +79,16 @@ namespace SalesForceOAuth.Controllers
                     }
                     rdr.Close();
                 }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
-        public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource)
+        public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -124,9 +107,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetTokenParameters(ref string sf_clientid, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point)
+        public static void GetTokenParameters(ref string sf_clientid, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -159,9 +142,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void CreateNewIntegrationSettingForUser(string ObjectRef, int GroupId, string SFRefreshToken, string SFAccessToken, string SFApiVersion, string SFInstanceUrl)
+        public static void CreateNewIntegrationSettingForUser(string ObjectRef, int GroupId, string SFRefreshToken, string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef );
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -184,9 +167,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetCurrentRefreshToken(string objectRef, int GroupId,  ref string SFRefreshToken)
+        public static void GetCurrentRefreshToken(string objectRef, int GroupId,  ref string SFRefreshToken, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -211,9 +194,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void UpdateIntegrationSettingForUser(string ObjectRef, int GroupId,  string SFAccessToken, string SFApiVersion, string SFInstanceUrl)
+        public static void UpdateIntegrationSettingForUser(string ObjectRef, int GroupId,  string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -232,9 +215,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetAPICredentials(string ObjectRef, int GroupId,ref  string SFAccessToken,ref string SFApiVersion,ref string SFInstanceUrl)
+        public static void GetAPICredentials(string ObjectRef, int GroupId,ref  string SFAccessToken,ref string SFApiVersion,ref string SFInstanceUrl, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -307,9 +290,9 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
-        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId)
+        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -332,9 +315,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType)
+        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -361,9 +344,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void ChatQueueItemAdded(int chatId)
+        public static void ChatQueueItemAdded(int chatId, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -382,9 +365,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetRedirectURLParametersDynamics(ref string dy_authoize_url, ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url)
+        public static void GetRedirectURLParametersDynamics(ref string dy_authoize_url, ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -416,9 +399,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetTokenParametersDynamics(ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url, ref string dy_token_post_url)
+        public static void GetTokenParametersDynamics(ref string dy_clientid, ref string dy_redirect_url, ref string dy_resource_url, ref string dy_token_post_url, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -450,9 +433,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        internal static void CreateNewIntegrationSettingForDynamicsUser(string objectRef, int groupId, string refreshToken, string accessToken, string resource)
+        internal static void CreateNewIntegrationSettingForDynamicsUser(string objectRef, int groupId, string refreshToken, string accessToken, string resource, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -475,9 +458,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        internal static void GetCurrentRefreshTokenDynamics(string objectRef, int groupId, ref string DYRefreshToken, ref string DYResourceURL)
+        internal static void GetCurrentRefreshTokenDynamics(string objectRef, int groupId, ref string DYRefreshToken, ref string DYResourceURL, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -503,9 +486,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        internal static void GetAPICredentialsDynamics(string objectRef, int groupId, ref string DYAccessToken, ref string DYApiVersion, ref string DYInstanceUrl, ref string resource)
+        internal static void GetAPICredentialsDynamics(string objectRef, int groupId, ref string DYAccessToken, ref string DYApiVersion, ref string DYInstanceUrl, ref string resource, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -531,12 +514,12 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-        internal static void TagChatDynamics(string objectRef, int groupId, int sessionId, string objType, string objId)
+        public static void TagChatDynamics(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
-            using (MySqlConnection conn = new MySqlConnection(connStr))
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            try
             {
-                try
+                using (MySqlConnection conn = new MySqlConnection(connStr))
                 {
                     conn.Open();
                     string sqlDel = "DELETE FROM integration_dynamics_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
@@ -547,18 +530,17 @@ namespace SalesForceOAuth.Controllers
                     sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now())";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
                 }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
-        public static void GetTaggedChatDynamicsId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType)
+        public static void GetTaggedChatDynamicsId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -586,9 +568,9 @@ namespace SalesForceOAuth.Controllers
         }
 
         public static CRMTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword, 
-            ref string clientId, ref string serviceURL, ref DateTime tokenExpiryDT, ref string authority)
+            ref string clientId, ref string serviceURL, ref DateTime tokenExpiryDT, ref string authority, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -637,46 +619,64 @@ namespace SalesForceOAuth.Controllers
                 }
             }
         }
-
-        public static int GetDynamicsCredentials(string objectRef, int groupId, ref string applicationURL, ref string userName, ref string password, ref string authType)
+        public static string GetConnectionStringbyURL(string url, string objectRef)
         {
-            //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
-            MySqlConnection conn = new MySqlConnection(connStr);
+            string connectionString = "";
+            if (url.Contains("api-apps-dotnet-dev0.websitealive.com") || url.Contains("localhost"))
+                connectionString = Environment.GetEnvironmentVariable("devappsConnStr");
+            else if (url.Contains("api-apps-dotnet-stage.websitealive.com"))
+                connectionString = Environment.GetEnvironmentVariable("stageappsConnStr");
+            else if (url.Contains("api-apps-dotnet.websitealive.com"))
+            {
+                connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
+                connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
+            }
+            else
+                connectionString = "";
+            return connectionString; 
+        }
+        public static int GetDynamicsCredentials(string objectRef, int groupId, ref string applicationURL, ref string userName, ref string password, ref string authType, string referrerURL)
+        {
+
+            string connStr = MyAppsDb.GetConnectionStringbyURL(referrerURL, objectRef );  
             try
             {
-                conn.Open();
-                string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.HasRows)
+                using (MySqlConnection conn = new MySqlConnection(connStr))
                 {
-                    while (rdr.Read())
+
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    MySqlDataReader rdr = cmd.ExecuteReader();
+                    if (rdr.HasRows)
                     {
-                        applicationURL = rdr["ApplicationURL"].ToString().Trim();
-                        userName = Encryption.Decrypt(rdr["UserName"].ToString().Trim());
-                        password = Encryption.Decrypt(rdr["Password"].ToString().Trim());
-                        authType = rdr["AuthType"].ToString().Trim();
-                        return 1;
+                        while (rdr.Read())
+                        {
+                            applicationURL = rdr["ApplicationURL"].ToString().Trim();
+                            userName = Encryption.Decrypt(rdr["UserName"].ToString().Trim());
+                            password = Encryption.Decrypt(rdr["Password"].ToString().Trim());
+                            authType = rdr["AuthType"].ToString().Trim();
+                            return 1;
+                        }
+                        return 0;
                     }
-                    return 0;
+                    else
+                    {
+                        return -1;
+                    }
+                    rdr.Close();
+
                 }
-                else
-                {
-                    return -1;
-                }
-                rdr.Close();
             }
             catch (Exception ex)
             {
                 throw;
             }
-            conn.Close();
         }
 
-        public static int RecordDynamicsCredentials(string objectRef, int groupId, string organizationURL, string userName, string password, string authType)
+        public static int RecordDynamicsCredentials(string objectRef, int groupId, string organizationURL, string userName, string password, string authType, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -706,9 +706,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT)
+        public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT, string urlReferrer)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -727,10 +727,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void ChatQueueItemAddedDynamics(int chatId)
+        public static void ChatQueueItemAddedDynamics(int chatId, string urlReferrer, string objectRef)
         {
-
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             { 
                 try
@@ -749,10 +748,10 @@ namespace SalesForceOAuth.Controllers
             }
         }
              
-        public static CRMTokenStatus GetAccessTokenSalesForce(string objectRef, int groupId, ref string accessToken)
+        public static CRMTokenStatus GetAccessTokenSalesForce(string objectRef, int groupId, ref string accessToken, string urlReferrer)
         {
             //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -798,9 +797,9 @@ namespace SalesForceOAuth.Controllers
             
         }
 
-        public static void GetRedirectURLParametersCallBack(ref string sf_callback_url, int id)
+        public static void GetRedirectURLParametersCallBack(ref string sf_callback_url, int id, string urlReferrer, string objectRef)
         {
-            string connStr = ConfigurationManager.ConnectionStrings["appsConnectionString"].ConnectionString;
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
@@ -828,7 +827,7 @@ namespace SalesForceOAuth.Controllers
             conn.Close();
         }
 
-        internal static void LogException(string function, string errorTitle, Exception ex)
+        public static void LogException(string function, string errorTitle, Exception ex)
         {
             CreateLogFiles log = new CreateLogFiles();
             string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
@@ -836,7 +835,7 @@ namespace SalesForceOAuth.Controllers
             log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
         }
 
-        internal static void LogError(string message)
+        public static void LogError(string message)
         {
             CreateLogFiles log = new CreateLogFiles();
             log.ErrorLog(message);
@@ -866,7 +865,7 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
-        internal static HttpResponseMessage ConvertJSONOutput(Exception ex, string function, string errorTitle, HttpStatusCode code)
+        public static HttpResponseMessage ConvertJSONOutput(Exception ex, string function, string errorTitle, HttpStatusCode code)
         {
             //log exception
             CreateLogFiles log = new CreateLogFiles();

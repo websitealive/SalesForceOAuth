@@ -32,3 +32,22 @@ Parameter name: Organization Name
 08/08/2017 18:36:01 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'new_websitealive' was not found in the MetadataCache.
 08/08/2017 18:37:40 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'New_AliveChat' was not found in the MetadataCache.
 08/08/2017 18:39:57 ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'new_alivechat' entity doesn't contain attribute with Name = 'new_websitealivechat'.
+11/08/2017 16:36:50 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 16:43:53 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 16:52:29 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 16:55:03 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 17:02:10 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 17:03:49 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/08/2017 22:41:25 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Access denied for user ''@'tcac-PC' (using password: NO)
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host '' for user '' using method 'mysql_native_password' failed with message: Access denied for user ''@'tcac-PC' (using password: NO)
+11/08/2017 22:41:47 ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Access denied for user ''@'tcac-PC' (using password: NO)
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host '' for user '' using method 'mysql_native_password' failed with message: Access denied for user ''@'tcac-PC' (using password: NO)
+11/08/2017 22:46:42 ==> Confirguration Error - Managed solution Not Found, check information
+14/08/2017 08:25:04 ==> Confirguration Error - Managed solution Not Found, check information
+28/08/2017 10:34:41 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+28/08/2017 10:37:28 ==> No Chat in queue to publish
+28/08/2017 10:40:12 ==> No Chat in queue to publish
+28/08/2017 10:40:39 ==> No Chat in queue to publish
+28/08/2017 10:49:32 ==> No Chat in queue to publish
