@@ -29,21 +29,40 @@ namespace SalesForceOAuth.Controllers
                     try
                     {
                         string InstanceUrl = "", ApiVersion = "", ItemId ="", ItemType= "";
-                        MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
-                        int chatId = 0;  
-                        MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType,urlReferrer); 
+                        MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                        int chatId = 0;  string OwnerEmail = ""; 
+                        MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId,ref chatId, ref ItemId, ref ItemType,ref OwnerEmail, urlReferrer); 
+                        if(chatId == 0)
+                        {
+                            return MyAppsDb.ConvertJSONOutput("No chat in queue!", HttpStatusCode.InternalServerError, false);
+                        }
                         ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                        TaskLogACall lTemp = new TaskLogACall();
-                        lTemp.Subject = lData.Subject; //"WebsiteAlive-Chat1";
-                        lTemp.Description = lData.Message.Replace("|", "\r\n") ;
-                        if (ItemType == "Lead" || ItemType == "Contact")
-                            lTemp.WhoId = ItemId;
+                        //find lead owner user
+                        OwnerEmail = (OwnerEmail == null ? "" : OwnerEmail);
+                        QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
+                            "where Username like '%" + OwnerEmail + "%' " +
+                            "OR Email like '%" + OwnerEmail + "%' ").ConfigureAwait(false);
+                        string ownerId = "";
+                        foreach (dynamic c in cont.Records)
+                        {
+                            ownerId = c.Id;
+                        }
+                        SuccessResponse sR;
+                        if (ownerId == "" || OwnerEmail == "")
+                        {
+                            TaskLogACall lTemp = new TaskLogACall();
+                            lTemp.Subject = lData.Subject; lTemp.Description = lData.Message.Replace("|", "\r\n"); lTemp.Status = "Completed";
+                            if (ItemType == "Lead" || ItemType == "Contact")  lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
+                            sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                        }
                         else
-                            lTemp.WhatId = ItemId;
-                        lTemp.Status = "Completed"; 
-                        var lACall = lTemp ;
-                        SuccessResponse sR = await client.CreateAsync("Task", lACall).ConfigureAwait(false);
+                        {
+                            TaskLogACallOW lTemp = new TaskLogACallOW();
+                            lTemp.Subject = lData.Subject; lTemp.Description = lData.Message.Replace("|", "\r\n"); lTemp.Status = "Completed"; lTemp.OwnerId = ownerId; 
+                            if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
+                            sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                        }
                         if (sR.Success == true)
                         {
                             MyAppsDb.ChatQueueItemAdded(chatId,urlReferrer, lData.ObjectRef);
@@ -66,7 +85,7 @@ namespace SalesForceOAuth.Controllers
                 return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,true);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string token,string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback)
+        public HttpResponseMessage GetTagChat(string token,string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string OwnerEmail, string callback)
         {
             #region JWT Token 
             //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
@@ -84,7 +103,7 @@ namespace SalesForceOAuth.Controllers
             List<Lead> myLeads = new List<Lead> { };
             try
             {
-                MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId, urlReferrer);
+                MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId, urlReferrer, OwnerEmail);
                 PostedObjectDetail output = new PostedObjectDetail();
                 output.ObjectName = "TagChat";
                 output.Message = "Chat Tagged successfully!";
@@ -103,6 +122,15 @@ namespace SalesForceOAuth.Controllers
         public string WhoId { get; set; }
         public string WhatId { get; set; }
         public string Status { get; set; }
+    }
+    public class TaskLogACallOW
+    {
+        public string Subject { get; set; }
+        public string Description { get; set; }
+        public string WhoId { get; set; }
+        public string WhatId { get; set; }
+        public string Status { get; set; }
+        public string OwnerId { get; set; }
     }
     public class MessageData: MyValidation
     {

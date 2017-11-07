@@ -39,9 +39,29 @@ namespace SalesForceOAuth.Controllers
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                SuccessResponse sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    //find lead owner user
+                    // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                    lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
+                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
+                        "where Username like '%" + lData.OwnerEmail + "%' " +
+                        "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
+                    string ownerId = "";
+                    foreach (dynamic c in cont.Records)
+                    {
+                        ownerId = c.Id;
+                    }
+                    SuccessResponse sR; 
+                    if (ownerId == "" || lData.OwnerEmail == "")
+                    {
+                        var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
+                        sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var acc = new AccountOW { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone, OwnerId = ownerId };
+                        sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
+                    }
                     if (sR.Success == true)
                     {
                         PostedObjectDetail output = new PostedObjectDetail();
@@ -89,23 +109,39 @@ namespace SalesForceOAuth.Controllers
             {
                 MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                
-                string objectValue = SValue;
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                //var accounts = await client.DescribeAsync<object>("Account");
+                //string objectValue = SValue;
+                //dynamic data = JObject.Parse(accounts.ToString());
+                //dynamic datafields = data.fields; 
+                //foreach(dynamic cc in datafields)
+                //{
+                //    string fieldname = cc.name; //field name 
+                //    string fieldlabel = cc.label; // field label 
+                //    string fieldtype = cc.type; //field type 
+                //}
+
+
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
-                    "where AccountNumber like '%" + SValue + "%' " 
-                    + "OR Name like '%" + SValue + "%' "
-                    + "OR Phone like '%" + SValue + "%'" ).ConfigureAwait(false); 
-                foreach (dynamic c in cont.Records)
+                //QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Name, Phone From Account " 
+                    //"where AccountNumber like '%" + SValue + "%' " 
+                    + "where Name like '%" + SValue + "%' "
+                    + "OR Phone like '%" + SValue + "%'" ).ConfigureAwait(false);
+                if (cont.Records.Count > 0)
                 {
-                    Account l = new Account();
-                    l.Id = c.Id;
-                    l.AccountNumber = c.AccountNumber;
-                    l.Name = c.Name; 
-                    l.Phone = c.Phone;
-                    myAccounts.Add(l);
+                    foreach (dynamic c in cont.Records)
+                    {
+                        Account l = new Account();
+                        l.Id = c.Id;
+                        //l.AccountNumber = c.AccountNumber;
+                        l.AccountNumber = "";
+                        l.Name = c.Name;
+                        l.Phone = c.Phone;
+                        myAccounts.Add(l);
+                    }
                 }
-                return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK,true);
+                return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK,false);
             }
             catch (Exception ex)
             {
@@ -133,6 +169,7 @@ namespace SalesForceOAuth.Controllers
         public string AccountNumber { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }
+        public string OwnerEmail { get; set; }
     }
     public class Account
     {
@@ -140,5 +177,13 @@ namespace SalesForceOAuth.Controllers
         public string AccountNumber { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }
+    }
+    public class AccountOW
+    {
+        public String Id { get; set; }
+        public string AccountNumber { get; set; }
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string OwnerId { get; set; }
     }
 }

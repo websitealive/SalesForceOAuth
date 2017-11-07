@@ -51,3 +51,106 @@ Parameter name: Organization Name
 28/08/2017 10:40:12 ==> No Chat in queue to publish
 28/08/2017 10:40:39 ==> No Chat in queue to publish
 28/08/2017 10:49:32 ==> No Chat in queue to publish
+15/09/2017 23:14:16 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired access/refresh token
+15/09/2017 23:15:36 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired access/refresh token
+15/09/2017 23:25:36 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired access/refresh token
+15/09/2017 23:26:38 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired access/refresh token
+15/09/2017 23:29:43 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired access/refresh token
+16/09/2017 00:23:26 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 00:23:28 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 00:23:57 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 00:23:59 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 00:24:28 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 00:24:29 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 00:50:06 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 00:50:08 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 01:08:08 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 01:08:14 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 01:10:27 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 01:10:29 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 01:12:45 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+16/09/2017 01:12:47 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+16/09/2017 01:28:56 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Unexpected character encountered while parsing value: D. Path '', line 0, position 0.
+16/09/2017 01:35:26 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: TLS 1.0 has been disabled in this organization. Please use TLS 1.1 or higher when connecting to Salesforce using https.
+16/09/2017 01:36:52 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: TLS 1.0 has been disabled in this organization. Please use TLS 1.1 or higher when connecting to Salesforce using https.
+16/09/2017 01:38:57 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The best overloaded method match for 'Newtonsoft.Json.Linq.JObject.Parse(string)' has some invalid arguments
+16/09/2017 01:40:52 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray. Path '', line 1, position 1.
+16/09/2017 01:44:41 ==> System.Collections.Generic.List`1[SalesForceOAuth.Controllers.Account]
+25/09/2017 20:05:08 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+25/09/2017 20:05:09 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+25/09/2017 20:16:54 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+25/09/2017 20:16:57 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+25/09/2017 20:24:07 ==> System.Collections.Generic.List`1[SalesForceOAuth.Controllers.Account]
+25/09/2017 20:27:53 ==> System.Collections.Generic.List`1[SalesForceOAuth.Controllers.Account]
+25/09/2017 20:30:28 ==> System.Collections.Generic.List`1[SalesForceOAuth.Controllers.Account]
+25/09/2017 20:32:43 ==> System.Collections.Generic.List`1[SalesForceOAuth.Controllers.Account]
+25/09/2017 21:10:19 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CreatedById. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+25/09/2017 21:13:19 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CreatedById. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+25/09/2017 21:16:12 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+25/09/2017 21:16:30 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+25/09/2017 21:17:43 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: token validity expired
+25/09/2017 21:19:44 ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: token validity expired
+25/09/2017 21:27:07 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+25/09/2017 21:27:11 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+25/09/2017 22:00:48 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Operation not valid for this user type
+27/09/2017 23:01:13 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [LastName, Company]
+27/09/2017 23:02:27 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [LastName, Company]
+27/09/2017 23:10:24 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [Company]
+27/09/2017 23:43:27 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+27/09/2017 23:43:33 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 00:02:00 ==> Internal Exception: Related To ID: id value of incorrect type: 00Q0Y000007VGmuUAG
+28/09/2017 22:27:39 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 22:27:41 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 22:28:05 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 22:28:59 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 23:55:25 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 23:55:28 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 23:56:17 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 23:56:42 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 23:57:01 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 23:57:55 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+28/09/2017 23:58:42 ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+28/09/2017 23:58:44 ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: token validity expired\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+07/11/2017 14:41:14 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+07/11/2017 14:41:29 ==> Internal Error: System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)
+07/11/2017 14:41:32 ==> "Internal Error: System.TimeoutException: Timeout in IO operation\r\n   at MySql.Data.MySqlClient.TimedStream.StopTimer()\r\n   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)\r\n   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)\r\n   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)\r\n   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()\r\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()\r\n   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32\u0026 affectedRow, Int64\u0026 insertedId)\r\n   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32\u0026 affectedRows, Int64\u0026 insertedId)\r\n   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)\r\n   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()\r\n   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior)"
+07/11/2017 14:43:19 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+07/11/2017 15:09:14 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+07/11/2017 15:09:17 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+07/11/2017 15:15:27 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+07/11/2017 15:15:30 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'LeadSubSource' on sobject of type Lead
+07/11/2017 15:18:43 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'LeadSubSource' on sobject of type Lead

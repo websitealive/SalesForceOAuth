@@ -5,6 +5,7 @@ using Salesforce.Force;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -34,16 +35,46 @@ namespace SalesForceOAuth.Controllers
             string urlReferrer = Request.RequestUri.Authority.ToString();
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef),urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true); }
+            {       return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);     }
             try
                 {
                     string InstanceUrl="", AccessToken ="", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref  ApiVersion, ref InstanceUrl,urlReferrer);
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    
-                    var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = lData.Company, Email = lData.Email, Phone = lData.Phone };
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    SuccessResponse sR = await client.CreateAsync("Lead", lead).ConfigureAwait(false);
+                    //find lead owner user
+                    lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
+                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
+                        "where Username like '%" + lData.OwnerEmail + "%' " +
+                        "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
+                    string ownerId = "";
+                    string companyName = (lData.Company == "" || lData.Company == null ? "NA" : lData.Company); 
+                    foreach (dynamic c in cont.Records)
+                    {
+                        ownerId = c.Id;  break;
+                    }
+                    SuccessResponse sR;
+                    dynamic newLead = new ExpandoObject();
+                    newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
+                    newLead.Email = lData.Email; newLead.Phone = lData.Phone;
+                    if (ownerId != "" || lData.OwnerEmail != "")
+                    {
+                        MyAppsDb.AddProperty(newLead, "OwnerId", ownerId);
+                        //var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = companyName, Email = lData.Email, Phone = lData.Phone };
+                        //sR = await client.CreateAsync("Lead", lead).ConfigureAwait(false);
+                    }
+                    foreach(CustomObject c in lData.CustomFields)
+                    {
+                        MyAppsDb.AddProperty(newLead, c.field, c.value);
+                    }
+
+                    //else
+                    //{
+                    //    //var leadow = new LeadOW { FirstName = lData.FirstName, LastName = lData.LastName, Email = lData.Email, Phone = lData.Phone, OwnerId = ownerId, Company = companyName };
+                    //    //sR = await client.CreateAsync("Lead", leadow).ConfigureAwait(false);
+                    //    newLead.OwnerId = ownerId;
+                    //}
+                    sR = await client.CreateAsync("Lead", newLead).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
                         PostedObjectDetail output = new PostedObjectDetail();
@@ -93,16 +124,19 @@ namespace SalesForceOAuth.Controllers
                         "OR Email like '%" + SValue + "%' " +
                         "OR Phone like '%" + SValue + "%' " 
                         ).ConfigureAwait(false);
-                    foreach (dynamic c in cont.Records)
+                    if (cont.Records.Count > 0)
                     {
-                        Lead l = new Lead();
-                        l.Id = c.Id;
-                        l.FirstName = c.FirstName;
-                        l.LastName = c.LastName;
-                        l.Company = c.Company;
-                        l.Email = c.Email;
-                        l.Phone = c.Phone;
-                        myLeads.Add(l);
+                        foreach (dynamic c in cont.Records)
+                        {
+                            Lead l = new Lead();
+                            l.Id = c.Id;
+                            l.FirstName = c.FirstName;
+                            l.LastName = c.LastName;
+                            l.Company = c.Company;
+                            l.Email = c.Email;
+                            l.Phone = c.Phone;
+                            myLeads.Add(l);
+                        }
                     }
                     return MyAppsDb.ConvertJSONPOutput(callback,myLeads, HttpStatusCode.OK,false);
                 }
@@ -118,6 +152,12 @@ namespace SalesForceOAuth.Controllers
         public string Id { get; set; }
         public string Message { get; set; }
     }
+    public class CustomObject 
+    {
+        public string field { get; set; }
+        public string value { get; set; }
+    }
+
     public class LeadData : MyValidation
     {
         public string siteRef { get; set; }
@@ -129,11 +169,20 @@ namespace SalesForceOAuth.Controllers
         public string Company { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string OwnerEmail { get; set; }
+        public List<CustomObject> CustomFields { get; set; }
     }
     public class SearchLeadData: SecureInfo
     {
         public string searchObject { get; set; }
         public string searchValue { get; set; }
+    }
+    public class UserAccounts
+    {
+        public const String SObjectTypeName = "Users";
+        public String Id { get; set; }
+        public string Username { get; set; }
+        public string Email  { get; set; }
     }
     public class Lead
     {
@@ -145,6 +194,23 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string Custom1 { get; set; }
+        public string Custom2 { get; set; }
+        public string Custom3 { get; set; }
+        public string Custom4 { get; set; }
+        public string Custom5 { get; set; }
+    }
+    public class LeadOW
+    {
+        public const String SObjectTypeName = "Lead";
+        public String Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Company { get; set; }
+        public string Description { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string OwnerId { get; set; }
     }
     public class HttpActionResult : IHttpActionResult
     {

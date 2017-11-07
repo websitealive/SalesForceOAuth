@@ -10,6 +10,8 @@ using System.Text;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json.Linq;
 using SalesForceOAuth.Web_API_Helper_Code;
+using System.Dynamic;
+using System.Collections.Generic;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -34,11 +36,11 @@ namespace SalesForceOAuth.Controllers
                     return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-                sf_callback_url = siteRef;
+                sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
 
-                string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
+                string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url,state: siteRef);
                 return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK,false);
             }
             catch(Exception ex)
@@ -53,37 +55,53 @@ namespace SalesForceOAuth.Controllers
     public class MyAppsDb
     {
         #region SalesForce Methods
+
+        public static void AddProperty(ExpandoObject expando, string propertyName, object propertyValue)
+        {
+            // ExpandoObject supports IDictionary so we can extend it like this
+            var expandoDict = expando as IDictionary<string, object>;
+            if (expandoDict.ContainsKey(propertyName))
+                expandoDict[propertyName] = propertyValue;
+            else
+                expandoDict.Add(propertyName, propertyValue);
+        }
+
         public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef );
-            try
-            { 
-                using (MySqlConnection conn = new MySqlConnection(connStr))
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
                 {
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            sf_authoize_url = rdr["sf_authoize_url"].ToString();
-                            sf_clientid = rdr["sf_clientid"].ToString();
-                            //sf_callback_url = rdr["sf_callback_url"].ToString();
+                            while (rdr.Read())
+                            {
+                                sf_authoize_url = rdr["sf_authoize_url"].ToString();
+                                sf_clientid = rdr["sf_clientid"].ToString();
+                                //sf_callback_url = rdr["sf_callback_url"].ToString();
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    rdr.Close();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
                 }
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            
         }
 
         public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource, string urlReferrer)
@@ -98,10 +116,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " WHERE objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -117,26 +136,30 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            sf_clientid = rdr["sf_clientid"].ToString();
-                            // sf_callback_url = rdr["sf_callback_url"].ToString();
-                            sf_consumer_key = rdr["sf_consumer_key"].ToString();
-                            sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
-                            sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
+                            while (rdr.Read())
+                            {
+                                sf_clientid = rdr["sf_clientid"].ToString();
+                                // sf_callback_url = rdr["sf_callback_url"].ToString();
+                                sf_consumer_key = rdr["sf_consumer_key"].ToString();
+                                sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
+                                sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -158,10 +181,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " values ('" + ObjectRef + "'," + GroupId + ", '" + SFRefreshToken + "', now(), '" + SFAccessToken + "', '" + SFApiVersion + "', '" + SFInstanceUrl + "', now())";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -177,18 +201,22 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT SFRefreshToken FROM integration_settings where ObjectRef = '" + objectRef + "' AND GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            SFRefreshToken = rdr["SFRefreshToken"].ToString();
+                            while (rdr.Read())
+                            {
+                                SFRefreshToken = rdr["SFRefreshToken"].ToString();
+                            }
                         }
+                        rdr.Close();
                     }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -206,10 +234,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " WHERE ObjectRef = '" + ObjectRef + "' AND GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -225,20 +254,24 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integration_settings WHERE ObjectRef = '" + ObjectRef + "' AND GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
-                            SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
-                            SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                            while (rdr.Read())
+                            {
+                                SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                                SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                                SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                            }
                         }
+                        rdr.Close();
                     }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -290,7 +323,7 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
-        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer)
+        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer, string OwnerEmail)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -302,20 +335,21 @@ namespace SalesForceOAuth.Controllers
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
 
-                    string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp)";
-                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now())";
+                    string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp,owner_email)";
+                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now(), '"+ OwnerEmail +"')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
         }
 
-        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType, string urlReferrer)
+        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType, ref string ownerEmail, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -323,22 +357,27 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_salesforce_queue WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
+                    string sql = "SELECT * FROM integration_salesforce_queue WHERE status = 0 AND  objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            id = Convert.ToInt32(rdr["id"]);
-                            itemType = rdr["object_type"].ToString().Trim();
-                            itemId = rdr["object_id"].ToString().Trim();
+                            while (rdr.Read())
+                            {
+                                id = Convert.ToInt32(rdr["id"]);
+                                itemType = rdr["object_type"].ToString().Trim();
+                                itemId = rdr["object_id"].ToString().Trim();
+                                ownerEmail = rdr["owner_email"].ToString().Trim();
+                            }
                         }
+                        rdr.Close();
                     }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -356,10 +395,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " WHERE id = " + chatId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -375,25 +415,29 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            dy_authoize_url = rdr["dy_authorize_url"].ToString();
-                            dy_clientid = rdr["dy_clientid"].ToString();
-                            dy_redirect_url = rdr["dy_redirect_url"].ToString();
-                            dy_resource_url = rdr["dy_resource_url"].ToString();
+                            while (rdr.Read())
+                            {
+                                dy_authoize_url = rdr["dy_authorize_url"].ToString();
+                                dy_clientid = rdr["dy_clientid"].ToString();
+                                dy_redirect_url = rdr["dy_redirect_url"].ToString();
+                                dy_resource_url = rdr["dy_resource_url"].ToString();
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -409,25 +453,29 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            dy_clientid = rdr["dy_clientid"].ToString();
-                            dy_redirect_url = rdr["dy_redirect_url"].ToString();
-                            dy_resource_url = rdr["dy_resource_url"].ToString();
-                            dy_token_post_url = rdr["dy_token_post_url"].ToString();
+                            while (rdr.Read())
+                            {
+                                dy_clientid = rdr["dy_clientid"].ToString();
+                                dy_redirect_url = rdr["dy_redirect_url"].ToString();
+                                dy_resource_url = rdr["dy_resource_url"].ToString();
+                                dy_token_post_url = rdr["dy_token_post_url"].ToString();
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -449,10 +497,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " values ('" + objectRef + "'," + groupId + ", '" + refreshToken.Trim() + "', now(), '" + accessToken.Trim() + "', now(),'" + resource + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -468,19 +517,23 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT DYRefreshToken, resource FROM integration_settings_dynamics where objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            DYRefreshToken = rdr["DYRefreshToken"].ToString();
-                            DYResourceURL = rdr["resource"].ToString();
+                            while (rdr.Read())
+                            {
+                                DYRefreshToken = rdr["DYRefreshToken"].ToString();
+                                DYResourceURL = rdr["resource"].ToString();
+                            }
                         }
+                        rdr.Close();
                     }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -489,37 +542,43 @@ namespace SalesForceOAuth.Controllers
         internal static void GetAPICredentialsDynamics(string objectRef, int groupId, ref string DYAccessToken, ref string DYApiVersion, ref string DYInstanceUrl, ref string resource, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            MySqlConnection conn = new MySqlConnection(connStr);
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                conn.Open();
-                string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.HasRows)
+                try
                 {
-                    while (rdr.Read())
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        DYAccessToken = rdr["DYAccessToken"].ToString().Trim();
-                        //DYApiVersion = rdr["DYApiVersion"].ToString().Trim();
-                       // DYInstanceUrl = rdr["DYInstanceUrl"].ToString().Trim();
-                        resource = rdr["resource"].ToString().Trim();
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                DYAccessToken = rdr["DYAccessToken"].ToString().Trim();
+                                //DYApiVersion = rdr["DYApiVersion"].ToString().Trim();
+                                // DYInstanceUrl = rdr["DYInstanceUrl"].ToString().Trim();
+                                resource = rdr["resource"].ToString().Trim();
+                            }
+                        }
+                        rdr.Close();
                     }
+                    conn.Close();
                 }
-                rdr.Close();
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw; 
+                }
             }
-            catch (Exception ex)
-            {
-            }
-            conn.Close();
         }
 
         public static void TagChatDynamics(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                using (MySqlConnection conn = new MySqlConnection(connStr))
+                try
                 {
                     conn.Open();
                     string sqlDel = "DELETE FROM integration_dynamics_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
@@ -530,12 +589,16 @@ namespace SalesForceOAuth.Controllers
                     sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now())";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
                 }
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+
+            
         }
 
         public static void GetTaggedChatDynamicsId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType, string urlReferrer)
@@ -548,20 +611,24 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integration_dynamics_queue WHERE status<>1 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            id = Convert.ToInt32(rdr["id"]);
-                            itemType = rdr["object_type"].ToString().Trim();
-                            itemId = rdr["object_id"].ToString().Trim();
+                            while (rdr.Read())
+                            {
+                                id = Convert.ToInt32(rdr["id"]);
+                                itemType = rdr["object_type"].ToString().Trim();
+                                itemId = rdr["object_id"].ToString().Trim();
+                            }
                         }
+                        rdr.Close();
                     }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -578,43 +645,47 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            username = rdr["username"].ToString().Trim();
-                            userPassword = rdr["userpassword"].ToString().Trim();
-                            clientId = rdr["clientid"].ToString().Trim();
-                            serviceURL = rdr["serviceurl"].ToString().Trim();
-                            authority = rdr["authority"].ToString().Trim();
-                            string date = rdr["tokenexpirydt"].ToString();
-                            // if no expiry date there
-                            if (date.Equals(""))
+                            while (rdr.Read())
                             {
-                                return CRMTokenStatus.TOKENEXPIRED;
+                                username = rdr["username"].ToString().Trim();
+                                userPassword = rdr["userpassword"].ToString().Trim();
+                                clientId = rdr["clientid"].ToString().Trim();
+                                serviceURL = rdr["serviceurl"].ToString().Trim();
+                                authority = rdr["authority"].ToString().Trim();
+                                string date = rdr["tokenexpirydt"].ToString();
+                                // if no expiry date there
+                                if (date.Equals(""))
+                                {
+                                    return CRMTokenStatus.TOKENEXPIRED;
+                                }
+                                tokenExpiryDT = Convert.ToDateTime(rdr["tokenexpirydt"].ToString()).AddHours(1);
+                                if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
+                                {
+                                    accessToken = rdr["accesstoken"].ToString().Trim();
+                                    return CRMTokenStatus.SUCCESSS;
+                                }
+                                else
+                                {
+                                    return CRMTokenStatus.TOKENEXPIRED;
+                                }
                             }
-                            tokenExpiryDT = Convert.ToDateTime(rdr["tokenexpirydt"].ToString()).AddHours(1);
-                            if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
-                            {
-                                accessToken = rdr["accesstoken"].ToString().Trim();
-                                return CRMTokenStatus.SUCCESSS;
-                            }
-                            else
-                            {
-                                return CRMTokenStatus.TOKENEXPIRED;
-                            }
+                            return CRMTokenStatus.USERNOTFOUND;
                         }
-                        return CRMTokenStatus.USERNOTFOUND;
+                        else
+                        {
+                            return CRMTokenStatus.USERNOTFOUND;
+                        }
+                        rdr.Close();
                     }
-                    else
-                    {
-                        return CRMTokenStatus.USERNOTFOUND;
-                    }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -625,7 +696,12 @@ namespace SalesForceOAuth.Controllers
             if (url.Contains("api-apps-dotnet-dev0.websitealive.com") || url.Contains("localhost"))
                 connectionString = Environment.GetEnvironmentVariable("devappsConnStr");
             else if (url.Contains("api-apps-dotnet-stage.websitealive.com"))
-                connectionString = Environment.GetEnvironmentVariable("stageappsConnStr");
+            {
+                //connectionString = Environment.GetEnvironmentVariable("stageappsConnStr");
+
+                connectionString = "server=dbmain.alivechat.websitealive.com;user=apps;database=apps;port=3306;password=wXa8823v123!;";
+                //connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
+            }
             else if (url.Contains("api-apps-dotnet.websitealive.com"))
             {
                 connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
@@ -639,39 +715,45 @@ namespace SalesForceOAuth.Controllers
         {
 
             string connStr = MyAppsDb.GetConnectionStringbyURL(referrerURL, objectRef );  
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                using (MySqlConnection conn = new MySqlConnection(connStr))
+                try
                 {
-
                     conn.Open();
                     string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            applicationURL = rdr["ApplicationURL"].ToString().Trim();
-                            userName = Encryption.Decrypt(rdr["UserName"].ToString().Trim());
-                            password = Encryption.Decrypt(rdr["Password"].ToString().Trim());
-                            authType = rdr["AuthType"].ToString().Trim();
-                            return 1;
+                            while (rdr.Read())
+                            {
+                                applicationURL = rdr["ApplicationURL"].ToString().Trim();
+                                userName = Encryption.Decrypt(rdr["UserName"].ToString().Trim());
+                                password = Encryption.Decrypt(rdr["Password"].ToString().Trim());
+                                authType = rdr["AuthType"].ToString().Trim();
+                                return 1;
+                            }
+                            rdr.Close();
+                            conn.Close();
+                            return 0;
                         }
-                        return 0;
+                        else
+                        {
+                            rdr.Close();
+                            conn.Close();
+                            return -1;
+                        }
+                        
                     }
-                    else
-                    {
-                        return -1;
-                    }
-                    rdr.Close();
-
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
                 }
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            
         }
 
         public static int RecordDynamicsCredentials(string objectRef, int groupId, string organizationURL, string userName, string password, string authType, string urlReferrer)
@@ -684,23 +766,30 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (!rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        rdr.Close();
-                        string insertSql = "INSERT INTO integration_settings_dynamics (objectref,groupid,username, password, applicationurl, AuthType)" +
-                            "VALUES ('" + objectRef + "'," + groupId.ToString() + ",'" + Encryption.Encrypt(userName) + "','" + Encryption.Encrypt(password) + "','" + organizationURL + "','" + authType + "')";
-                        MySqlCommand cmdInsert = new MySqlCommand(insertSql, conn);
-                        int rows = cmdInsert.ExecuteNonQuery();
-                        return rows;
+                        if (!rdr.HasRows)
+                        {
+                            rdr.Close();
+                            string insertSql = "INSERT INTO integration_settings_dynamics (objectref,groupid,username, password, applicationurl, AuthType)" +
+                                "VALUES ('" + objectRef + "'," + groupId.ToString() + ",'" + Encryption.Encrypt(userName) + "','" + Encryption.Encrypt(password) + "','" + organizationURL + "','" + authType + "')";
+                            MySqlCommand cmdInsert = new MySqlCommand(insertSql, conn);
+                            int rows = cmdInsert.ExecuteNonQuery();
+                            rdr.Close();
+                            conn.Close();
+                            return rows;
+                        }
+                        else
+                        {
+                            rdr.Close();
+                            conn.Close();
+                            return 0;
+                        }
                     }
-                    else
-                        return 0; 
-                    
                 }
                 catch (Exception ex)
                 {
-                    if (conn != null) conn.Close(); 
+                    conn.Close(); 
                     throw;
                 }
             }
@@ -718,10 +807,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -739,10 +829,11 @@ namespace SalesForceOAuth.Controllers
                     sql += " WHERE id = " + chatId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
-
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                     throw;
                 }
             }
@@ -752,47 +843,55 @@ namespace SalesForceOAuth.Controllers
         {
             //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            MySqlConnection conn = new MySqlConnection(connStr);
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                conn.Open();
-                string sql = "SELECT  * FROM integration_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.HasRows)
+                try
                 {
-                    while (rdr.Read())
+                    conn.Open();
+                    string sql = "SELECT  * FROM integration_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        string date = rdr["SFATCreationDT"].ToString();
-                        // if no expiry date there
-                        if (date.Equals(""))
+                        if (rdr.HasRows)
                         {
-                            return CRMTokenStatus.TOKENEXPIRED;
-                        }
-                        DateTime tokenExpiryDT = Convert.ToDateTime(rdr["SFATCreationDT"].ToString()).AddHours(1); // add 55 mins
-                        if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
-                        {
-                            accessToken = rdr["SFAccessToken"].ToString().Trim();
-                            return CRMTokenStatus.SUCCESSS;
+                            while (rdr.Read())
+                            {
+                                string date = rdr["SFATCreationDT"].ToString();
+                                // if no expiry date there
+                                if (date.Equals(""))
+                                {
+                                    rdr.Close(); conn.Close();
+                                    return CRMTokenStatus.TOKENEXPIRED;
+                                }
+                                DateTime tokenExpiryDT = Convert.ToDateTime(rdr["SFATCreationDT"].ToString()).AddHours(1); // add 55 mins
+                                if (tokenExpiryDT.AddMinutes(-5) > DateTime.Now)
+                                {
+                                    accessToken = rdr["SFAccessToken"].ToString().Trim();
+                                    rdr.Close(); conn.Close();
+                                    return CRMTokenStatus.SUCCESSS;
+                                }
+                                else
+                                {
+                                    rdr.Close(); conn.Close();
+                                    return CRMTokenStatus.TOKENEXPIRED;
+                                }
+                            }
+                            
+                            return CRMTokenStatus.USERNOTFOUND;
                         }
                         else
                         {
-                            return CRMTokenStatus.TOKENEXPIRED;
+                            rdr.Close(); conn.Close();
+                            return CRMTokenStatus.USERNOTFOUND;
                         }
                     }
-                    rdr.Close(); conn.Close();
-                    return CRMTokenStatus.USERNOTFOUND;
+                    
                 }
-                else
+                catch (Exception ex)
                 {
-                    rdr.Close(); conn.Close();
-                    return CRMTokenStatus.USERNOTFOUND;
+                    conn.Close();
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                conn.Close();
-                throw;
             }
             
         }
@@ -800,31 +899,36 @@ namespace SalesForceOAuth.Controllers
         public static void GetRedirectURLParametersCallBack(ref string sf_callback_url, int id, string urlReferrer, string objectRef)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            MySqlConnection conn = new MySqlConnection(connStr);
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                conn.Open();
-                string sql = "SELECT * FROM integration_salesforce_sites where id = " + id.ToString();
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.HasRows)
+                try
                 {
-                    while (rdr.Read())
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_salesforce_sites where id = " + id.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        sf_callback_url = rdr["sf_callback_url"].ToString();
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                sf_callback_url = rdr["sf_callback_url"].ToString();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
+                    conn.Close();
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine("No rows found.");
+                    conn.Close();
+                    throw;
                 }
-                rdr.Close();
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            conn.Close();
         }
 
         public static void LogException(string function, string errorTitle, Exception ex)

@@ -29,7 +29,8 @@ namespace SalesForceOAuth.Controllers
             }
             string sf_clientid = "", sf_callback_url = "", sf_consumer_key = "", sf_consumer_secret = "", sf_token_req_end_point = "";
             string urlReferrer = Request.RequestUri.Authority.ToString();
-            sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
+            //sf_callback_url = System.Web.HttpUtility.UrlDecode(siteRef);
+            sf_callback_url = "https://login.salesforce.com/apex/OauthSetup"; 
             try
             {
                 MyAppsDb.GetTokenParameters(ref sf_clientid, ref sf_consumer_key, ref sf_consumer_secret, ref sf_token_req_end_point, urlReferrer, ObjectRef);

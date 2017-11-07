@@ -26,66 +26,77 @@ namespace SalesForceOAuth.App_Code
 
         
         public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid,ref string sf_callback_url, string urlReferrer, string objectRef)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-                MySqlConnection conn = new MySqlConnection(connStr);
                 try
                 {
                     conn.Open();
                     string sql = "SELECT * FROM integrations_constants where id = 1";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    MySqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.HasRows)
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        while (rdr.Read())
+                        if (rdr.HasRows)
                         {
-                            sf_authoize_url = rdr["sf_authoize_url"].ToString();
-                            sf_clientid = rdr["sf_clientid"].ToString();
-                            sf_callback_url = rdr["sf_callback_url"].ToString();
+                            while (rdr.Read())
+                            {
+                                sf_authoize_url = rdr["sf_authoize_url"].ToString();
+                                sf_clientid = rdr["sf_clientid"].ToString();
+                                sf_callback_url = rdr["sf_callback_url"].ToString();
+                            }
                         }
+                        //else
+                        //{
+                        //    //Console.WriteLine("No rows found.");
+                        //}
+                        rdr.Close();
                     }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    rdr.Close();
+                    conn.Close();
                 }
                 catch (Exception ex)
                 {
+                    conn.Close();
                 }
-                conn.Close();
+                
+            }
         }
 
         public static void GetTokenParameters(ref string sf_callback_url, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point,string urlReferrer, string objectRef)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            MySqlConnection conn = new MySqlConnection(connStr);
-            try
+            using (MySqlConnection conn = new MySqlConnection(connStr))
             {
-                conn.Open();
-                string sql = "SELECT * FROM integrations_constants where id = 1";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.HasRows)
+                try
                 {
-                    while (rdr.Read())
+                    conn.Open();
+                    string sql = "SELECT * FROM integrations_constants where id = 1";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
-                        sf_callback_url = rdr["sf_callback_url"].ToString();
-                        sf_consumer_key = rdr["sf_consumer_key"].ToString();
-                        sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
-                        sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                sf_callback_url = rdr["sf_callback_url"].ToString();
+                                sf_consumer_key = rdr["sf_consumer_key"].ToString();
+                                sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
+                                sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
+                            }
+                        }
+                        else
+                        {
+                            //Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine("No rows found.");
+                    conn.Close();
                 }
-                rdr.Close();
+                
             }
-            catch (Exception ex)
-            {
-            }
-            conn.Close();
         }
 
         //
