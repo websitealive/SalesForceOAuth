@@ -90,8 +90,6 @@ C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOA
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.pdb
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csprojResolveAssemblyReference.cache
-C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\MySql.Data.dll
-C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\MySql.Data.xml
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Cors.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Cors.dll
 C:\Users\tcac\Documents\Visual Studio 2015\Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Cors.xml

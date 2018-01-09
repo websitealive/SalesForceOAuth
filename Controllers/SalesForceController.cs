@@ -36,12 +36,25 @@ namespace SalesForceOAuth.Controllers
                     return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-                sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
-                string urlReferrer = Request.RequestUri.Authority.ToString();
-                MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+                if(siteRef.Contains("localhost"))
+                {
+                    sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
+                    string urlReferrer = Request.RequestUri.Authority.ToString();
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
 
-                string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url,state: siteRef);
-                return MyAppsDb.ConvertJSONPOutput(callback,url, HttpStatusCode.OK,false);
+                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url, state: siteRef);
+                    return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    sf_callback_url = siteRef;
+                    string urlReferrer = Request.RequestUri.Authority.ToString();
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+
+                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
+                    return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
+                }
+                
             }
             catch(Exception ex)
             {

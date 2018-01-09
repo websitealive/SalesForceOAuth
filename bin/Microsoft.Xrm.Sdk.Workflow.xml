@@ -1249,7 +1249,7 @@
       <returns>
         <para>Type: <see href="https://msdn.microsoft.com/library/dd465965.aspx">InArgument</see> The new state for the entity record.</para>
       </returns>
-      <remarks />Record state and status</member>
+      <remarks />8597998f-764f-4c73-b63d-9f5e02c78061#bkmk_RecordStateandStatus</member>
     <member name="P:Microsoft.Xrm.Sdk.Workflow.Activities.SetState.Status">
       <summary>
         <para>Sets the new status that corresponds to the <paramref name="State" /> property.</para>
@@ -1259,7 +1259,7 @@
       </returns>
       <remarks>
         <para>Must be a valid status for the specified state.</para>
-      </remarks>Record state and status</member>
+      </remarks>8597998f-764f-4c73-b63d-9f5e02c78061#bkmk_RecordStateandStatus</member>
     <member name="P:Microsoft.Xrm.Sdk.Workflow.Activities.StartChildWorkflow.EntityId">
       <summary>
         <para>Sets the ID of the primary entity for the child workflow.</para>

@@ -51,18 +51,23 @@ namespace SalesForceOAuth.Controllers
                     if (chatId != 0)
                     {
                         Guid newChatId;
+                        System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                         using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                         {
                             #region set properties
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration = new Entity("ayu_alivechat");
-                            if (ItemType.Equals("account"))
+                            if (ItemType.Contains("account"))
                             {
                                 registration["ayu_account"] = new EntityReference("account", new Guid(ItemId));
                             }
-                            else if (ItemType.Equals("lead"))
+                            else if (ItemType.Contains("lead"))
                             {
                                 registration["ayu_lead"] = new EntityReference("lead", new Guid(ItemId));
+                            }
+                            else if (ItemType.Contains("contact"))
+                            {
+                                registration["ayu_contact"] = new EntityReference("contact", new Guid(ItemId));
                             }
 
                             registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;

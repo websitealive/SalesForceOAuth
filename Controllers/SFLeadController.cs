@@ -57,17 +57,20 @@ namespace SalesForceOAuth.Controllers
                     dynamic newLead = new ExpandoObject();
                     newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
                     newLead.Email = lData.Email; newLead.Phone = lData.Phone;
-                    if (ownerId != "" || lData.OwnerEmail != "")
+                    //if (ownerId != "" || lData.OwnerEmail != ""
+                    if (ownerId != "" && lData.OwnerEmail != "")
                     {
                         MyAppsDb.AddProperty(newLead, "OwnerId", ownerId);
                         //var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = companyName, Email = lData.Email, Phone = lData.Phone };
                         //sR = await client.CreateAsync("Lead", lead).ConfigureAwait(false);
                     }
-                    foreach(CustomObject c in lData.CustomFields)
+                    if (lData.CustomFields != null)
                     {
-                        MyAppsDb.AddProperty(newLead, c.field, c.value);
+                        foreach (CustomObject c in lData.CustomFields)
+                        {
+                            MyAppsDb.AddProperty(newLead, c.field, c.value);
+                        }
                     }
-
                     //else
                     //{
                     //    //var leadow = new LeadOW { FirstName = lData.FirstName, LastName = lData.LastName, Email = lData.Email, Phone = lData.Phone, OwnerId = ownerId, Company = companyName };
@@ -172,6 +175,7 @@ namespace SalesForceOAuth.Controllers
         public string OwnerEmail { get; set; }
         public List<CustomObject> CustomFields { get; set; }
     }
+    
     public class SearchLeadData: SecureInfo
     {
         public string searchObject { get; set; }
@@ -199,6 +203,7 @@ namespace SalesForceOAuth.Controllers
         public string Custom3 { get; set; }
         public string Custom4 { get; set; }
         public string Custom5 { get; set; }
+        public dynamic AccountId { get; internal set; }
     }
     public class LeadOW
     {

@@ -127,7 +127,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/15/2015 02:06:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Crm.Sdk.Proxy.dll">
-      <publishTime>12/21/2016 13:48:06</publishTime>
+      <publishTime>11/15/2017 10:51:22</publishTime>
     </File>
     <File Include="bin/Microsoft.IdentityModel.Clients.ActiveDirectory.dll">
       <publishTime>11/17/2016 14:18:08</publishTime>
@@ -172,16 +172,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/23/2012 15:23:58</publishTime>
     </File>
     <File Include="bin/Microsoft.Xrm.Sdk.Deployment.dll">
-      <publishTime>11/03/2016 15:22:56</publishTime>
+      <publishTime>11/15/2017 10:51:26</publishTime>
     </File>
     <File Include="bin/Microsoft.Xrm.Sdk.dll">
-      <publishTime>12/21/2016 13:48:06</publishTime>
+      <publishTime>11/15/2017 10:51:22</publishTime>
     </File>
     <File Include="bin/Microsoft.Xrm.Sdk.Workflow.dll">
-      <publishTime>11/03/2016 15:35:24</publishTime>
+      <publishTime>10/21/2017 13:33:18</publishTime>
     </File>
     <File Include="bin/Microsoft.Xrm.Tooling.Connector.dll">
-      <publishTime>04/11/2017 17:43:24</publishTime>
+      <publishTime>11/15/2017 10:51:30</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>06/17/2016 18:28:04</publishTime>
@@ -235,7 +235,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/27/2016 10:41:14</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>10/30/2017 22:13:37</publishTime>
+      <publishTime>01/04/2018 20:35:23</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>01/28/2015 03:02:42</publishTime>
@@ -310,7 +310,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/26/2016 23:13:24</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>05/25/2017 18:57:43</publishTime>
+      <publishTime>01/04/2018 16:20:51</publishTime>
     </File>
     <File Include="Scripts/ai.0.22.19-build00125.js">
       <publishTime>09/26/2016 23:14:08</publishTime>
@@ -373,7 +373,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/26/2016 23:13:24</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>08/14/2017 08:27:53</publishTime>
+      <publishTime>01/04/2018 20:35:24</publishTime>
     </File>
   </ItemGroup>
 </Project>

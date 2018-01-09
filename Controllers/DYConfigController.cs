@@ -49,6 +49,7 @@ namespace SalesForceOAuth.Controllers
                 deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
 
@@ -112,6 +113,7 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(lData.OrganizationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
 

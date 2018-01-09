@@ -26,6 +26,7 @@ namespace SalesForceOAuth.Web_API_Helper_Code
 
         public void ErrorLog(string sErrMsg)
         {
+
             StreamWriter sw = new StreamWriter(System.Web.Hosting.HostingEnvironment.MapPath("~/LogFile/file.log"), true);
             sw.WriteLine(sLogFormat + sErrMsg + "\r");
             sw.Flush();

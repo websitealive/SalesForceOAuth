@@ -154,3 +154,270 @@ Parameter name: key
 Parameter name: key
 07/11/2017 15:15:30 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'LeadSubSource' on sobject of type Lead
 07/11/2017 15:18:43 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'LeadSubSource' on sobject of type Lead
+03/12/2017 09:42:04 ==> No Chat in queue to publish
+03/12/2017 09:44:00 ==> No Chat in queue to publish
+03/12/2017 09:59:41 ==> No Chat in queue to publish
+08/12/2017 15:05:57 ==> No Chat in queue to publish
+08/12/2017 16:18:14 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+LastName, Company, Email, Phone  (Select ID, Name from Account) 
+                                 ^
+ERROR at Row:1:Column:56
+unexpected token: 'Select'
+08/12/2017 16:20:39 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+LastName, Company, Email, Phone  (SELECT ID, Name from Account) 
+                                 ^
+ERROR at Row:1:Column:56
+unexpected token: 'SELECT'
+08/12/2017 16:24:33 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+(SELECT ID, Name from Account)  From Contacts where FirstName like '%Nav%'
+                                     ^
+ERROR at Row:1:Column:93
+sObject type 'Contacts' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+08/12/2017 16:25:44 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ID, Name from Accounts)  From Contacts where FirstName like '%Nav%'
+                              ^
+ERROR at Row:1:Column:94
+sObject type 'Contacts' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+08/12/2017 16:26:38 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ID, Name from Accounts)  From Contacts where FirstName like '%Nav%'
+                              ^
+ERROR at Row:1:Column:85
+sObject type 'Contacts' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+08/12/2017 16:27:37 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+(SELECT ID, Name from Account)  From Contacts where FirstName like '%Nav%'
+                                     ^
+ERROR at Row:1:Column:84
+sObject type 'Contacts' is not supported. If you are attempting to use a custom object, be sure to append the '__c' after the entity name. Please reference your WSDL or the describe call for the appropriate names.
+08/12/2017 16:28:22 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ Phone, (SELECT ID, Name from Account)  From Contact where FirstName
+                              ^
+ERROR at Row:1:Column:69
+Didn't understand relationship 'Account' in FROM part of query call. If you are attempting to use a custom relationship, be sure to append the '__r' after the custom relationship name. Please reference your WSDL or the describe call for the appropriate names.
+08/12/2017 16:29:27 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ Phone, (SELECT ID, Name from Accounts)  From Contact where FirstName
+                              ^
+ERROR at Row:1:Column:69
+Didn't understand relationship 'Accounts' in FROM part of query call. If you are attempting to use a custom relationship, be sure to append the '__r' after the custom relationship name. Please reference your WSDL or the describe call for the appropriate names.
+20/12/2017 19:09:57 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ Phone, (SELECT ID, Name from Accounts)  From Contact where FirstName
+                              ^
+ERROR at Row:1:Column:69
+Didn't understand relationship 'Accounts' in FROM part of query call. If you are attempting to use a custom relationship, be sure to append the '__r' after the custom relationship name. Please reference your WSDL or the describe call for the appropriate names.
+21/12/2017 11:45:29 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+FirstName, LastName, Email, Phone,Account , AccountID, Account.Name
+                                  ^
+ERROR at Row:1:Column:46
+No such column 'Account' on entity 'Contact'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+21/12/2017 11:47:24 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+FirstName, LastName, Email, Phone,Account , AccountID, Account.Name
+                                  ^
+ERROR at Row:1:Column:46
+No such column 'Account' on entity 'Contact'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+21/12/2017 11:51:29 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ (SELECT AccountID, Name from Account)  From Contact where FirstName
+                              ^
+ERROR at Row:1:Column:76
+Didn't understand relationship 'Account' in FROM part of query call. If you are attempting to use a custom relationship, be sure to append the '__r' after the custom relationship name. Please reference your WSDL or the describe call for the appropriate names.
+21/12/2017 11:52:45 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+FirstName, LastName, Email, Phone, from Contact)  From Account) where
+                                  ^
+ERROR at Row:1:Column:71
+unexpected token: 'from'
+21/12/2017 12:02:42 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+LastName, Email, Phone From Contact) where FirstName like '%Bates%'
+                                  ^
+ERROR at Row:1:Column:57
+unexpected token: )
+21/12/2017 12:03:20 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Account.Name From Contactwhere FirstName like '%Bates%' OR LastName like
+                                        ^
+ERROR at Row:1:Column:98
+unexpected token: like
+21/12/2017 12:16:27 ==> Could not add new contact, check mandatory fields
+03/01/2018 19:50:04 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 19:51:21 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 19:58:20 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 20:21:43 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 20:31:52 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 20:32:40 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 20:36:19 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 21:07:13 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 21:07:34 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 21:09:53 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+03/01/2018 21:38:11 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+04/01/2018 15:44:49 ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+04/01/2018 15:45:56 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+04/01/2018 16:14:44 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 16:27:11 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 16:34:42 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Discovery.svc?wsdl&sdkversion=9'.
+04/01/2018 16:45:35 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 16:47:01 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 16:47:29 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 16:49:48 ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm11.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+04/01/2018 17:09:05 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:10:50 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:12:39 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:15:58 ==> Could not add new contact, check mandatory fields
+04/01/2018 17:17:49 ==> Could not add new contact, check mandatory fields
+04/01/2018 17:18:56 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:26:05 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:28:27 ==> Could not add new contact, check mandatory fields
+04/01/2018 17:35:55 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Specified cast is not valid.
+04/01/2018 17:40:13 ==> Could not add new contact, check mandatory fields
+04/01/2018 17:41:02 ==> Could not add new contact, check mandatory fields
+04/01/2018 17:50:19 ==> Could not add new contact, check mandatory fields

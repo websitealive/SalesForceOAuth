@@ -16,6 +16,8 @@ using System.Net.Http.Headers;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Web.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -33,11 +35,6 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "DyLead-PostLead", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
-            //string AccessToken = "";
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
             try
             {
                 //Test system
@@ -50,6 +47,7 @@ namespace SalesForceOAuth.Controllers
 
                 string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
                 connectionString += "RequireNewInstance=true;";
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
                 if (crmSvc != null && crmSvc.IsReady)
                 {
@@ -153,8 +151,8 @@ namespace SalesForceOAuth.Controllers
             {
                 //Connect to SDK 
                 //Test system
-                //string ApplicationURL = "https://alan365.crm.dynamics.com", userName = "alan@alan365.onmicrosoft.com",
-                //    password = "Getthat$$$5", authType = "Office365";
+                //string ApplicationURL = "https://alive5.crm11.dynamics.com", userName = "alive5@alive5.onmicrosoft.com",
+                //password = "Passw0rd1", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -171,6 +169,7 @@ namespace SalesForceOAuth.Controllers
                 deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     List<DYLead> listToReturn = new List<DYLead>();
