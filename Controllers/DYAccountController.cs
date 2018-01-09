@@ -50,7 +50,7 @@ namespace SalesForceOAuth.Controllers
                 string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
                 connectionString += "RequireNewInstance=true;";
                 CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
-                
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 if (crmSvc != null && crmSvc.IsReady)
                 {
                     //create Account object
@@ -168,6 +168,7 @@ namespace SalesForceOAuth.Controllers
                 deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     List<DYAccount> listToReturn = new List<DYAccount>();
@@ -235,6 +236,16 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Phone { get; set; }
     }
+    public class DYContactPostData : MyValidation
+    {
+        public string token { get; set; }
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Salesengineer { get; set; }
+        
+    }
 
     public class DYAccountPostValue
     {
@@ -265,7 +276,12 @@ namespace SalesForceOAuth.Controllers
         public string emailaddress1 { get; set; }
         public string crmtaskassigneduniqueid { get; set; }
     }
-    
+    public class DYContact
+    {
+        public string contactid { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+    }
     public class DYAccountOutput: DYAccount
     {
         [JsonProperty("odata.etag")]
