@@ -59,6 +59,35 @@ namespace SalesForceOAuth.Controllers
                     inData.Add("accountnumber", new CrmDataTypeWrapper(lData.AccountNumber, CrmFieldType.String));
                     inData.Add("description", new CrmDataTypeWrapper(lData.Description, CrmFieldType.String));
                     inData.Add("telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
+                    if (lData.CustomFields != null)
+                    {
+                        foreach (DYCustomObject c in lData.CustomFields)
+                        {
+                            CrmFieldType type;
+                            switch (c.type.ToLower())
+                            {
+                                case "string":
+                                    { type = CrmFieldType.String; break; }
+                                case "decimal":
+                                    { type = CrmFieldType.CrmDecimal; break; }
+                                case "lookup":
+                                    { type = CrmFieldType.Lookup; break; }
+                                case "bool":
+                                    { type = CrmFieldType.CrmBoolean; break; }
+                                default:
+                                    { type = CrmFieldType.String; break; }
+                            }
+                            if (type == CrmFieldType.Lookup)
+                            {
+                                if (c.value.ToString().Length > 0)
+                                {
+                                    inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));
+                                }
+                            }
+                            else
+                                inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                        }
+                    }
                     Guid accountId = crmSvc.CreateNewRecord("account", inData);
                     if (accountId != Guid.Empty)
                     {
@@ -86,52 +115,6 @@ namespace SalesForceOAuth.Controllers
             //End connect to SDK
 
 
-            //    #region dynamics api call
-            //    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(lData.ObjectRef, lData.GroupId.ToString());
-            //    //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
-            //    if (msg.StatusCode == HttpStatusCode.OK)
-            //    {
-            //        AccessToken = msg.Content.ReadAsStringAsync().Result; }
-            //    else
-            //    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
-            //    HttpClient client = new HttpClient();
-            //    client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
-            //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-            //    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-            //    client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
-            //    client.DefaultRequestHeaders.Add("OData-Version", "4.0");
-            //    StringBuilder requestURI = new StringBuilder();
-            //    requestURI.Append("/api/data/v8.0/accounts");
-            //    DYAccountPostValue aData = new DYAccountPostValue();
-            //    aData.name = lData.Name;
-            //    aData.description = lData.Description;
-            //    aData.accountnumber = lData.AccountNumber;
-            //    aData.address1_telephone1 = lData.Phone;
-            //    StringContent content = new StringContent(JsonConvert.SerializeObject(aData), Encoding.UTF8, "application/json");
-            //    HttpResponseMessage response = client.PostAsync(requestURI.ToString(), content).Result;
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var output = response.Headers.Location.OriginalString;
-            //        var id = output.Substring(output.IndexOf("(") + 1, 36);
-            //        PostedObjectDetail pObject = new PostedObjectDetail();
-            //        pObject.Id = id;
-            //        pObject.ObjectName = "Account";
-            //        pObject.Message = "Account added successfully!";
-            //        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK);
-            //    }
-            //    else
-            //    {
-            //        return MyAppsDb.ConvertJSONOutput("Dynamics Error: " + response.StatusCode, HttpStatusCode.InternalServerError);
-            //    }
-            //    #endregion dynamics api call
-            //}
-            //catch (Exception ex)
-            //{
-            //    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
-            //}
-            //}
-            //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
 
         [HttpGet]
@@ -153,6 +136,9 @@ namespace SalesForceOAuth.Controllers
                 //Test system
                 //string ApplicationURL = "https://alan365.crm.dynamics.com", userName = "alan@alan365.onmicrosoft.com",
                 //    password = "Getthat$$$5", authType = "Office365";
+                //Test system IFD
+                //string ApplicationURL = "https://msdynamics.websitealive.com", userName = @"wsa\administrator",
+                //    password = "bX9bTkYv)Td", authType = "IFD";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -235,6 +221,7 @@ namespace SalesForceOAuth.Controllers
         public string Name { get; set; }
         public string Description { get; set; }
         public string Phone { get; set; }
+        public List<DYCustomObject> CustomFields { get; set; }
     }
     public class DYContactPostData : MyValidation
     {
@@ -243,7 +230,8 @@ namespace SalesForceOAuth.Controllers
         public int GroupId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Salesengineer { get; set; }
+        public List<DYCustomObject> CustomFields { get; set; }
+        //public string Salesengineer { get; set; }
         
     }
 

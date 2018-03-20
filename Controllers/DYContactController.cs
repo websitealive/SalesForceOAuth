@@ -58,8 +58,42 @@ namespace SalesForceOAuth.Controllers
                     Dictionary<string, CrmDataTypeWrapper> inData = new Dictionary<string, CrmDataTypeWrapper>();
                     inData.Add("firstname", new CrmDataTypeWrapper(lData.FirstName, CrmFieldType.String));
                     inData.Add("lastname", new CrmDataTypeWrapper(lData.LastName, CrmFieldType.String));
+                    if (lData.CustomFields != null)
+                    {
+                        foreach (DYCustomObject c in lData.CustomFields)
+                        {
+                            CrmFieldType type;
+                            switch (c.type.ToLower())
+                            {
+                                case "string":
+                                    { type = CrmFieldType.String; break; }
+                                case "decimal":
+                                    { type = CrmFieldType.CrmDecimal; break; }
+                                case "lookup":
+                                    { type = CrmFieldType.Lookup; break; }
+                                case "bool":
+                                    { type = CrmFieldType.CrmBoolean; break; }
+                                default:
+                                    { type = CrmFieldType.String; break; }
+                            }
+                            if(type ==  CrmFieldType.Lookup)
+                            {
+                                if (c.value.ToString().Length > 0)
+                                {
+                                    inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));
+                                }
+                            }
+                            else 
+                                inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                        }
+                    }
+
+
                     //inData.Add("ayu_salesengineer", new CrmDataTypeWrapper(lData.Salesengineer, CrmFieldType.Picklist));
-                    inData.Add("ayu_salesperson", new CrmDataTypeWrapper(new Guid(lData.Salesengineer),CrmFieldType.Lookup, "systemuser"));
+                    //if (lData.Salesengineer.ToString().Length > 0)
+                    //{
+                    //    inData.Add("ayu_salesperson", new CrmDataTypeWrapper(new Guid(lData.Salesengineer), CrmFieldType.Lookup, "systemuser"));
+                    //}
                     Guid contactId = crmSvc.CreateNewRecord("contact", inData);
                     if (contactId != Guid.Empty)
                     {
@@ -128,20 +162,20 @@ namespace SalesForceOAuth.Controllers
                     IOrganizationService objser = (IOrganizationService)proxyservice;
                     //filter name 
                     ConditionExpression filterOwnRcd = new ConditionExpression();
-                    filterOwnRcd.AttributeName = "firstname";
+                    filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
                     filterOwnRcd.Values.Add("%" + SValue + "%");
                     //filter email
-                    ConditionExpression filterOwnRcd2 = new ConditionExpression();
-                    filterOwnRcd2.AttributeName = "lastname";
-                    filterOwnRcd2.Operator = ConditionOperator.Like;
-                    filterOwnRcd2.Values.Add("%" + SValue + "%");
+                    //ConditionExpression filterOwnRcd2 = new ConditionExpression();
+                    //filterOwnRcd2.AttributeName = "lastname";
+                    //filterOwnRcd2.Operator = ConditionOperator.Like;
+                    //filterOwnRcd2.Values.Add("%" + SValue + "%");
 
 
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
-                    filter1.Conditions.Add(filterOwnRcd2);
-                    filter1.FilterOperator = LogicalOperator.Or;
+                    //filter1.Conditions.Add(filterOwnRcd2);
+                    //filter1.FilterOperator = LogicalOperator.Or;
                     QueryExpression query = new QueryExpression("contact");
                     query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
                     query.Criteria.AddFilter(filter1);

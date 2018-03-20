@@ -290,6 +290,67 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
+        public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType ,ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl,ref string customSearchFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_field_name frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+                           sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int row = 0; customSearchFields = ""; 
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                                SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                                SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                                if(rdr["entity_name"].ToString().Equals(entityType))
+                                {
+                                    if (row == 0)
+                                    {
+                                        customSearchFields = rdr["search_field_name"].ToString().Trim(); row++; 
+                                    }
+                                    else
+                                    {
+                                        customSearchFields += "|" + rdr["search_field_name"].ToString().Trim();
+                                    }
+                                }
+
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException exs)
+                {
+                    CreateLogFiles log = new CreateLogFiles();
+                    string InnerException = (exs.InnerException == null ? "" : exs.InnerException.ToString());
+                    string Message = (exs.Message.ToString() == null ? "" : exs.Message.ToString());
+                    log.ErrorLog("Function: GetAPICredentialswithCustomSearchFields:" + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    CreateLogFiles log = new CreateLogFiles();
+                    string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
+                    string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
+                    log.ErrorLog("Function: GetAPICredentialswithCustomSearchFields:" + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+
         public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code, bool logError)
         {
             //log exception if true
@@ -713,11 +774,12 @@ namespace SalesForceOAuth.Controllers
                 //connectionString = Environment.GetEnvironmentVariable("stageappsConnStr");
 
                 connectionString = "server=dbmain.alivechat.websitealive.com;user=apps;database=apps;port=3306;password=wXa8823v123!;";
-                //connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
+               // connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
             }
             else if (url.Contains("api-apps-dotnet.websitealive.com"))
             {
-                connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
+                connectionString = "server=dbmain.alivechat.websitealive.com;user=apps;database=apps;port=3306;password=wXa8823v123!;";
+                //connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
                 connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
             }
             else

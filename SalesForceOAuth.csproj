@@ -274,6 +274,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\DYAdminConfigController.cs" />
     <Compile Include="Controllers\DYConfigController.cs" />
     <Compile Include="Controllers\DYContactController.cs" />
     <Compile Include="Controllers\SalesForceTokenController.cs" />

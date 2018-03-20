@@ -421,3 +421,59 @@ Parameter name: Organization Name
 04/01/2018 17:40:13 ==> Could not add new contact, check mandatory fields
 04/01/2018 17:41:02 ==> Could not add new contact, check mandatory fields
 04/01/2018 17:50:19 ==> Could not add new contact, check mandatory fields
+24/01/2018 23:33:19 ==> Function: DYContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+24/01/2018 23:34:02 ==> Function: DYContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+26/02/2018 13:52:49 ==> Function: SFLeads-GetSearchedLeads : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+26/02/2018 13:58:25 ==> Function: SFLeads-GetSearchedLeads : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+26/02/2018 14:00:21 ==> Function: SFLeads-GetSearchedLeads : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+26/02/2018 14:28:36 ==> Function: SFContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+27/02/2018 12:15:05 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+Phone like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                               ^
+ERROR at Row:1:Column:104
+field 'Description' can not be filtered in a query call
+27/02/2018 12:30:58 ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+27/02/2018 12:33:53 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
+27/02/2018 12:36:48 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
+27/02/2018 13:41:22 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+27/02/2018 14:11:21 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
+27/02/2018 14:13:20 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
+28/02/2018 23:34:04 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Unknown column 'scs.search_field_name' in 'field list'
+28/02/2018 23:34:57 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Unknown column 'scs.search_field_name' in 'field list'
+28/02/2018 23:36:48 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Phone like '%eyJ0eXAiOiJK%' OR Title|Source like '%eyJ0eXAiOiJK%' OR
+                                   ^
+ERROR at Row:1:Column:206
+unexpected token: '|'
+28/02/2018 23:37:16 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Title like '%eyJ0eXAiOiJK%' OR Source like '%eyJ0eXAiOiJK%'
+                               ^
+ERROR at Row:1:Column:233
+No such column 'Source' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+05/03/2018 23:09:30 ==> function hit: no problem there
+06/03/2018 00:22:18 ==> function hit: no problem there
+06/03/2018 00:23:05 ==> User not registered to use this application.
+06/03/2018 00:24:37 ==> function hit: no problem there
+07/03/2018 18:40:43 ==> function hit: no problem there
+08/03/2018 21:22:26 ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: The remote name could not be resolved: 'websitealive4.onmicrosoft.com'
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://websitealive4.onmicrosoft.com//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+08/03/2018 21:22:58 ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: The remote name could not be resolved: 'websitealive4.onmicrosoft.com'
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://websitealive4.onmicrosoft.com//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+08/03/2018 21:24:30 ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: The remote name could not be resolved: 'websitealive4.onmicrosoft.com'
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://websitealive4.onmicrosoft.com//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+08/03/2018 21:29:28 ==> Confirguration Error - Managed solution Not Found, check information
+19/03/2018 20:38:41 ==> function hit: no problem there
+19/03/2018 21:00:17 ==> reading exception: helper get access token issue
+19/03/2018 21:00:19 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Cannot perform runtime binding on a null reference
+19/03/2018 21:07:25 ==> reading exception: helper get access token issue
+19/03/2018 21:07:26 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'System.Dynamic.ExpandoObject' does not contain a definition for 'Add'
+19/03/2018 21:12:05 ==> reading exception: helper get access token issue
+19/03/2018 21:12:17 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'System.Dynamic.ExpandoObject' does not contain a definition for 'Add'
+19/03/2018 21:24:43 ==> reading exception: helper get access token issue
+19/03/2018 21:24:45 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'System.Dynamic.ExpandoObject' does not contain a definition for 'Add'

@@ -107,34 +107,28 @@ namespace SalesForceOAuth.Controllers
             List<Account> myAccounts = new List<Account> { };
             try
             {
-                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                //MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                string sFieldOptional = "";
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //var accounts = await client.DescribeAsync<object>("Account");
-                //string objectValue = SValue;
-                //dynamic data = JObject.Parse(accounts.ToString());
-                //dynamic datafields = data.fields; 
-                //foreach(dynamic cc in datafields)
-                //{
-                //    string fieldname = cc.name; //field name 
-                //    string fieldlabel = cc.label; // field label 
-                //    string fieldtype = cc.type; //field type 
-                //}
-
+                StringBuilder b = new StringBuilder();
+                b.Append("SELECT Id, Name, Phone From Account ");
+                b.Append("where Name like '%" + SValue + "%' ");
+                b.Append("OR Phone like '%" + SValue + "%' ");
+                string[] customSearchArray = sFieldOptional.Split('|');
+                foreach (string csA in customSearchArray)
+                {
+                    b.Append("OR " + csA + " like '%" + SValue + "%' ");
+                }
 
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, AccountNumber, Name, Phone From Account " +
-                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Name, Phone From Account " 
-                    //"where AccountNumber like '%" + SValue + "%' " 
-                    + "where Name like '%" + SValue + "%' "
-                    + "OR Phone like '%" + SValue + "%'" ).ConfigureAwait(false);
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(b.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {
                     foreach (dynamic c in cont.Records)
                     {
                         Account l = new Account();
                         l.Id = c.Id;
-                        //l.AccountNumber = c.AccountNumber;
                         l.AccountNumber = "";
                         l.Name = c.Name;
                         l.Phone = c.Phone;

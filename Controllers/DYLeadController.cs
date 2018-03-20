@@ -56,15 +56,41 @@ namespace SalesForceOAuth.Controllers
                     inData.Add("companyname", new CrmDataTypeWrapper(lData.Companyname, CrmFieldType.String));
                     inData.Add("firstname", new CrmDataTypeWrapper(lData.Firstname, CrmFieldType.String));
                     inData.Add("lastname", new CrmDataTypeWrapper(lData.Lastname, CrmFieldType.String));
-                    inData.Add("address1_city", new CrmDataTypeWrapper(lData.City, CrmFieldType.String));
-                    inData.Add("address1_telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
-                    inData.Add("emailaddress1", new CrmDataTypeWrapper(lData.Email, CrmFieldType.String));
                     inData.Add("subject", new CrmDataTypeWrapper(lData.Subject, CrmFieldType.String));
-                    //aData.companyname = lData.Companyname;
-                    //aData.address1_city = lData.City;
-                    //aData.address1_telephone1 = lData.Phone;
-                    //aData.emailaddress1 = lData.Email;
-                    //aData.subject = lData.Subject; 
+                    //inData.Add("address1_city", new CrmDataTypeWrapper(lData.City, CrmFieldType.String));
+                    //inData.Add("address1_telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
+                    //inData.Add("emailaddress1", new CrmDataTypeWrapper(lData.Email, CrmFieldType.String));
+                    if (lData.CustomFields != null)
+                    {
+                        foreach (DYCustomObject c in lData.CustomFields)
+                        {
+                            CrmFieldType type;
+                            switch (c.type.ToLower())
+                            {
+                                case "string":
+                                    { type = CrmFieldType.String; break; }
+                                case "decimal":
+                                    { type = CrmFieldType.CrmDecimal; break; }
+                                case "lookup":
+                                    { type = CrmFieldType.Lookup; break; }
+                                case "bool":
+                                    { type = CrmFieldType.CrmBoolean; break; }
+                                default:
+                                    { type = CrmFieldType.String; break; }
+                            }
+                            if (type == CrmFieldType.Lookup)
+                            {
+                                if (c.value.ToString().Length > 0)
+                                {
+                                    inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));
+                                }
+                            }
+                            else
+                                inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                        }
+                    }
+
+
                     Guid accountId = crmSvc.CreateNewRecord("lead", inData);
                     if (accountId != Guid.Empty)
                     {
@@ -299,13 +325,16 @@ namespace SalesForceOAuth.Controllers
         public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
-        public string Companyname { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
+        public string Companyname { get; set; }
         public string Subject { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string City { get; set; }
+        public List<DYCustomObject> CustomFields { get; set; }
+
+
+        //public string Email { get; set; }
+        //public string Phone { get; set; }
+        //public string City { get; set; }
     }
 
     public class DYLeadPostValue

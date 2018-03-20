@@ -71,7 +71,7 @@ namespace SalesForceOAuth.Controllers
                             }
 
                             registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                            registration["ayu_chat"] = lData.Message.Replace("|", "\r\n"); ;
+                            registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"); 
                             #endregion set properties
                             newChatId = objser.Create(registration);
                         }
