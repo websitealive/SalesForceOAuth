@@ -25,8 +25,8 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(LeadData lData)
         {
-            string outputPayload;
-            try
+            string outputPayload;//
+            try 
             {
                 outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
