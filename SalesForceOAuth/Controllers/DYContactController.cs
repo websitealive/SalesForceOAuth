@@ -32,7 +32,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "DyContact-PostContact", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DyContact-PostContact", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             try
             {
@@ -106,17 +106,17 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Could not add new contact, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                        return MyAppsDb.ConvertJSONOutput("Could not add new contact, check mandatory fields", HttpStatusCode.OK, true);
                     }
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.InternalServerError, true);
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.OK, true);
                 }
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "DyContact-GetConfigurationStatus", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DyContact-GetConfigurationStatus", "Unhandled exception", HttpStatusCode.OK);
             }
            
         }
@@ -132,7 +132,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYContacts-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYContacts-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             try
             {
@@ -143,7 +143,9 @@ namespace SalesForceOAuth.Controllers
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                string sFieldOptional = "";
+                //int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                int output = MyAppsDb.GetDynamicsCredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref ApplicationURL, ref userName, ref password, ref authType, ref sFieldOptional, urlReferrer);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -160,26 +162,38 @@ namespace SalesForceOAuth.Controllers
                 {
                     List<DYContact> listToReturn = new List<DYContact>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
+                    QueryExpression query = new QueryExpression("contact");
+                    query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
+                    FilterExpression filter1 = new FilterExpression();
+                    
+                    string[] customSearchArray = sFieldOptional.Split('|');
+                    if (sFieldOptional.Length > 0)
+                    {
+                        foreach (string csA in customSearchArray)
+                        {
+                            query.ColumnSet.AddColumn(csA);
+                        }
+                    }
                     //filter name 
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
                     filterOwnRcd.Values.Add("%" + SValue + "%");
-                    //filter email
-                    //ConditionExpression filterOwnRcd2 = new ConditionExpression();
-                    //filterOwnRcd2.AttributeName = "lastname";
-                    //filterOwnRcd2.Operator = ConditionOperator.Like;
-                    //filterOwnRcd2.Values.Add("%" + SValue + "%");
-
-
-                    FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
-                    //filter1.Conditions.Add(filterOwnRcd2);
-                    //filter1.FilterOperator = LogicalOperator.Or;
-                    QueryExpression query = new QueryExpression("contact");
-                    query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
+                    // get list of custom fields 
+                    if (sFieldOptional.Length > 0)
+                    {
+                        foreach (string csA in customSearchArray)
+                        {
+                            ConditionExpression filterOwnRcd2 = new ConditionExpression();
+                            filterOwnRcd2.AttributeName = csA;
+                            filterOwnRcd2.Operator = ConditionOperator.Like;
+                            filterOwnRcd2.Values.Add("%" + SValue + "%");
+                            filter1.Conditions.Add(filterOwnRcd2);
+                        }
+                    }
+                    filter1.FilterOperator = LogicalOperator.Or;
                     query.Criteria.AddFilter(filter1);
-
                     EntityCollection result1 = objser.RetrieveMultiple(query);
                     if (result1.Entities.Count > 0)
                     {
@@ -188,11 +202,35 @@ namespace SalesForceOAuth.Controllers
                         {
                             DYContact info = new DYContact();
                             if (z.Attributes.Contains("contactid"))
+                            {
                                 info.contactid = z.Attributes["contactid"].ToString();
+                            }
                             if (z.Attributes.Contains("firstname"))
-                                info.firstname = z.Attributes["firstname"].ToString();
+                            {
+                                info.firstname = z.Attributes["firstname"].ToString(); 
+                            }
                             if (z.Attributes.Contains("lastname"))
-                                info.lastname = z.Attributes["lastname"].ToString();
+                            {
+                                info.lastname = z.Attributes["lastname"].ToString(); 
+                            }
+                            int noOfcustomItems = 0;
+                            if (sFieldOptional.Length > 0)
+                            {
+                                foreach (string csA in customSearchArray)
+                                {
+                                    if (z.Attributes.Contains(csA))
+                                    {
+                                        //code to add to custom list
+                                        noOfcustomItems++;
+                                        MyAppsDb.AssignCustomVariableValue(info, csA, z.Attributes[csA].ToString(), noOfcustomItems);
+                                    }
+                                    else
+                                    {
+                                        noOfcustomItems++; // if no value found return empty string 
+                                        MyAppsDb.AssignCustomVariableValue(info, csA,"", noOfcustomItems);
+                                    }
+                                }
+                            }
                             listToReturn.Add(info);
                         }
                     }
@@ -201,7 +239,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.OK);
             }
         }
 

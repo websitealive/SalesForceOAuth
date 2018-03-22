@@ -477,3 +477,88 @@ No such column 'Source' on entity 'Lead'. If you are attempting to use a custom 
 19/03/2018 21:12:17 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'System.Dynamic.ExpandoObject' does not contain a definition for 'Add'
 19/03/2018 21:24:43 ==> reading exception: helper get access token issue
 19/03/2018 21:24:45 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'System.Dynamic.ExpandoObject' does not contain a definition for 'Add'
+20/03/2018 14:21:40 ==> reading exception: helper get access token issue
+20/03/2018 14:21:40 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT * From Lead where FirstName like
+      ^
+ERROR at Row:1:Column:7
+unexpected token: '*'
+20/03/2018 14:22:34 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT * From Lead where FirstName like
+      ^
+ERROR at Row:1:Column:7
+unexpected token: '*'
+20/03/2018 15:08:27 ==> Function: SFContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+20/03/2018 15:45:47 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+20/03/2018 15:46:09 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+20/03/2018 15:47:02 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+20/03/2018 15:48:37 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+20/03/2018 15:48:52 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+20/03/2018 16:33:24 ==> Function: DYContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+20/03/2018 16:34:34 ==> Function: DYContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+20/03/2018 16:35:37 ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Unknown column 'i.ObjectRef' in 'where clause'
+20/03/2018 16:42:33 ==> Function: SFAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+20/03/2018 19:04:20 ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+OR Fax like '%eyJ0eXAiOiJK%' OR Description like '%eyJ0eXAiOiJK%'
+                                ^
+ERROR at Row:1:Column:165
+field 'Description' can not be filtered in a query call
+21/03/2018 16:38:05 ==> Internal Exception: No such column 'type' on sobject of type Task
+21/03/2018 16:46:37 ==> Internal Exception: Call Type: bad value for restricted picklist field: Chat -Online
+21/03/2018 17:40:48 ==> Function: SFContacts-GetSearchedContacts : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+21/03/2018 17:43:29 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id  from Account where Id like '%00Q0Y000007Va42UAC%'
+                              ^
+ERROR at Row:1:Column:31
+invalid operator on id field
+21/03/2018 17:43:52 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id  from Account where Id like '%00Q0Y000007Va42UAC%'
+                              ^
+ERROR at Row:1:Column:31
+invalid operator on id field
+21/03/2018 17:45:27 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ Email, Phone from lead where Id like '%00Q0Y000007Va42UAC%'
+                              ^
+ERROR at Row:1:Column:72
+invalid operator on id field
+21/03/2018 17:47:39 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+ Phone from lead where Id like =00Q0Y000007Va42UAC
+                              ^
+ERROR at Row:1:Column:79
+Bind variables only allowed in Apex code
+21/03/2018 22:56:33 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 22:58:49 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:00:11 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:01:00 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:04:58 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:07:07 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:07:24 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+21/03/2018 23:13:49 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name

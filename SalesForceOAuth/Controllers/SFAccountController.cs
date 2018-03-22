@@ -5,6 +5,7 @@ using Salesforce.Force;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -25,7 +26,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -51,17 +52,21 @@ namespace SalesForceOAuth.Controllers
                     {
                         ownerId = c.Id;
                     }
-                    SuccessResponse sR; 
-                    if (ownerId == "" || lData.OwnerEmail == "")
+                    SuccessResponse sR;
+                    dynamic newAccount = new ExpandoObject();
+                    newAccount.Name = lData.Name; newAccount.AccountNumber = lData.AccountNumber; newAccount.Phone = lData.Phone;
+                    if (ownerId != "" && lData.OwnerEmail != "")
                     {
-                        var acc = new Account { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone };
-                        sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
+                        MyAppsDb.AddProperty(newAccount, "OwnerId", ownerId);
                     }
-                    else
+                    if (lData.CustomFields != null)
                     {
-                        var acc = new AccountOW { Name = lData.Name, AccountNumber = lData.AccountNumber, Phone = lData.Phone, OwnerId = ownerId };
-                        sR = await client.CreateAsync("Account", acc).ConfigureAwait(false);
+                        foreach (CustomObject c in lData.CustomFields)
+                        {
+                            MyAppsDb.AddProperty(newAccount, c.field, c.value);
+                        }
                     }
+                    sR = await client.CreateAsync("Account", newAccount).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
                         PostedObjectDetail output = new PostedObjectDetail();
@@ -72,12 +77,12 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError,true);
+                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                     }
                 }
                 catch (Exception ex)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.InternalServerError);
+                    return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.OK);
                 }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
@@ -87,7 +92,6 @@ namespace SalesForceOAuth.Controllers
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string siteRef, string callback)
         {
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
             string outputPayload;
             try
             {
@@ -95,7 +99,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-               return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+               return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -104,34 +108,57 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);
             }
-            List<Account> myAccounts = new List<Account> { };
             try
             {
+                List<Account> myAccounts = new List<Account> { };
                 //MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 string sFieldOptional = "";
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                StringBuilder b = new StringBuilder();
-                b.Append("SELECT Id, Name, Phone From Account ");
-                b.Append("where Name like '%" + SValue + "%' ");
-                b.Append("OR Phone like '%" + SValue + "%' ");
+                string objectValue = SValue;
+                StringBuilder query = new StringBuilder();
+                StringBuilder columns = new StringBuilder();
+                StringBuilder filters = new StringBuilder();
                 string[] customSearchArray = sFieldOptional.Split('|');
-                foreach (string csA in customSearchArray)
+                if (sFieldOptional.Length > 0)
                 {
-                    b.Append("OR " + csA + " like '%" + SValue + "%' ");
+                    foreach (string csA in customSearchArray)
+                    {
+                        columns.Append("," + csA);
+                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                    }
                 }
-
+                query.Append("SELECT Id, AccountNumber, Name, Phone " + columns + " From Account ");
+                query.Append("where Name like '%" + SValue + "%' ");
+                query.Append("OR Phone like '%" + SValue + "%' ");
+                query.Append(filters.ToString());
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(b.ToString()).ConfigureAwait(false);
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {
                     foreach (dynamic c in cont.Records)
                     {
                         Account l = new Account();
                         l.Id = c.Id;
-                        l.AccountNumber = "";
+                        l.AccountNumber = c.AccountNumber; 
                         l.Name = c.Name;
                         l.Phone = c.Phone;
+                        if (sFieldOptional.Length > 0)
+                        {
+                            int noOfcustomItems = 0;
+                            foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                            {
+                                foreach (string csA in customSearchArray)
+                                {
+                                    if (item.Name == csA)
+                                    {
+                                        //code to add to custom list
+                                        noOfcustomItems++;
+                                        MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
+                                    }
+                                }
+                            }
+                        }
                         myAccounts.Add(l);
                     }
                 }
@@ -139,7 +166,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.OK);
             }
             //}
             //else
@@ -164,6 +191,7 @@ namespace SalesForceOAuth.Controllers
         public string Name { get; set; }
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
+        public List<CustomObject> CustomFields { get; set; }
     }
     public class Account
     {
@@ -171,6 +199,16 @@ namespace SalesForceOAuth.Controllers
         public string AccountNumber { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }
+        public string Custom1 { get; set; }
+        public string Custom2 { get; set; }
+        public string Custom3 { get; set; }
+        public string Custom4 { get; set; }
+        public string Custom5 { get; set; }
+        public string Custom6 { get; set; }
+        public string Custom7 { get; set; }
+        public string Custom8 { get; set; }
+        public string Custom9 { get; set; }
+        public string Custom10 { get; set; }
     }
     public class AccountOW
     {

@@ -32,7 +32,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -60,12 +60,10 @@ namespace SalesForceOAuth.Controllers
                 dynamic newLead = new ExpandoObject();
                 newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
                 newLead.Email = lData.Email; newLead.Phone = lData.Phone;
-                //if (ownerId != "" || lData.OwnerEmail != ""
+
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {
                     MyAppsDb.AddProperty(newLead, "OwnerId", ownerId);
-                    //var lead = new Lead { FirstName = lData.FirstName, LastName = lData.LastName, Company = companyName, Email = lData.Email, Phone = lData.Phone };
-                    //sR = await client.CreateAsync("Lead", lead).ConfigureAwait(false);
                 }
                 if (lData.CustomFields != null)
                 {
@@ -74,12 +72,6 @@ namespace SalesForceOAuth.Controllers
                         MyAppsDb.AddProperty(newLead, c.field, c.value);
                     }
                 }
-                //else
-                //{
-                //    //var leadow = new LeadOW { FirstName = lData.FirstName, LastName = lData.LastName, Email = lData.Email, Phone = lData.Phone, OwnerId = ownerId, Company = companyName };
-                //    //sR = await client.CreateAsync("Lead", leadow).ConfigureAwait(false);
-                //    newLead.OwnerId = ownerId;
-                //}
                 sR = await client.CreateAsync("Lead", newLead).ConfigureAwait(false);
                 if (sR.Success == true)
                 {
@@ -91,12 +83,12 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError, true);
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                 }
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
             }
         }
         [HttpGet]
@@ -110,7 +102,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLeads-GetSearchedLeads", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLeads-GetSearchedLeads", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -122,11 +114,6 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 List<Lead> myLeads = new List<Lead> { };
-                //List<System.Dynamic.ExpandoObject> myLeads = new List<System.Dynamic.ExpandoObject>();
-                //List<dynamic> myLeads = new List<dynamic> { };
-
-                
-                //MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
                 string sFieldOptional = "";
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "lead", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
@@ -135,10 +122,13 @@ namespace SalesForceOAuth.Controllers
                 StringBuilder columns = new StringBuilder();
                 StringBuilder filters = new StringBuilder();
                 string[] customSearchArray = sFieldOptional.Split('|');
-                foreach (string csA in customSearchArray)
+                if (sFieldOptional.Length > 0)
                 {
-                    columns.Append("," + csA ); 
-                    filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                    foreach (string csA in customSearchArray)
+                    {
+                        columns.Append("," + csA);
+                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                    }
                 }
                 query.Append("SELECT Id, FirstName, LastName, Company, Email, Phone " + columns.ToString() + " From Lead ");
                 query.Append("where FirstName like '%" + SValue + "%' ");
@@ -146,31 +136,12 @@ namespace SalesForceOAuth.Controllers
                 query.Append("OR Email like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append(filters.ToString()); 
-                
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
-
-
                 if (cont.Records.Count > 0)
                 {
                     foreach (dynamic c in cont.Records)
                     {
-                        //string searchField = "";
-                        //foreach (Newtonsoft.Json.Linq.JProperty item in c)
-                        //{
-                        //    foreach (string csA in customSearchArray)
-                        //    {
-                        //        if(item.Name == csA)
-                        //        {
-                        //            //code to add to custom list
-                        //            searchField += 
-
-                        //        }
-                        //    }
-                        //}
-
-
-
                         Lead l = new Lead();
                         l.Id = c.Id;
                         l.FirstName = c.FirstName;
@@ -178,17 +149,31 @@ namespace SalesForceOAuth.Controllers
                         l.Company = c.Company;
                         l.Email = c.Email;
                         l.Phone = c.Phone;
+                        if (sFieldOptional.Length > 0)
+                        {
+                            int noOfcustomItems = 0;
+                            foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                            {
+                                foreach (string csA in customSearchArray)
+                                {
+                                    if (item.Name == csA)
+                                    {
+                                        //code to add to custom list
+                                        noOfcustomItems++;
+                                        MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
+                                    }
+                                }
+                            }
+                        }
                         myLeads.Add(l);
                     }
                 }
                 return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK, false);
-                //return MyAppsDb.ConvertJSONPOutput(callback, cont.Records, HttpStatusCode.OK, false);
+                
             }
             catch (Exception ex)
             {
-                CreateLogFiles log1 = new CreateLogFiles();
-                log1.ErrorLog("reading exception: helper get access token issue");
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.OK);
             }
         }
     }
@@ -254,11 +239,16 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string CustomSearchOutput { get; set; }
+        public string Custom1 { get; set; }
         public string Custom2 { get; set; }
         public string Custom3 { get; set; }
         public string Custom4 { get; set; }
         public string Custom5 { get; set; }
+        public string Custom6 { get; set; }
+        public string Custom7 { get; set; }
+        public string Custom8 { get; set; }
+        public string Custom9 { get; set; }
+        public string Custom10 { get; set; }
         public dynamic AccountId { get; internal set; }
     }
     public class LeadOW

@@ -278,6 +278,7 @@
     <Compile Include="Controllers\DYConfigController.cs" />
     <Compile Include="Controllers\DYContactController.cs" />
     <Compile Include="Controllers\SalesForceTokenController.cs" />
+    <Compile Include="Controllers\SFDetailedController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
     <Compile Include="Web API Helper Code\Authentication.cs" />
     <Compile Include="Web API Helper Code\Configuration.cs" />

@@ -125,7 +125,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_settings_dynamics Set DYAccessToken = '" + access_token + "', SFATCreationDT=now(), resource='" + resource + "'";
+                    string sql = "Update integration_dynamics_settings Set DYAccessToken = '" + access_token + "', SFATCreationDT=now(), resource='" + resource + "'";
                     sql += " WHERE objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
@@ -289,6 +289,113 @@ namespace SalesForceOAuth.Controllers
                 }
             }
         }
+        public static void AssignCustomVariableValue(dynamic lead,string label, string value, int itemno)
+        {
+            switch(itemno)
+            {
+                case 1:
+                    {
+                        lead.Custom1 = label + "|" + value; break;
+                    }
+                case 2:
+                    {
+                        lead.Custom2 = label + "|" + value; break;
+                    }
+                case 3:
+                    {
+                        lead.Custom3 = label + "|" + value; break;
+                    }
+                case 4:
+                    {
+                        lead.Custom4 = label + "|" + value; break;
+                    }
+                case 5:
+                    {
+                        lead.Custom5 = label + "|" + value; break;
+                    }
+                case 6:
+                    {
+                        lead.Custom6 = label + "|" + value; break;
+                    }
+                case 7:
+                    {
+                        lead.Custom7 = label + "|" + value; break;
+                    }
+                case 8:
+                    {
+                        lead.Custom8 = label + "|" + value; break;
+                    }
+                case 9:
+                    {
+                        lead.Custom9 = label + "|" + value; break;
+                    }
+                case 10:
+                    {
+                        lead.Custom10 = label + "|" + value; break;
+                    }
+            }
+
+        }
+        public static void GetAPICredentialswithCustomViewFields(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, ref string customViewFields,ref string sLabelViewFields, ref string query, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_type,iscs.label,iscs.sf_variable frOM integration_settings AS ints Left Outer Join integration_salesforce_detailedview_fields AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+                    sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int row = 0; customViewFields = "" ; sLabelViewFields = ""; 
+                    query = "SELECT Id ";
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                                SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                                SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                                
+                                if (rdr["entity_type"].ToString().Equals(entityType))
+                                {
+                                    if (row == 0)
+                                    {
+                                        customViewFields = rdr["sf_variable"].ToString().Trim() ;
+                                        sLabelViewFields = rdr["label"].ToString().Trim(); 
+                                        query +=  ", " + rdr["sf_variable"].ToString().Trim(); 
+                                        row++;
+                                    }
+                                    else
+                                    {
+                                        query += ", " + rdr["sf_variable"].ToString().Trim();
+                                        customViewFields += "|" + rdr["sf_variable"].ToString().Trim() ;
+                                        sLabelViewFields += rdr["label"].ToString().Trim();
+                                    }
+                                }
+
+                            }
+                            query += " from " + entityType; 
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException exs)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
 
         public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType ,ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl,ref string customSearchFields, string urlReferrer)
         {
@@ -331,25 +438,74 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (MySqlException exs)
                 {
-                    CreateLogFiles log = new CreateLogFiles();
-                    string InnerException = (exs.InnerException == null ? "" : exs.InnerException.ToString());
-                    string Message = (exs.Message.ToString() == null ? "" : exs.Message.ToString());
-                    log.ErrorLog("Function: GetAPICredentialswithCustomSearchFields:" + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
                     conn.Close();
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    CreateLogFiles log = new CreateLogFiles();
-                    string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
-                    string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
-                    log.ErrorLog("Function: GetAPICredentialswithCustomSearchFields:" + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
                     conn.Close();
                     throw;
                 }
             }
         }
 
+        public static int GetDynamicsCredentialswithCustomSearchFields(string objectRef, int groupId, string entityType, ref string applicationURL, ref string userName, ref string password, ref string authType, ref string customSearchFields, string referrerURL)
+        {
+
+            string connStr = MyAppsDb.GetConnectionStringbyURL(referrerURL, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT i.ApplicationURL, i.UserName, i.Password, i.AuthType, d.entity_name,d.search_field_name FROM integration_dynamics_settings i  Left Outer Join integration_dynamics_custom_search AS d ON i.objectref = d.objectref AND i.groupid = d.groupid ";
+                    sql += " WHERE i.ObjectRef = '" + objectRef + "' AND i.GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int row = 0; customSearchFields = "";
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                applicationURL = rdr["ApplicationURL"].ToString().Trim();
+                                userName = Encryption.Decrypt(rdr["UserName"].ToString().Trim());
+                                password = Encryption.Decrypt(rdr["Password"].ToString().Trim());
+                                authType = rdr["AuthType"].ToString().Trim();
+                                if (rdr["entity_name"].ToString().Equals(entityType))
+                                {
+                                    if (row == 0)
+                                    {
+                                        customSearchFields = rdr["search_field_name"].ToString().Trim(); row++;
+                                    }
+                                    else
+                                    {
+                                        customSearchFields += "|" + rdr["search_field_name"].ToString().Trim();
+                                    }
+                                }
+                                return 1;
+                            }
+                            rdr.Close();
+                            conn.Close();
+                            return 0;
+                        }
+                        else
+                        {
+                            rdr.Close();
+                            conn.Close();
+                            return -1;
+                        }
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+
+        }
 
         public static HttpResponseMessage ConvertJSONPOutput(string callback, object message, HttpStatusCode code, bool logError)
         {
@@ -563,11 +719,11 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sqlDel = "DELETE FROM integration_settings_dynamics WHERE objectRef = '" + objectRef + "' AND groupId =" + groupId.ToString();
+                    string sqlDel = "DELETE FROM integration_dynamics_settings WHERE objectRef = '" + objectRef + "' AND groupId =" + groupId.ToString();
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
 
-                    string sql = "insert into integration_settings_dynamics(objectRef, groupId, DYRefreshToken, DYRTCreationDT, DYAccessToken, DYATCreationDT, resource)";
+                    string sql = "insert into integration_dynamics_settings(objectRef, groupId, DYRefreshToken, DYRTCreationDT, DYAccessToken, DYATCreationDT, resource)";
                     sql += " values ('" + objectRef + "'," + groupId + ", '" + refreshToken.Trim() + "', now(), '" + accessToken.Trim() + "', now(),'" + resource + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
@@ -589,7 +745,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT DYRefreshToken, resource FROM integration_settings_dynamics where objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
+                    string sql = "SELECT DYRefreshToken, resource FROM integration_dynamics_settings where objectRef = '" + objectRef + "' AND groupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -621,7 +777,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    string sql = "SELECT * FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -717,7 +873,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    string sql = "SELECT * FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -795,7 +951,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    string sql = "SELECT * FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -839,14 +995,14 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_settings_dynamics WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    string sql = "SELECT * FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
                         if (!rdr.HasRows)
                         {
                             rdr.Close();
-                            string insertSql = "INSERT INTO integration_settings_dynamics (objectref,groupid,username, password, applicationurl, AuthType)" +
+                            string insertSql = "INSERT INTO integration_dynamics_settings (objectref,groupid,username, password, applicationurl, AuthType)" +
                                 "VALUES ('" + objectRef + "'," + groupId.ToString() + ",'" + Encryption.Encrypt(userName) + "','" + Encryption.Encrypt(password) + "','" + organizationURL + "','" + authType + "')";
                             MySqlCommand cmdInsert = new MySqlCommand(insertSql, conn);
                             int rows = cmdInsert.ExecuteNonQuery();
@@ -878,7 +1034,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_settings_dynamics Set accesstoken = '" + accessToken + "', tokenexpirydt = now()";
+                    string sql = "Update integration_dynamics_settings Set accesstoken = '" + accessToken + "', tokenexpirydt = now()";
                     sql += " WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
@@ -1008,16 +1164,27 @@ namespace SalesForceOAuth.Controllers
 
         public static void LogException(string function, string errorTitle, Exception ex)
         {
-            CreateLogFiles log = new CreateLogFiles();
-            string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
-            string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
-            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+            try
+            {
+                CreateLogFiles log = new CreateLogFiles();
+                string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
+                string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
+                log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+            }
+            catch(Exception ex1)
+            { }
         }
 
         public static void LogError(string message)
         {
-            CreateLogFiles log = new CreateLogFiles();
-            log.ErrorLog(message);
+            try
+            {
+                CreateLogFiles log = new CreateLogFiles();
+                log.ErrorLog(message);
+            }
+            catch (Exception ex1)
+            { }
+
         }
 
         public static HttpResponseMessage ConvertJSONPOutput(string callback, Exception ex, string function, string errorTitle, HttpStatusCode code)

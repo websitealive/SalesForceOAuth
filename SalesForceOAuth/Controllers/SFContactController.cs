@@ -26,7 +26,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFContact-PostContact", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFContact-PostContact", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -45,28 +45,26 @@ namespace SalesForceOAuth.Controllers
                     "where Username like '%" + lData.OwnerEmail + "%' " +
                     "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
                 string ownerId = "";
-                //string companyName = (lData.Company == "" || lData.Company == null ? "NA" : lData.Company);
                 foreach (dynamic c in cont.Records)
                 {
                     ownerId = c.Id; break;
                 }
                 SuccessResponse sR;
-                dynamic newLead = new ExpandoObject();
-                newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Email = lData.Email; newLead.Phone = lData.Phone;
-                newLead.accountid = lData.AccountId;
-
+                dynamic newContact = new ExpandoObject();
+                newContact.FirstName = lData.FirstName; newContact.LastName = lData.LastName; newContact.Email = lData.Email; newContact.Phone = lData.Phone;
+                newContact.accountid = lData.AccountId;
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {
-                    MyAppsDb.AddProperty(newLead, "OwnerId", ownerId);
+                    MyAppsDb.AddProperty(newContact, "OwnerId", ownerId);
                 }
                 if (lData.CustomFields != null)
                 {
                     foreach (CustomObject c in lData.CustomFields)
                     {
-                        MyAppsDb.AddProperty(newLead, c.field, c.value);
+                        MyAppsDb.AddProperty(newContact, c.field, c.value);
                     }
                 }
-                sR = await client.CreateAsync("Contact", newLead).ConfigureAwait(false);
+                sR = await client.CreateAsync("Contact", newContact).ConfigureAwait(false);
                 if (sR.Success == true)
                 {
                     PostedObjectDetail output = new PostedObjectDetail();
@@ -77,12 +75,12 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.InternalServerError, true);
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                 }
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
             }
 
 
@@ -151,7 +149,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFContacts-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFContacts-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -161,18 +159,30 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 List<MyContact> myContacts = new List<MyContact> { };
-                MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                string sFieldOptional = "";
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
+                StringBuilder query = new StringBuilder();
+                StringBuilder columns = new StringBuilder();
+                StringBuilder filters = new StringBuilder();
+                string[] customSearchArray = sFieldOptional.Split('|');
+                if (sFieldOptional.Length > 0 )
+                { 
+                    foreach (string csA in customSearchArray)
+                    {
+                        columns.Append("," + csA);
+                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                    }
+                }
+                query.Append("SELECT Id, FirstName, LastName, Email, Phone " + columns + ", AccountId, Account.Name From Contact ");
+                query.Append("where FirstName like '%" + SValue + "%' ");
+                query.Append("OR LastName like '%" + SValue + "%' ");
+                query.Append("OR Email like '%" + SValue + "%' ");
+                query.Append("OR Phone like '%" + SValue + "%' ");
+                query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-                //SELECT Id, FirstName, LastName, Email, Phone From Contact
-                //SELECT AccountID, Name, (SELECT Id, FirstName, LastName, Email, Phone, from Contact)  From Account
-                QueryResult <dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, FirstName, LastName, Email, Phone, AccountId, Account.Name From Contact " +
-                    "where FirstName like '%" + SValue + "%' " +
-                    "OR LastName like '%" + SValue + "%' " +
-                    "OR Email like '%" + SValue + "%' " +
-                    "OR Phone like '%" + SValue + "%' "
-                    ).ConfigureAwait(false);
+                QueryResult <dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {
                     foreach (dynamic c in cont.Records)
@@ -185,17 +195,22 @@ namespace SalesForceOAuth.Controllers
                         l.Phone = c.Phone;
                         l.AccountId = c.AccountId;
                         l.AccountName = c.Account.Name;
-                        //foreach (dynamic acc in c.Contact.records)
-                        //{
-                        //    l.Id = acc.Id;
-                        //    l.FirstName =acc.FirstName;
-                        //    l.LastName = acc.LastName;
-                        //    l.Email = acc.Email;
-                        //    l.Phone = acc.Phone;
-                        //    //    l.AccountId = acc.Id;
-                        //    //    l.AccountName = acc.Name;
-                        //    break;
-                        //}
+                        if (sFieldOptional.Length > 0)
+                        {
+                            int noOfcustomItems = 0;
+                            foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                            {
+                                foreach (string csA in customSearchArray)
+                                {
+                                    if (item.Name == csA)
+                                    {
+                                        //code to add to custom list
+                                        noOfcustomItems++;
+                                        MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
+                                    }
+                                }
+                            }
+                        }
                         myContacts.Add(l);
                     }
                 }
@@ -203,61 +218,9 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.OK);
             }
-            //var re = Request;
-            //var headers = re.Headers;
-            //if (headers.Contains("Authorization"))
-            //{
-            //    string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-            //    string ObjectRef = "", SValue = "";
-            //    int GroupId = 0;
-            //    string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-            //    string outputPayload;
-            //    try
-            //    {
-            //        outputPayload = JWT.JsonWebToken.Decode(_token, ConfigurationManager.AppSettings["APISecureKey"], true);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        return MyAppsDb.ConvertJSONOutput(ex, "DYConfig-GetSearchedContacts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
-            //    }
-            //    JObject values = JObject.Parse(outputPayload); // parse as array  
-            //    GroupId = Convert.ToInt32(values.GetValue("GroupId").ToString());
-            //    ObjectRef = values.GetValue("ObjectRef").ToString();
-            //    SValue = values.GetValue("SValue").ToString();
-            //    List<MyContact> myContacts = new List<MyContact> { };
-            //    string urlReferrer = Request.RequestUri.Authority.ToString();
-            //    try
-            //    {
-            //        MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
-            //        ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-
-            //        QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(
-            //            "SELECT Id, FirstName, LastName, Email, Phone, AccountId From Contact " +
-            //            "where FirstName like '%" + SValue + "%' " +
-            //            "OR LastName like '%" + SValue + "%' " +
-            //            "OR Email like '%" + SValue + "%' " +
-            //            "OR Phone like '%" + SValue + "%' "
-            //            );
-            //        foreach (dynamic c in cont.Records)
-            //        {
-            //            MyContact mc = new MyContact();
-            //            mc.Id = c.Id; mc.FirstName = c.FirstName;mc.LastName = c.LastName; mc.Email = c.Email;
-            //            mc.AccountId = c.AccountId; mc.Phone = c.Phone;
-            //            myContacts.Add(mc);
-            //        }
-            //        return MyAppsDb.ConvertJSONOutput(myContacts, HttpStatusCode.OK,false);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        return MyAppsDb.ConvertJSONOutput(ex, "SF-PostContact", "Unhandled exception", HttpStatusCode.InternalServerError);
-            //    }
-            //}
-            //else
-            //{
-            //    return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized,true);
-            //}
+      
         }
     }
 
@@ -285,5 +248,15 @@ namespace SalesForceOAuth.Controllers
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string Custom1 { get; set; }
+        public string Custom2 { get; set; }
+        public string Custom3 { get; set; }
+        public string Custom4 { get; set; }
+        public string Custom5 { get; set; }
+        public string Custom6 { get; set; }
+        public string Custom7 { get; set; }
+        public string Custom8 { get; set; }
+        public string Custom9 { get; set; }
+        public string Custom10 { get; set; }
     }
 }

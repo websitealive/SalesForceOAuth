@@ -269,6 +269,16 @@ namespace SalesForceOAuth.Controllers
         public string contactid { get; set; }
         public string firstname { get; set; }
         public string lastname { get; set; }
+        public string Custom1 { get; set; }
+        public string Custom2 { get; set; }
+        public string Custom3 { get; set; }
+        public string Custom4 { get; set; }
+        public string Custom5 { get; set; }
+        public string Custom6 { get; set; }
+        public string Custom7 { get; set; }
+        public string Custom8 { get; set; }
+        public string Custom9 { get; set; }
+        public string Custom10 { get; set; }
     }
     public class DYAccountOutput: DYAccount
     {
