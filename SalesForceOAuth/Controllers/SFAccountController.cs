@@ -112,17 +112,20 @@ namespace SalesForceOAuth.Controllers
             {
                 List<Account> myAccounts = new List<Account> { };
                 //MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
-                string sFieldOptional = "";
-                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, urlReferrer);
+                string cSearchField = "";
+                string cSearchFieldLabels = "";
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField,ref cSearchFieldLabels, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();
                 StringBuilder columns = new StringBuilder();
                 StringBuilder filters = new StringBuilder();
-                string[] customSearchArray = sFieldOptional.Split('|');
-                if (sFieldOptional.Length > 0)
+                string[] customSearchFieldArray = cSearchField.Split('|');
+                //string[] customSearchFieldArray = cSearchField.Split('|');
+                string[] customSearchLabelArray = cSearchFieldLabels.Split('|');
+                if (cSearchField.Length > 0)
                 {
-                    foreach (string csA in customSearchArray)
+                    foreach (string csA in customSearchFieldArray)
                     {
                         columns.Append("," + csA);
                         filters.Append("OR " + csA + " like '%" + SValue + "%' ");
@@ -143,20 +146,22 @@ namespace SalesForceOAuth.Controllers
                         l.AccountNumber = c.AccountNumber; 
                         l.Name = c.Name;
                         l.Phone = c.Phone;
-                        if (sFieldOptional.Length > 0)
+                        if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                foreach (string csA in customSearchArray)
+                                int i = 0;
+                                foreach (string csA in customSearchFieldArray)
                                 {
-                                    if (item.Name == csA)
+                                    if (item.Name.ToLower() == csA.ToLower())
                                     {
                                         //code to add to custom list
                                         noOfcustomItems++;
-                                        MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
+                                        MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
                                     }
                                 }
+                                i++; 
                             }
                         }
                         myAccounts.Add(l);

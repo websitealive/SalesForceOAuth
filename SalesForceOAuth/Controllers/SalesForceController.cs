@@ -333,6 +333,26 @@ namespace SalesForceOAuth.Controllers
                     {
                         lead.Custom10 = label + "|" + value; break;
                     }
+                case 11:
+                    {
+                        lead.Custom11 = label + "|" + value; break;
+                    }
+                case 12:
+                    {
+                        lead.Custom12 = label + "|" + value; break;
+                    }
+                case 13:
+                    {
+                        lead.Custom13 = label + "|" + value; break;
+                    }
+                case 14:
+                    {
+                        lead.Custom14 = label + "|" + value; break;
+                    }
+                case 15:
+                    {
+                        lead.Custom15 = label + "|" + value; break;
+                    }
             }
 
         }
@@ -377,8 +397,23 @@ namespace SalesForceOAuth.Controllers
                                 }
 
                             }
-                            query += " from " + entityType; 
                         }
+                        if(entityType.ToLower() == "lead")
+                        {
+                            query += "," + ConfigurationManager.AppSettings["SFLeadDefault"]; 
+                        } 
+                        else if (entityType.ToLower() == "account")
+                        {
+                            query += "," + ConfigurationManager.AppSettings["SFAccountDefault"];
+                        }
+                        else if (entityType.ToLower() == "contact")
+                        {
+                            query += "," + ConfigurationManager.AppSettings["SFContactDefault"];
+                        }
+
+                        query += " from " + entityType;
+
+
                         rdr.Close();
                     }
                     conn.Close();
@@ -397,7 +432,7 @@ namespace SalesForceOAuth.Controllers
         }
 
 
-        public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType ,ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl,ref string customSearchFields, string urlReferrer)
+        public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType ,ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl,ref string customSearchFields, ref string customSearchFieldsLabels, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -405,10 +440,10 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_field_name frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_field_name, iscs.search_label frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
                            sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    int row = 0; customSearchFields = ""; 
+                    int row = 0; customSearchFields = ""; customSearchFieldsLabels = ""; 
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
                         if (rdr.HasRows)
@@ -422,11 +457,14 @@ namespace SalesForceOAuth.Controllers
                                 {
                                     if (row == 0)
                                     {
-                                        customSearchFields = rdr["search_field_name"].ToString().Trim(); row++; 
+                                        customSearchFields = rdr["search_field_name"].ToString().Trim();
+                                        customSearchFieldsLabels = rdr["search_label"].ToString().Trim();
+                                        row++; 
                                     }
                                     else
                                     {
                                         customSearchFields += "|" + rdr["search_field_name"].ToString().Trim();
+                                        customSearchFieldsLabels += "|" + rdr["search_label"].ToString().Trim();
                                     }
                                 }
 

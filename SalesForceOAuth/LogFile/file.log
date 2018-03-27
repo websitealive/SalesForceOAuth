@@ -562,3 +562,11 @@ Parameter name: Organization Name
 Parameter name: Organization Name
 21/03/2018 23:13:49 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
 Parameter name: Organization Name
+27/03/2018 18:40:13 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'Newtonsoft.Json.Linq.JValue' does not contain a definition for 'Name'
+27/03/2018 18:43:34 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'Newtonsoft.Json.Linq.JValue' does not contain a definition for 'Name'
+27/03/2018 20:38:36 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: only aggregate expressions use field aliasing
+27/03/2018 20:50:49 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id, , Title FirstName, LastName, Email
+          ^
+ERROR at Row:1:Column:11
+unexpected token: ','

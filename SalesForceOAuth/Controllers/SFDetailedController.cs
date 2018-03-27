@@ -54,9 +54,34 @@ namespace SalesForceOAuth.Controllers
                     {
                         SFDetailedView l = new SFDetailedView();
                         l.Id = c.Id;
+                        int noOfcustomItems = 0;
+                        if (entity == "lead")
+                        {
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "First Name", c.FirstName.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Last Name", c.LastName.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Company", c.Company.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Email", c.Email.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Phone", c.Phone.ToString(), noOfcustomItems);
+                        } else if(entity == "account")
+                        {
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Number", c.AccountNumber.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Name", c.Name.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Phone", c.Phone.ToString(), noOfcustomItems);
+                        }
+                        else if (entity == "contact")
+                        {
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "First Name", c.FirstName.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Last Name", c.LastName.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Email", c.Email.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Phone", c.Phone.ToString(), noOfcustomItems);
+                            if (c.Account != null)
+                            {
+                                noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Name", c.Account.Name.ToString(), noOfcustomItems);
+                            }
+                        }
                         if (sFieldOptional.Length > 0)
                         {
-                            int noOfcustomItems = 0;
+                            
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
                                 foreach (string csA in customSearchArray)
@@ -97,5 +122,10 @@ namespace SalesForceOAuth.Controllers
         public string Custom8 { get; set; }
         public string Custom9 { get; set; }
         public string Custom10 { get; set; }
+        public string Custom11 { get; set; }
+        public string Custom12{ get; set; }
+        public string Custom13 { get; set; }
+        public string Custom14{ get; set; }
+        public string Custom15 { get; set; }
     }
 }
