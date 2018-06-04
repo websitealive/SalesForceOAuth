@@ -47,17 +47,32 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
-                string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
-                connectionString += "RequireNewInstance=true;";
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
+                //string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
+                //connectionString = "url=https://msdynamics.websitealive.com/MSDynamics;username=wsa\\administrator;password=bX9bTkYv)Td;Domain=wsa;authtype=IFD;RequireNewInstance=true;"; 
 
-                if (crmSvc != null && crmSvc.IsReady)
+                //connectionString += "RequireNewInstance=true;";
+
+
+                //new code start
+
+                Uri organizationUri;
+                Uri homeRealmUri;
+                ClientCredentials credentials = new ClientCredentials();
+                ClientCredentials deviceCredentials = new ClientCredentials();
+                credentials.UserName.UserName = userName;
+                credentials.UserName.Password = password;
+                deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
+                deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
+                organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
+                homeRealmUri = null;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
-                    //create Account object
-                    Dictionary<string, CrmDataTypeWrapper> inData = new Dictionary<string, CrmDataTypeWrapper>();
-                    inData.Add("firstname", new CrmDataTypeWrapper(lData.FirstName, CrmFieldType.String));
-                    inData.Add("lastname", new CrmDataTypeWrapper(lData.LastName, CrmFieldType.String));
+                    IOrganizationService objser = (IOrganizationService)proxyservice;
+                    Entity registration = new Entity("contact");
+                    registration["firstname"] = lData.FirstName;
+                    registration["lastname"] = lData.LastName;
+                    #region custom fields 
                     if (lData.CustomFields != null)
                     {
                         foreach (DYCustomObject c in lData.CustomFields)
@@ -65,36 +80,46 @@ namespace SalesForceOAuth.Controllers
                             CrmFieldType type;
                             switch (c.type.ToLower())
                             {
-                                case "string":
-                                    { type = CrmFieldType.String; break; }
-                                case "decimal":
-                                    { type = CrmFieldType.CrmDecimal; break; }
+                                //case "string":
+                                //    {
+                                //        type = CrmFieldType.String;break;
+                                //    }
+                                case "optionset":
+                                    {
+                                        type = CrmFieldType.CrmDecimal;
+                                        int option = Convert.ToInt32(c.value); 
+                                        registration[c.field] = new OptionSetValue(option);
+                                        break;
+                                    }
                                 case "lookup":
-                                    { type = CrmFieldType.Lookup; break; }
-                                case "bool":
-                                    { type = CrmFieldType.CrmBoolean; break; }
+                                    {
+                                        type = CrmFieldType.Lookup;
+                                        if (c.value.ToString().Length > 0)
+                                        {
+                                            registration[c.field] = new EntityReference("User", new Guid(c.value));//inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));// registration[c.field] = new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table).Value;
+                                        }
+                                        break;
+                                    }
+                                //case "bool":
+                                //    { type = CrmFieldType.CrmBoolean; break; }
                                 default:
-                                    { type = CrmFieldType.String; break; }
+                                    {
+                                        type = CrmFieldType.String;
+                                        registration[c.field] = c.value;
+                                        break;
+                                        
+                                    }
                             }
-                            if(type ==  CrmFieldType.Lookup)
-                            {
-                                if (c.value.ToString().Length > 0)
-                                {
-                                    inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));
-                                }
-                            }
-                            else 
-                                inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                            //if (type != CrmFieldType.Lookup)
+                            //{
+                            //    //  inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                            //    registration[c.field] = c.value; // new CrmDataTypeWrapper(c.value, type); 
+                            //}
                         }
                     }
+                    #endregion Custom fields 
 
-
-                    //inData.Add("ayu_salesengineer", new CrmDataTypeWrapper(lData.Salesengineer, CrmFieldType.Picklist));
-                    //if (lData.Salesengineer.ToString().Length > 0)
-                    //{
-                    //    inData.Add("ayu_salesperson", new CrmDataTypeWrapper(new Guid(lData.Salesengineer), CrmFieldType.Lookup, "systemuser"));
-                    //}
-                    Guid contactId = crmSvc.CreateNewRecord("contact", inData);
+                    Guid contactId = objser.Create(registration);
                     if (contactId != Guid.Empty)
                     {
                         //Console.WriteLine("Account created.");
@@ -109,10 +134,75 @@ namespace SalesForceOAuth.Controllers
                         return MyAppsDb.ConvertJSONOutput("Could not add new contact, check mandatory fields", HttpStatusCode.OK, true);
                     }
                 }
-                else
-                {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.OK, true);
-                }
+
+                //end code start
+
+
+                //userName = "wsa\administrator";
+                //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                //CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
+
+                //if (crmSvc != null && crmSvc.IsReady)
+                //{
+                //    //create Account object
+                //    Dictionary<string, CrmDataTypeWrapper> inData = new Dictionary<string, CrmDataTypeWrapper>();
+                //    inData.Add("firstname", new CrmDataTypeWrapper(lData.FirstName, CrmFieldType.String));
+                //    inData.Add("lastname", new CrmDataTypeWrapper(lData.LastName, CrmFieldType.String));
+                //    if (lData.CustomFields != null)
+                //    {
+                //        foreach (DYCustomObject c in lData.CustomFields)
+                //        {
+                //            CrmFieldType type;
+                //            switch (c.type.ToLower())
+                //            {
+                //                case "string":
+                //                    { type = CrmFieldType.String; break; }
+                //                case "decimal":
+                //                    { type = CrmFieldType.CrmDecimal; break; }
+                //                case "lookup":
+                //                    { type = CrmFieldType.Lookup; break; }
+                //                case "bool":
+                //                    { type = CrmFieldType.CrmBoolean; break; }
+                //                default:
+                //                    { type = CrmFieldType.String; break; }
+                //            }
+                //            if(type ==  CrmFieldType.Lookup)
+                //            {
+                //                if (c.value.ToString().Length > 0)
+                //                {
+                //                    inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));
+                //                }
+                //            }
+                //            else 
+                //                inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
+                //        }
+                //    }
+
+
+                //    //inData.Add("ayu_salesengineer", new CrmDataTypeWrapper(lData.Salesengineer, CrmFieldType.Picklist));
+                //    //if (lData.Salesengineer.ToString().Length > 0)
+                //    //{
+                //    //    inData.Add("ayu_salesperson", new CrmDataTypeWrapper(new Guid(lData.Salesengineer), CrmFieldType.Lookup, "systemuser"));
+                //    //}
+                //    //Guid contactId = crmSvc.CreateNewRecord("contact", inData);
+                //    //if (contactId != Guid.Empty)
+                //    //{
+                //    //    //Console.WriteLine("Account created.");
+                //    //    PostedObjectDetail pObject = new PostedObjectDetail();
+                //    //    pObject.Id = contactId.ToString();
+                //    //    pObject.ObjectName = "Contact";
+                //    //    pObject.Message = "Contact added successfully!";
+                //    //    return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+                //    //}
+                //    //else
+                //    //{
+                //    //    return MyAppsDb.ConvertJSONOutput("Could not add new contact, check mandatory fields", HttpStatusCode.OK, true);
+                //    //}
+                //}
+                //else
+                //{
+                //    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.OK, true);
+                //}
             }
             catch (Exception ex)
             {

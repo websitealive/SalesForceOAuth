@@ -34,7 +34,7 @@ namespace SalesForceOAuth.Controllers
                     string ApplicationURL = "", userName = "", password = "", authType = "";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
                     int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-
+                    
                     Uri organizationUri;
                     Uri homeRealmUri;
                     ClientCredentials credentials = new ClientCredentials();

@@ -570,3 +570,37 @@ SELECT Id, , Title FirstName, LastName, Email
           ^
 ERROR at Row:1:Column:11
 unexpected token: ','
+29/03/2018 12:55:57 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 13:08:23 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 13:22:39 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 13:25:24 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+29/03/2018 13:26:11 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 13:27:58 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 13:32:09 ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+29/03/2018 13:37:26 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+29/03/2018 14:24:07 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+29/03/2018 14:29:48 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: The formatter threw an exception while trying to deserialize the message: There was an error while trying to deserialize parameter http://schemas.microsoft.com/xrm/2011/Contracts/Services:entity. The InnerException message was 'Error in line 1 position 8564. Element 'http://schemas.datacontract.org/2004/07/System.Collections.Generic:value' contains data from a type that maps to the name 'Microsoft.Xrm.Tooling.Connector:CrmDataTypeWrapper'. The deserializer has no knowledge of any type that maps to this name. Consider changing the implementation of the ResolveName method on your DataContractResolver to return a non-null value for name 'CrmDataTypeWrapper' and namespace 'Microsoft.Xrm.Tooling.Connector'.'.  Please see InnerException for more details.
+29/03/2018 15:06:33 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: The formatter threw an exception while trying to deserialize the message: There was an error while trying to deserialize parameter http://schemas.microsoft.com/xrm/2011/Contracts/Services:entity. The InnerException message was 'Error in line 1 position 8910. Element 'http://schemas.datacontract.org/2004/07/System.Collections.Generic:value' contains data from a type that maps to the name 'Microsoft.Xrm.Tooling.Connector:CrmDataTypeWrapper'. The deserializer has no knowledge of any type that maps to this name. Consider changing the implementation of the ResolveName method on your DataContractResolver to return a non-null value for name 'CrmDataTypeWrapper' and namespace 'Microsoft.Xrm.Tooling.Connector'.'.  Please see InnerException for more details.
+29/03/2018 15:24:35 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+29/03/2018 15:32:07 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+29/03/2018 15:32:39 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+29/03/2018 15:33:45 ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Input string was not in a correct format.
+13/04/2018 22:35:14 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Phone number not in right format
+02/05/2018 21:59:34 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Index was outside the bounds of the array.
+02/05/2018 22:00:17 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Index was outside the bounds of the array.
+02/05/2018 22:03:25 ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Index was outside the bounds of the array.
+23/05/2018 11:39:34 ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+23/05/2018 11:40:16 ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+23/05/2018 11:40:33 ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+23/05/2018 11:47:29 ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+25/05/2018 16:43:04 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y0000
+25/05/2018 16:45:33 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y0000
+25/05/2018 16:45:53 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y0000
+25/05/2018 16:50:50 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y000002c2Rm2
+25/05/2018 16:51:49 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y000002c2Rm2

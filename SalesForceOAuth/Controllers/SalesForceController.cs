@@ -295,63 +295,63 @@ namespace SalesForceOAuth.Controllers
             {
                 case 1:
                     {
-                        lead.Custom1 = label + "|" + value; break;
+                        lead.Custom1 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 2:
                     {
-                        lead.Custom2 = label + "|" + value; break;
+                        lead.Custom2 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 3:
                     {
-                        lead.Custom3 = label + "|" + value; break;
+                        lead.Custom3 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 4:
                     {
-                        lead.Custom4 = label + "|" + value; break;
+                        lead.Custom4 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 5:
                     {
-                        lead.Custom5 = label + "|" + value; break;
+                        lead.Custom5 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 6:
                     {
-                        lead.Custom6 = label + "|" + value; break;
+                        lead.Custom6 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 7:
                     {
-                        lead.Custom7 = label + "|" + value; break;
+                        lead.Custom7 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 8:
                     {
-                        lead.Custom8 = label + "|" + value; break;
+                        lead.Custom8 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 9:
                     {
-                        lead.Custom9 = label + "|" + value; break;
+                        lead.Custom9 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 10:
                     {
-                        lead.Custom10 = label + "|" + value; break;
+                        lead.Custom10 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 11:
                     {
-                        lead.Custom11 = label + "|" + value; break;
+                        lead.Custom11 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 12:
                     {
-                        lead.Custom12 = label + "|" + value; break;
+                        lead.Custom12 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 13:
                     {
-                        lead.Custom13 = label + "|" + value; break;
+                        lead.Custom13 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 14:
                     {
-                        lead.Custom14 = label + "|" + value; break;
+                        lead.Custom14 = label + "|" + (value != null ? value : ""); break;
                     }
                 case 15:
                     {
-                        lead.Custom15 = label + "|" + value; break;
+                        lead.Custom15 = label + "|" + (value != null ? value : ""); break;
                     }
             }
 
@@ -392,7 +392,7 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         query += ", " + rdr["sf_variable"].ToString().Trim();
                                         customViewFields += "|" + rdr["sf_variable"].ToString().Trim() ;
-                                        sLabelViewFields += rdr["label"].ToString().Trim();
+                                        sLabelViewFields += "|" + rdr["label"].ToString().Trim();
                                     }
                                 }
 
@@ -521,11 +521,11 @@ namespace SalesForceOAuth.Controllers
                                         customSearchFields += "|" + rdr["search_field_name"].ToString().Trim();
                                     }
                                 }
-                                return 1;
+                                
                             }
                             rdr.Close();
                             conn.Close();
-                            return 0;
+                            return 1;
                         }
                         else
                         {
@@ -961,7 +961,7 @@ namespace SalesForceOAuth.Controllers
         public static string GetConnectionStringbyURL(string url, string objectRef)
         {
             string connectionString = "";
-            if (url.Contains("api-apps-dotnet-dev0.websitealive.com") || url.Contains("localhost"))
+            if (url.Contains("api-apps-dotnet-dev0.websitealive.com") || url.Contains("localhost") || url.Contains("worker-dev0.websitealive.com"))
                 connectionString = Environment.GetEnvironmentVariable("devappsConnStr");
             else if (url.Contains("api-apps-dotnet-stage.websitealive.com"))
             {

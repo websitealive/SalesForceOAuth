@@ -143,15 +143,15 @@ namespace SalesForceOAuth.Controllers
                     {
                         Account l = new Account();
                         l.Id = c.Id;
-                        l.AccountNumber = c.AccountNumber; 
-                        l.Name = c.Name;
-                        l.Phone = c.Phone;
+                        l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
+                        l.Name = (c.Name != null ? c.Name : "");
+                        l.Phone = (c.Phone != null ? c.Phone : ""); 
                         if (cSearchField.Length > 0)
                         {
-                            int noOfcustomItems = 0;
+                            int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                int i = 0;
+                                
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -159,9 +159,10 @@ namespace SalesForceOAuth.Controllers
                                         //code to add to custom list
                                         noOfcustomItems++;
                                         MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                        i++;
                                     }
                                 }
-                                i++; 
+                                
                             }
                         }
                         myAccounts.Add(l);

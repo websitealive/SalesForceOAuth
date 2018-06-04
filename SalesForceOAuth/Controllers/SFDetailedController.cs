@@ -44,6 +44,7 @@ namespace SalesForceOAuth.Controllers
                 string query = ""; 
                 MyAppsDb.GetAPICredentialswithCustomViewFields(ObjectRef, GroupId, entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional,ref sLabelOptional ,ref query, urlReferrer);
                 string[] customSearchArray = sFieldOptional.Split('|');
+                string[] customSearchLabelArray = sLabelOptional.Split('|');
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 query += " where Id ='" + refId + "'";
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
@@ -79,19 +80,37 @@ namespace SalesForceOAuth.Controllers
                                 noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Name", c.Account.Name.ToString(), noOfcustomItems);
                             }
                         }
+                        //if (sFieldOptional.Length > 0)
+                        //{
+                            
+                        //    foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                        //    {
+                        //        foreach (string csA in customSearchArray)
+                        //        {
+                        //            if (item.Name == csA)
+                        //            {
+                        //                //code to add to custom list
+                        //                noOfcustomItems++;
+                        //                MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
+                        //            }
+                        //        }
+                        //    }
+                        //}
                         if (sFieldOptional.Length > 0)
                         {
-                            
+                            int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
+
                                 foreach (string csA in customSearchArray)
                                 {
-                                    if (item.Name == csA)
+                                    if (item.Name.ToLower() == csA.ToLower())
                                     {
                                         //code to add to custom list
                                         noOfcustomItems++;
-                                        MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
-                                    }
+                                        MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                        i++;
+                                    }//codde
                                 }
                             }
                         }

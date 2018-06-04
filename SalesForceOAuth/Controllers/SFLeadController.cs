@@ -59,7 +59,14 @@ namespace SalesForceOAuth.Controllers
                 SuccessResponse sR;
                 dynamic newLead = new ExpandoObject();
                 newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
-                newLead.Email = lData.Email; newLead.Phone = lData.Phone;
+                newLead.Email = lData.Email;
+                lData.Phone = lData.Phone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
+                newLead.Phone = String.Format("{0:(###) ###-####}", lData.Phone);
+                Decimal value;
+                if (Decimal.TryParse(lData.Phone, out value))
+                    newLead.Phone = String.Format("{0:(###) ###-####}", value);
+                else
+                    return MyAppsDb.ConvertJSONOutput(new Exception("Phone number not in right format",null), "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
 
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {
@@ -133,7 +140,8 @@ namespace SalesForceOAuth.Controllers
                     }
                 }
                 query.Append("SELECT Id, FirstName, LastName, Company, Email, Phone " + columns.ToString() + " From Lead ");
-                query.Append("where FirstName like '%" + SValue + "%' ");
+                query.Append("where Name like '%" + SValue + "%' ");
+                query.Append("OR FirstName like '%" + SValue + "%' ");
                 query.Append("OR LastName like '%" + SValue + "%' ");
                 query.Append("OR Email like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
@@ -146,17 +154,17 @@ namespace SalesForceOAuth.Controllers
                     {
                         Lead l = new Lead();
                         l.Id = c.Id;
-                        l.FirstName = c.FirstName;
-                        l.LastName = c.LastName;
-                        l.Company = c.Company;
-                        l.Email = c.Email;
-                        l.Phone = c.Phone;
+                        l.FirstName = (c.FirstName != null ? c.FirstName:"");
+                        l.LastName = (c.LastName != null ? c.LastName:"");
+                        l.Company = (c.Company != null ? c.Company :"");
+                        l.Email = (c.Email != null ? c.Email :"") ;
+                        l.Phone = (c.Phone != null ? c.Phone : "");
                         if (cSearchField.Length > 0)
                         {
-                            int noOfcustomItems = 0;
+                            int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                int i = 0; 
+                                
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -165,8 +173,9 @@ namespace SalesForceOAuth.Controllers
                                         noOfcustomItems++;
                                         //MyAppsDb.AssignCustomVariableValue(l, item.Name, item.Value.ToString(), noOfcustomItems);
                                         MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                        i++;
                                     }
-                                    i++;
+                                    
                                 }
                             }
                         }

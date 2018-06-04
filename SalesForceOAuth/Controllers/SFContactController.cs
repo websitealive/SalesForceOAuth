@@ -179,7 +179,8 @@ namespace SalesForceOAuth.Controllers
                     }
                 }
                 query.Append("SELECT Id, FirstName, LastName, Email, Phone " + columns + ", AccountId, Account.Name From Contact ");
-                query.Append("where FirstName like '%" + SValue + "%' ");
+                query.Append("where Name like '%" + SValue + "%' ");
+                query.Append("OR FirstName like '%" + SValue + "%' ");
                 query.Append("OR LastName like '%" + SValue + "%' ");
                 query.Append("OR Email like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
@@ -192,21 +193,22 @@ namespace SalesForceOAuth.Controllers
                     {
                         MyContact l = new MyContact();
                         l.Id = c.Id;
-                        l.FirstName = c.FirstName;
-                        l.LastName = c.LastName;
-                        l.Email = c.Email;
-                        l.Phone = c.Phone;
-                        l.AccountId = c.AccountId;
+                        l.FirstName = (c.FirstName != null ? c.FirstName : "");
+                        l.LastName = (c.LastName != null ? c.LastName : "");
+                        l.Email = (c.Email != null ? c.Email : "");
+                        l.Phone = (c.Phone != null ? c.Phone : "");
+                        l.AccountId = (c.AccountId != null ? c.AccountId : "");
                         if (c.Account != null)
                         {
                             l.AccountName = c.Account.Name;
                         }
+                        else l.AccountName = ""; 
                         if (cSearchField.Length > 0)
                         {
-                            int noOfcustomItems = 0;
+                            int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                int i = 0; 
+                                 
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -214,9 +216,9 @@ namespace SalesForceOAuth.Controllers
                                         //code to add to custom list
                                         noOfcustomItems++;
                                         MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                        i++;
                                     }
                                 }
-                                i++; 
                             }
                         }
                         myContacts.Add(l);
