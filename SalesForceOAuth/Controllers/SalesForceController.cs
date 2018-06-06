@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace SalesForceOAuth.Controllers
 {
-    
+
     public class SalesForceController : ApiController
     {
         /// <summary>
@@ -36,7 +36,7 @@ namespace SalesForceOAuth.Controllers
                     return MyAppsDb.ConvertJSONPOutput(callback, ex, "Salesforce-GetRedirectURL", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
                 }
                 string sf_authoize_url = "", sf_clientid = "", sf_callback_url = "";
-                if(siteRef.Contains("localhost"))
+                if (siteRef.Contains("localhost"))
                 {
                     sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -54,9 +54,9 @@ namespace SalesForceOAuth.Controllers
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
                     return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "SalesForce-GetRedirectURL", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
@@ -81,7 +81,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)
         {
-            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef );
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -114,12 +114,12 @@ namespace SalesForceOAuth.Controllers
                     throw;
                 }
             }
-            
+
         }
 
         public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource, string urlReferrer)
         {
-            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -180,7 +180,7 @@ namespace SalesForceOAuth.Controllers
 
         public static void CreateNewIntegrationSettingForUser(string ObjectRef, int GroupId, string SFRefreshToken, string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
         {
-            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef );
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -204,9 +204,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetCurrentRefreshToken(string objectRef, int GroupId,  ref string SFRefreshToken, string urlReferrer)
+        public static void GetCurrentRefreshToken(string objectRef, int GroupId, ref string SFRefreshToken, string urlReferrer)
         {
-            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -235,7 +235,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void UpdateIntegrationSettingForUser(string ObjectRef, int GroupId,  string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
+        public static void UpdateIntegrationSettingForUser(string ObjectRef, int GroupId, string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -257,7 +257,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetAPICredentials(string ObjectRef, int GroupId,ref  string SFAccessToken,ref string SFApiVersion,ref string SFInstanceUrl, string urlReferrer)
+        public static void GetAPICredentials(string ObjectRef, int GroupId, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -289,9 +289,9 @@ namespace SalesForceOAuth.Controllers
                 }
             }
         }
-        public static void AssignCustomVariableValue(dynamic lead,string label, string value, int itemno)
+        public static void AssignCustomVariableValue(dynamic lead, string label, string value, int itemno)
         {
-            switch(itemno)
+            switch (itemno)
             {
                 case 1:
                     {
@@ -356,7 +356,7 @@ namespace SalesForceOAuth.Controllers
             }
 
         }
-        public static void GetAPICredentialswithCustomViewFields(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, ref string customViewFields,ref string sLabelViewFields, ref string query, string urlReferrer)
+        public static void GetAPICredentialswithCustomViewFields(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, ref string customViewFields, ref string sLabelViewFields, ref string query, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -367,7 +367,7 @@ namespace SalesForceOAuth.Controllers
                     string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_type,iscs.label,iscs.sf_variable frOM integration_settings AS ints Left Outer Join integration_salesforce_detailedview_fields AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
                     sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    int row = 0; customViewFields = "" ; sLabelViewFields = ""; 
+                    int row = 0; customViewFields = ""; sLabelViewFields = "";
                     query = "SELECT Id ";
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -378,30 +378,30 @@ namespace SalesForceOAuth.Controllers
                                 SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
                                 SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
                                 SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
-                                
+
                                 if (rdr["entity_type"].ToString().Equals(entityType))
                                 {
                                     if (row == 0)
                                     {
-                                        customViewFields = rdr["sf_variable"].ToString().Trim() ;
-                                        sLabelViewFields = rdr["label"].ToString().Trim(); 
-                                        query +=  ", " + rdr["sf_variable"].ToString().Trim(); 
+                                        customViewFields = rdr["sf_variable"].ToString().Trim();
+                                        sLabelViewFields = rdr["label"].ToString().Trim();
+                                        query += ", " + rdr["sf_variable"].ToString().Trim();
                                         row++;
                                     }
                                     else
                                     {
                                         query += ", " + rdr["sf_variable"].ToString().Trim();
-                                        customViewFields += "|" + rdr["sf_variable"].ToString().Trim() ;
+                                        customViewFields += "|" + rdr["sf_variable"].ToString().Trim();
                                         sLabelViewFields += "|" + rdr["label"].ToString().Trim();
                                     }
                                 }
 
                             }
                         }
-                        if(entityType.ToLower() == "lead")
+                        if (entityType.ToLower() == "lead")
                         {
-                            query += "," + ConfigurationManager.AppSettings["SFLeadDefault"]; 
-                        } 
+                            query += "," + ConfigurationManager.AppSettings["SFLeadDefault"];
+                        }
                         else if (entityType.ToLower() == "account")
                         {
                             query += "," + ConfigurationManager.AppSettings["SFAccountDefault"];
@@ -432,7 +432,7 @@ namespace SalesForceOAuth.Controllers
         }
 
 
-        public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType ,ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl,ref string customSearchFields, ref string customSearchFieldsLabels, string urlReferrer)
+        public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, ref string customSearchFields, ref string customSearchFieldsLabels, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -441,9 +441,9 @@ namespace SalesForceOAuth.Controllers
                 {
                     conn.Open();
                     string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_field_name, iscs.search_label frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
-                           sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
+                    sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    int row = 0; customSearchFields = ""; customSearchFieldsLabels = ""; 
+                    int row = 0; customSearchFields = ""; customSearchFieldsLabels = "";
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
                         if (rdr.HasRows)
@@ -453,13 +453,13 @@ namespace SalesForceOAuth.Controllers
                                 SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
                                 SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
                                 SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
-                                if(rdr["entity_name"].ToString().Equals(entityType))
+                                if (rdr["entity_name"].ToString().Equals(entityType))
                                 {
                                     if (row == 0)
                                     {
                                         customSearchFields = rdr["search_field_name"].ToString().Trim();
                                         customSearchFieldsLabels = rdr["search_label"].ToString().Trim();
-                                        row++; 
+                                        row++;
                                     }
                                     else
                                     {
@@ -521,7 +521,7 @@ namespace SalesForceOAuth.Controllers
                                         customSearchFields += "|" + rdr["search_field_name"].ToString().Trim();
                                     }
                                 }
-                                
+
                             }
                             rdr.Close();
                             conn.Close();
@@ -554,7 +554,7 @@ namespace SalesForceOAuth.Controllers
             }
             if (callback.Equals("internal"))
             {
-                return ConvertStringOutput(message.ToString(), code); 
+                return ConvertStringOutput(message.ToString(), code);
             }
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
@@ -566,13 +566,13 @@ namespace SalesForceOAuth.Controllers
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
-  
+
         public static HttpResponseMessage ConvertJSONOutput(object message, HttpStatusCode code, bool logError)
         {
             //log exception if true
             if (logError)
             {
-                LogError(message.ToString()); 
+                LogError(message.ToString());
             }
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
@@ -604,7 +604,7 @@ namespace SalesForceOAuth.Controllers
                     int rowsDeleted = cmd1.ExecuteNonQuery();
 
                     string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp,owner_email)";
-                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now(), '"+ OwnerEmail +"')";
+                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now(), '" + OwnerEmail + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
                     conn.Close();
@@ -617,9 +617,9 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId,ref int id,  ref string itemId, ref string itemType, ref string ownerEmail, string urlReferrer)
+        public static void GetTaggedChatId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType, ref string ownerEmail, string urlReferrer)
         {
-            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer,objectRef);
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -836,7 +836,7 @@ namespace SalesForceOAuth.Controllers
                 catch (Exception ex)
                 {
                     conn.Close();
-                    throw; 
+                    throw;
                 }
             }
         }
@@ -866,7 +866,7 @@ namespace SalesForceOAuth.Controllers
                 }
             }
 
-            
+
         }
 
         public static void GetTaggedChatDynamicsId(string objectRef, int groupId, int sessionId, ref int id, ref string itemId, ref string itemType, string urlReferrer)
@@ -902,7 +902,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static CRMTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword, 
+        public static CRMTokenStatus GetAccessTokenDynamics(string objectRef, string groupId, ref string accessToken, ref string username, ref string userPassword,
             ref string clientId, ref string serviceURL, ref DateTime tokenExpiryDT, ref string authority, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -962,13 +962,17 @@ namespace SalesForceOAuth.Controllers
         {
             string connectionString = "";
             if (url.Contains("api-apps-dotnet-dev0.websitealive.com") || url.Contains("localhost") || url.Contains("worker-dev0.websitealive.com"))
-                connectionString = Environment.GetEnvironmentVariable("devappsConnStr");
+            {
+                connectionString = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
+
+                //connectionString = Environment.GetEnvironmentVariable("devappsConnStr");
+            }
             else if (url.Contains("api-apps-dotnet-stage.websitealive.com"))
             {
                 //connectionString = Environment.GetEnvironmentVariable("stageappsConnStr");
 
                 connectionString = "server=dbmain.alivechat.websitealive.com;user=apps;database=apps;port=3306;password=wXa8823v123!;";
-               // connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
+                // connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
             }
             else if (url.Contains("api-apps-dotnet.websitealive.com"))
             {
@@ -978,12 +982,12 @@ namespace SalesForceOAuth.Controllers
             }
             else
                 connectionString = "";
-            return connectionString; 
+            return connectionString;
         }
         public static int GetDynamicsCredentials(string objectRef, int groupId, ref string applicationURL, ref string userName, ref string password, ref string authType, string referrerURL)
         {
 
-            string connStr = MyAppsDb.GetConnectionStringbyURL(referrerURL, objectRef );  
+            string connStr = MyAppsDb.GetConnectionStringbyURL(referrerURL, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
                 try
@@ -1013,7 +1017,7 @@ namespace SalesForceOAuth.Controllers
                             conn.Close();
                             return -1;
                         }
-                        
+
                     }
                 }
                 catch (Exception ex)
@@ -1022,7 +1026,7 @@ namespace SalesForceOAuth.Controllers
                     throw;
                 }
             }
-            
+
         }
 
         public static int RecordDynamicsCredentials(string objectRef, int groupId, string organizationURL, string userName, string password, string authType, string urlReferrer)
@@ -1058,7 +1062,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 catch (Exception ex)
                 {
-                    conn.Close(); 
+                    conn.Close();
                     throw;
                 }
             }
@@ -1090,7 +1094,7 @@ namespace SalesForceOAuth.Controllers
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
-            { 
+            {
                 try
                 {
                     conn.Open();
@@ -1107,7 +1111,7 @@ namespace SalesForceOAuth.Controllers
                 }
             }
         }
-             
+
         public static CRMTokenStatus GetAccessTokenSalesForce(string objectRef, int groupId, ref string accessToken, string urlReferrer)
         {
             //string connStr = "server=dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com;user=root;database=apps;port=3306;password=a2387ass;Convert Zero Datetime=True;";
@@ -1145,7 +1149,7 @@ namespace SalesForceOAuth.Controllers
                                     return CRMTokenStatus.TOKENEXPIRED;
                                 }
                             }
-                            
+
                             return CRMTokenStatus.USERNOTFOUND;
                         }
                         else
@@ -1154,7 +1158,7 @@ namespace SalesForceOAuth.Controllers
                             return CRMTokenStatus.USERNOTFOUND;
                         }
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -1162,7 +1166,7 @@ namespace SalesForceOAuth.Controllers
                     throw;
                 }
             }
-            
+
         }
 
         public static void GetRedirectURLParametersCallBack(ref string sf_callback_url, int id, string urlReferrer, string objectRef)
@@ -1209,7 +1213,7 @@ namespace SalesForceOAuth.Controllers
                 string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
                 log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
             }
-            catch(Exception ex1)
+            catch (Exception ex1)
             { }
         }
 
@@ -1261,13 +1265,13 @@ namespace SalesForceOAuth.Controllers
             response.StatusCode = code;
             StringBuilder sb = new StringBuilder();
             JavaScriptSerializer js = new JavaScriptSerializer();
-            string outMsg = errorTitle +"--Internal exception : " + InnerException + ", Exception Message: " + Message; 
+            string outMsg = errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message;
             sb.Append(js.Serialize(outMsg));
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
 
-        
+
         #endregion SalesForce Methods
     }
 
@@ -1294,7 +1298,7 @@ namespace SalesForceOAuth.Controllers
     //    public string LeadId { get; set; }
     //    public string Messsage { get; set; }
     //}
-    
-    
- 
+
+
+
 }

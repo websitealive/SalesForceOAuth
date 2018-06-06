@@ -45,7 +45,7 @@ namespace SalesForceOAuth.Controllers
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef,lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
                 connectionString += "RequireNewInstance=true;";
@@ -100,7 +100,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Could not add new account, check mandatory fields", HttpStatusCode.InternalServerError,true);
+                        return MyAppsDb.ConvertJSONOutput("Could not add new account, check mandatory fields", HttpStatusCode.InternalServerError, true);
                     }
                 }
                 else
@@ -120,7 +120,7 @@ namespace SalesForceOAuth.Controllers
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string callback)
         {
-       
+
             string outputPayload;
             try
             {
@@ -174,7 +174,7 @@ namespace SalesForceOAuth.Controllers
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd2);
-                    filter1.FilterOperator = LogicalOperator.Or; 
+                    filter1.FilterOperator = LogicalOperator.Or;
                     QueryExpression query = new QueryExpression("account");
                     query.ColumnSet.AddColumns("accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name");
                     query.Criteria.AddFilter(filter1);
@@ -230,9 +230,11 @@ namespace SalesForceOAuth.Controllers
         public int GroupId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
         //public string Salesengineer { get; set; }
-        
+
     }
 
     public class DYAccountPostValue
@@ -280,7 +282,7 @@ namespace SalesForceOAuth.Controllers
         public string Custom9 { get; set; }
         public string Custom10 { get; set; }
     }
-    public class DYAccountOutput: DYAccount
+    public class DYAccountOutput : DYAccount
     {
         [JsonProperty("odata.etag")]
         public string etag { get; set; }
@@ -294,5 +296,5 @@ namespace SalesForceOAuth.Controllers
         public DYAccountOutput[] value { get; set; }
     }
 
-    
+
 }

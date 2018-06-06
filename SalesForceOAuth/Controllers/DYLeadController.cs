@@ -43,7 +43,7 @@ namespace SalesForceOAuth.Controllers
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId , ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
                 connectionString += "RequireNewInstance=true;";
@@ -58,8 +58,8 @@ namespace SalesForceOAuth.Controllers
                     inData.Add("lastname", new CrmDataTypeWrapper(lData.Lastname, CrmFieldType.String));
                     inData.Add("subject", new CrmDataTypeWrapper(lData.Subject, CrmFieldType.String));
                     //inData.Add("address1_city", new CrmDataTypeWrapper(lData.City, CrmFieldType.String));
-                    //inData.Add("address1_telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
-                    //inData.Add("emailaddress1", new CrmDataTypeWrapper(lData.Email, CrmFieldType.String));
+                    inData.Add("telephone1", new CrmDataTypeWrapper(lData.Phone, CrmFieldType.String));
+                    inData.Add("emailaddress1", new CrmDataTypeWrapper(lData.Email, CrmFieldType.String));
                     if (lData.CustomFields != null)
                     {
                         foreach (DYCustomObject c in lData.CustomFields)
@@ -103,12 +103,12 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Could not add new Lead, check mandatory fields", HttpStatusCode.InternalServerError,true);
+                        return MyAppsDb.ConvertJSONOutput("Could not add new Lead, check mandatory fields", HttpStatusCode.InternalServerError, true);
                     }
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.InternalServerError,true);
+                    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.InternalServerError, true);
                 }
 
                 #region dynamics rest api call code obsolete
@@ -224,7 +224,7 @@ namespace SalesForceOAuth.Controllers
                     filter1.FilterOperator = LogicalOperator.Or;
                     QueryExpression query = new QueryExpression("lead");
                     query.ColumnSet.AddColumns("leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname");
-                   query.Criteria.AddFilter(filter1);
+                    query.Criteria.AddFilter(filter1);
 
                     EntityCollection result1 = objser.RetrieveMultiple(query);
                     if (result1.Entities.Count > 0)
@@ -252,7 +252,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     return MyAppsDb.ConvertJSONPOutput(callback, listToReturn, HttpStatusCode.OK, false);
                 }
-              #region dynamics api call 
+                #region dynamics api call 
                 ////HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], ObjectRef,GroupId.ToString(), "internal");
                 //HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(ObjectRef, GroupId.ToString());
                 //if (msg.StatusCode == HttpStatusCode.OK)
@@ -329,6 +329,8 @@ namespace SalesForceOAuth.Controllers
         public string Lastname { get; set; }
         public string Companyname { get; set; }
         public string Subject { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
 
 

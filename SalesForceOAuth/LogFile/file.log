@@ -604,3 +604,28 @@ Parameter name: Organization Name
 25/05/2018 16:45:53 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y0000
 25/05/2018 16:50:50 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y000002c2Rm2
 25/05/2018 16:51:49 ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: 0010Y000002c2Rm2
+6/6/2018 10:45:03 AM ==> Internal Error: 
+6/6/2018 10:46:21 AM ==> "Internal Error: "
+6/6/2018 10:51:19 AM ==> Internal Error: 
+6/6/2018 10:51:19 AM ==> "Internal Error: "
+6/6/2018 11:12:43 AM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+6/6/2018 11:12:44 AM ==> "Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts."
+6/6/2018 1:12:50 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: User
+6/6/2018 1:57:55 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+6/6/2018 2:08:21 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+6/6/2018 2:11:20 PM ==> Internal Exception: Dynamics setup is incomplete or login credentials are not right. 
+6/6/2018 2:21:19 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+6/6/2018 2:24:12 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+6/6/2018 2:31:32 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Organization cannot be null or empty.
+Parameter name: Organization Name
+6/6/2018 2:56:00 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'ayu_salesperson' and NameMapping = 'Logical'.
+6/6/2018 3:01:04 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'ayu_salesperson' and NameMapping = 'Logical'.
+6/6/2018 3:10:19 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: User
+6/6/2018 3:36:23 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An item with the same key has already been added.
+6/6/2018 3:38:21 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An item with the same key has already been added.
+6/6/2018 3:42:23 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An item with the same key has already been added.
+6/6/2018 3:56:28 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'ayu_salesperson' and NameMapping = 'Logical'.

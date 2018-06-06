@@ -72,6 +72,8 @@ namespace SalesForceOAuth.Controllers
                     Entity registration = new Entity("contact");
                     registration["firstname"] = lData.FirstName;
                     registration["lastname"] = lData.LastName;
+                    registration["emailaddress1"] = lData.Email;
+                    registration["telephone1"] = lData.Phone;
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
@@ -87,7 +89,7 @@ namespace SalesForceOAuth.Controllers
                                 case "optionset":
                                     {
                                         type = CrmFieldType.CrmDecimal;
-                                        int option = Convert.ToInt32(c.value); 
+                                        int option = Convert.ToInt32(c.value);
                                         registration[c.field] = new OptionSetValue(option);
                                         break;
                                     }
@@ -107,7 +109,7 @@ namespace SalesForceOAuth.Controllers
                                         type = CrmFieldType.String;
                                         registration[c.field] = c.value;
                                         break;
-                                        
+
                                     }
                             }
                             //if (type != CrmFieldType.Lookup)
@@ -208,7 +210,7 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "DyContact-GetConfigurationStatus", "Unhandled exception", HttpStatusCode.OK);
             }
-           
+
         }
 
         [HttpGet]
@@ -255,7 +257,7 @@ namespace SalesForceOAuth.Controllers
                     QueryExpression query = new QueryExpression("contact");
                     query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
                     FilterExpression filter1 = new FilterExpression();
-                    
+
                     string[] customSearchArray = sFieldOptional.Split('|');
                     if (sFieldOptional.Length > 0)
                     {
@@ -297,11 +299,11 @@ namespace SalesForceOAuth.Controllers
                             }
                             if (z.Attributes.Contains("firstname"))
                             {
-                                info.firstname = z.Attributes["firstname"].ToString(); 
+                                info.firstname = z.Attributes["firstname"].ToString();
                             }
                             if (z.Attributes.Contains("lastname"))
                             {
-                                info.lastname = z.Attributes["lastname"].ToString(); 
+                                info.lastname = z.Attributes["lastname"].ToString();
                             }
                             int noOfcustomItems = 0;
                             if (sFieldOptional.Length > 0)
@@ -317,7 +319,7 @@ namespace SalesForceOAuth.Controllers
                                     else
                                     {
                                         noOfcustomItems++; // if no value found return empty string 
-                                        MyAppsDb.AssignCustomVariableValue(info, csA,"", noOfcustomItems);
+                                        MyAppsDb.AssignCustomVariableValue(info, csA, "", noOfcustomItems);
                                     }
                                 }
                             }
