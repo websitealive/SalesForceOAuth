@@ -629,3 +629,7 @@ Parameter name: Organization Name
 6/6/2018 3:38:21 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An item with the same key has already been added.
 6/6/2018 3:42:23 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An item with the same key has already been added.
 6/6/2018 3:56:28 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'ayu_salesperson' and NameMapping = 'Logical'.
+6/7/2018 9:57:32 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+6/7/2018 9:58:55 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+6/7/2018 2:04:49 PM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/7/2018 2:05:53 PM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
