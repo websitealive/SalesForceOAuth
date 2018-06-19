@@ -49,7 +49,7 @@ namespace SalesForceOAuth.Controllers
 
 
                     //In chats in CRM
-                    if (lData.ChatId == null)
+                    if (lData.ChatId == Guid.Empty)
                     {
                         // Inserting the new chat
                         Guid newChatId;
@@ -58,13 +58,14 @@ namespace SalesForceOAuth.Controllers
                         {
                             #region set properties
                             IOrganizationService objser = (IOrganizationService)proxyservice;
-                            Entity registration = new Entity("new_alive5chat");
+                            Entity registration = new Entity("new_alive5sms");
 
 
-                            registration["ayu_lead"] = new EntityReference("lead", new Guid(lData.LeadId));
+                            registration["new_alive5sms"] = new EntityReference("lead", new Guid(lData.LeadId));
 
                             registration["new_name"] = "AliveChat ID: " + lData.SessionId;
-                            registration["new_5chat"] = lData.Message;
+                            registration["new_sms"] = lData.Message;
+                            registration["new_latestsms"] = lData.Message;
                             #endregion set properties
                             newChatId = objser.Create(registration);
                         }
@@ -86,19 +87,29 @@ namespace SalesForceOAuth.Controllers
                     else
                     {
                         // Update the Previous chat
-
-
                         ColumnSet cols = new ColumnSet(
-                            new String[] { "new_5chat", "address1_postalcode", "lastusedincampaign", "versionnumber" });
+                            new String[] { "new_5chat", "new_lastmessage" });
                         System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                         using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                         {
                             Entity retrievedChats = proxyservice.Retrieve("new_alive5chat", lData.ChatId, cols);
 
-                            Console.Write("retrieved ");
+                            var prChats = retrievedChats.Attributes["new_5chat"];
+                            var newChats = retrievedChats.Attributes["new_5chat"] + "|" + lData.Message;
+                            retrievedChats.Attributes["new_5chat"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                            retrievedChats.Attributes["new_lastmessage"] = lData.Message;
+
+
+                            proxyservice.Update(retrievedChats);
                         }
 
-                        return MyAppsDb.ConvertJSONOutput("Record Updated Successfully", HttpStatusCode.OK, false);
+                        PostedObjectDetail pObject = new PostedObjectDetail();
+                        pObject.Id = lData.ChatId.ToString();
+                        pObject.ObjectName = "Chat";
+                        pObject.Message = "Chat added successfully!";
+
+                        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+
                     }
 
                     #endregion code for post add message  
@@ -125,7 +136,7 @@ namespace SalesForceOAuth.Controllers
         public int GroupId { get; set; }
         public int SessionId { get; set; }
         public Guid ChatId { get; set; }
-        public byte[] LeadId { get; set; }
+        public string LeadId { get; set; }
         //public string ItemId { get; set; }
         public string Subject { get; set; }
         public string Message { get; set; }

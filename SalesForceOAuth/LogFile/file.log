@@ -633,3 +633,20 @@ Parameter name: Organization Name
 6/7/2018 9:58:55 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 6/7/2018 2:04:49 PM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
 6/7/2018 2:05:53 PM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/7/2018 2:51:34 PM ==> No Chat in queue to publish
+6/7/2018 2:52:46 PM ==> No Chat in queue to publish
+6/7/2018 2:59:37 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Byte array for GUID must be exactly 16 bytes long.
+6/19/2018 10:56:35 AM ==> Function: SFAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/19/2018 11:01:05 AM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+6/19/2018 11:01:05 AM ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+6/19/2018 11:02:54 AM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+6/19/2018 11:02:54 AM ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+6/19/2018 12:23:36 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+6/19/2018 12:23:36 PM ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+6/19/2018 12:24:25 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+6/19/2018 12:24:30 PM ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
+6/19/2018 12:35:41 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 6/30/2018 or request may be missing a required field at [line:1, column:60]

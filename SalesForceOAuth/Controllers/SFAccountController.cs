@@ -16,6 +16,78 @@ namespace SalesForceOAuth.Controllers
 {
     public class SFAccountController : ApiController
     {
+        //[HttpPost]
+        //public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(AccountData lData)
+        //{
+        //    string outputPayload;
+        //    try
+        //    {
+        //        outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Your request isn't authorized!", HttpStatusCode.OK);
+        //    }
+        //    //Access token update
+        //    string urlReferrer = Request.RequestUri.Authority.ToString();
+        //    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
+        //    if (msg.StatusCode != HttpStatusCode.OK)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, true);
+        //    }
+        //    try
+        //    {
+        //        string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+        //        MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+        //        ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+        //        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        //        //find lead owner user
+        //        // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+        //        lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
+        //        QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
+        //            "where Username like '%" + lData.OwnerEmail + "%' " +
+        //            "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
+        //        string ownerId = "";
+        //        foreach (dynamic c in cont.Records)
+        //        {
+        //            ownerId = c.Id;
+        //        }
+        //        SuccessResponse sR;
+        //        dynamic newAccount = new ExpandoObject();
+        //        newAccount.Name = lData.Name; newAccount.AccountNumber = lData.AccountNumber; newAccount.Phone = lData.Phone;
+        //        if (ownerId != "" && lData.OwnerEmail != "")
+        //        {
+        //            MyAppsDb.AddProperty(newAccount, "OwnerId", ownerId);
+        //        }
+        //        if (lData.CustomFields != null)
+        //        {
+        //            foreach (CustomObject c in lData.CustomFields)
+        //            {
+        //                MyAppsDb.AddProperty(newAccount, c.field, c.value);
+        //            }
+        //        }
+        //        sR = await client.CreateAsync("Account", newAccount).ConfigureAwait(false);
+        //        if (sR.Success == true)
+        //        {
+        //            PostedObjectDetail output = new PostedObjectDetail();
+        //            output.Id = sR.Id;
+        //            output.ObjectName = "Account";
+        //            output.Message = "Account added successfully!";
+        //            return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
+        //        }
+        //        else
+        //        {
+        //            return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.OK);
+        //    }
+        //    //}
+        //    //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
+        //}
+
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAccount(AccountData lData)
         {
@@ -30,60 +102,79 @@ namespace SalesForceOAuth.Controllers
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef),urlReferrer);
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
             {
-                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, true);
             }
             try
+            {
+                string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+                MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                //find lead owner user
+                // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
+                    "where Username like '%" + lData.OwnerEmail + "%' " +
+                    "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
+                string ownerId = "";
+                foreach (dynamic c in cont.Records)
                 {
-                    string InstanceUrl = "", AccessToken = "", ApiVersion = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl,urlReferrer);
-                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    //find lead owner user
-                    // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-                    lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
-                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
-                        "where Username like '%" + lData.OwnerEmail + "%' " +
-                        "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
-                    string ownerId = "";
-                    foreach (dynamic c in cont.Records)
+                    ownerId = c.Id;
+                }
+                SuccessResponse sR;
+                dynamic newAccount = new ExpandoObject();
+                newAccount.Phone = lData.Phone;
+                newAccount.AccountNumber = lData.AccountNumber;
+                if (lData.AccountType == 0) //For Business Account
+                {
+                    newAccount.Name = lData.Name;
+                }
+                else if (lData.AccountType == 0) // For Personal Account
+                {
+                    newAccount.FirstName = lData.FirstName;
+                    newAccount.LastName = lData.LastName;
+                    newAccount.Active__c = lData.Active;
+                    newAccount.SLA__c = lData.SLA;
+                    newAccount.SLAExpirationDate__c = lData.SLAExpirationDate;
+                    newAccount.SLASerialNumber__c = lData.SLASerialNumber;
+                }
+                else
+                {
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: The Account either Business or Personal", HttpStatusCode.OK, true);
+                }
+
+                if (ownerId != "" && lData.OwnerEmail != "")
+                {
+                    MyAppsDb.AddProperty(newAccount, "OwnerId", ownerId);
+                }
+                if (lData.CustomFields != null)
+                {
+                    foreach (CustomObject c in lData.CustomFields)
                     {
-                        ownerId = c.Id;
-                    }
-                    SuccessResponse sR;
-                    dynamic newAccount = new ExpandoObject();
-                    newAccount.Name = lData.Name; newAccount.AccountNumber = lData.AccountNumber; newAccount.Phone = lData.Phone;
-                    if (ownerId != "" && lData.OwnerEmail != "")
-                    {
-                        MyAppsDb.AddProperty(newAccount, "OwnerId", ownerId);
-                    }
-                    if (lData.CustomFields != null)
-                    {
-                        foreach (CustomObject c in lData.CustomFields)
-                        {
-                            MyAppsDb.AddProperty(newAccount, c.field, c.value);
-                        }
-                    }
-                    sR = await client.CreateAsync("Account", newAccount).ConfigureAwait(false);
-                    if (sR.Success == true)
-                    {
-                        PostedObjectDetail output = new PostedObjectDetail();
-                        output.Id = sR.Id;
-                        output.ObjectName = "Account";
-                        output.Message = "Account added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK,false);
-                    }
-                    else
-                    {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
+                        MyAppsDb.AddProperty(newAccount, c.field, c.value);
                     }
                 }
-                catch (Exception ex)
+                sR = await client.CreateAsync("Account", newAccount).ConfigureAwait(false);
+                if (sR.Success == true)
                 {
-                    return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.OK);
+                    PostedObjectDetail output = new PostedObjectDetail();
+                    output.Id = sR.Id;
+                    output.ObjectName = "Account";
+                    output.Message = "Account added successfully!";
+                    return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
                 }
+                else
+                {
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "SFAccount-PostAccount", "Unhandled exception", HttpStatusCode.OK);
+            }
             //}
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
@@ -99,14 +190,14 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-               return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.OK);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
-            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef),urlReferrer);
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(siteRef), urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
             {
-                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode,true);
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, true);
             }
             try
             {
@@ -114,7 +205,7 @@ namespace SalesForceOAuth.Controllers
                 //MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 string cSearchField = "";
                 string cSearchFieldLabels = "";
-                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField,ref cSearchFieldLabels, urlReferrer);
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "account", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();
@@ -145,13 +236,13 @@ namespace SalesForceOAuth.Controllers
                         l.Id = c.Id;
                         l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
                         l.Name = (c.Name != null ? c.Name : "");
-                        l.Phone = (c.Phone != null ? c.Phone : ""); 
+                        l.Phone = (c.Phone != null ? c.Phone : "");
                         if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                
+
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -162,13 +253,13 @@ namespace SalesForceOAuth.Controllers
                                         i++;
                                     }
                                 }
-                                
+
                             }
                         }
                         myAccounts.Add(l);
                     }
                 }
-                return MyAppsDb.ConvertJSONPOutput(callback,myAccounts, HttpStatusCode.OK,false);
+                return MyAppsDb.ConvertJSONPOutput(callback, myAccounts, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
@@ -193,10 +284,17 @@ namespace SalesForceOAuth.Controllers
         public string token { get; set; }
         public string ObjectRef { get; set; }
         public int GroupId { get; set; }
+        public int AccountType { get; set; } // 0 for Business Account & 1 for Personal Account.
         public string AccountNumber { get; set; }
         public string Name { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
+        public string Active { get; set; }
+        public string SLA { get; set; }
+        public DateTime SLAExpirationDate { get; set; }
+        public string SLASerialNumber { get; set; }
         public List<CustomObject> CustomFields { get; set; }
     }
     public class Account
