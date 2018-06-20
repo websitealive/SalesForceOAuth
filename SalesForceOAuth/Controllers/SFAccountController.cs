@@ -132,18 +132,18 @@ namespace SalesForceOAuth.Controllers
                 {
                     newAccount.Name = lData.Name;
                 }
-                else if (lData.AccountType == 0) // For Personal Account
+                else if (lData.AccountType == 1) // For Personal Account
                 {
                     newAccount.FirstName = lData.FirstName;
                     newAccount.LastName = lData.LastName;
-                    newAccount.Active__c = lData.Active;
-                    newAccount.SLA__c = lData.SLA;
-                    newAccount.SLAExpirationDate__c = lData.SLAExpirationDate;
-                    newAccount.SLASerialNumber__c = lData.SLASerialNumber;
+                    //newAccount.Active__c = lData.Active;
+                    //newAccount.SLA__c = lData.SLA;
+                    //newAccount.SLAExpirationDate__c = lData.SLAExpirationDate;
+                    //newAccount.SLASerialNumber__c = lData.SLASerialNumber;
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: The Account either Business or Personal", HttpStatusCode.OK, true);
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: Invalid AccountType. For Business Account the AccountType is 0 and for Personal Account AccountType is 1", HttpStatusCode.Conflict, true);
                 }
 
                 if (ownerId != "" && lData.OwnerEmail != "")
@@ -291,10 +291,6 @@ namespace SalesForceOAuth.Controllers
         public string LastName { get; set; }
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
-        public string Active { get; set; }
-        public string SLA { get; set; }
-        public DateTime SLAExpirationDate { get; set; }
-        public string SLASerialNumber { get; set; }
         public List<CustomObject> CustomFields { get; set; }
     }
     public class Account

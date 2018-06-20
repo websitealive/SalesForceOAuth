@@ -650,3 +650,8 @@ Parameter name: Organization Name
    at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
 6/19/2018 12:24:30 PM ==> "Unhandled exception--Internal exception : Salesforce.Common.ForceException: retry your request\r\n   at Salesforce.Common.AuthenticationClient.\u003cTokenRefreshAsync\u003ed__13.MoveNext(), Exception Message: One or more errors occurred."
 6/19/2018 12:35:41 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 6/30/2018 or request may be missing a required field at [line:1, column:60]
+6/20/2018 3:29:36 PM ==> SalesForce Error: The Account either Business or Personal
+6/20/2018 3:31:19 PM ==> SalesForce Error: The Account either Business or Personal
+6/20/2018 3:33:35 PM ==> SalesForce Error: The Account either Business or Personal
+6/20/2018 3:36:47 PM ==> SalesForce Error: The Account either Business or Personal
+6/20/2018 3:40:58 PM ==> SalesForce Error: Invalid AccountType for Business Account the AccountType is 0 & for Personal Account AccountType is 1
