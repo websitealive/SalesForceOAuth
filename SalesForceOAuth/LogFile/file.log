@@ -655,3 +655,5 @@ Parameter name: Organization Name
 6/20/2018 3:33:35 PM ==> SalesForce Error: The Account either Business or Personal
 6/20/2018 3:36:47 PM ==> SalesForce Error: The Account either Business or Personal
 6/20/2018 3:40:58 PM ==> SalesForce Error: Invalid AccountType for Business Account the AccountType is 0 & for Personal Account AccountType is 1
+6/21/2018 11:40:20 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.
+6/21/2018 11:42:59 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.

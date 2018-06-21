@@ -34,7 +34,7 @@ namespace SalesForceOAuth.Controllers
                     string ApplicationURL = "", userName = "", password = "", authType = "";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
                     int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-                    
+
                     Uri organizationUri;
                     Uri homeRealmUri;
                     ClientCredentials credentials = new ClientCredentials();
@@ -56,23 +56,36 @@ namespace SalesForceOAuth.Controllers
                         {
                             #region set properties
                             IOrganizationService objser = (IOrganizationService)proxyservice;
-                            Entity registration = new Entity("ayu_alivechat");
+                            Entity registration;
                             if (ItemType.Contains("account"))
                             {
+                                registration = new Entity("ayu_alivechat");
                                 registration["ayu_account"] = new EntityReference("account", new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else if (ItemType.Contains("lead"))
                             {
-                                registration["ayu_lead"] = new EntityReference("lead", new Guid(ItemId));
+                                registration = new Entity("gol_leadalivechat");
+                                registration["gol_leadid"] = new EntityReference("lead", new Guid(ItemId));
+                                registration["gol_name"] = "AliveChat ID: " + lData.SessionId;
+                                registration["gol_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else if (ItemType.Contains("contact"))
                             {
-                                registration["ayu_contact"] = new EntityReference("contact", new Guid(ItemId));
+                                registration = new Entity("gol_contactalivechat");
+                                registration["gol_contactid"] = new EntityReference("contact", new Guid(ItemId));
+                                registration["gol_name"] = "AliveChat ID: " + lData.SessionId;
+                                registration["gol_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            }
+                            else
+                            {
+                                registration = new Entity();
+                                newChatId = Guid.Empty;
+                                return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
                             }
 
-                            registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                            registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"); 
-                            #endregion set properties
+                            #endregion
                             newChatId = objser.Create(registration);
                         }
                         if (newChatId != Guid.Empty)
@@ -81,7 +94,7 @@ namespace SalesForceOAuth.Controllers
                             pObject.Id = newChatId.ToString();
                             pObject.ObjectName = "Chat";
                             pObject.Message = "Chat added successfully!";
-                            MyAppsDb.ChatQueueItemAddedDynamics(chatId,urlReferrer, lData.ObjectRef);
+                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef);
                             return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
                         }
                         else
@@ -238,7 +251,7 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYChat-GetTagChat", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
-       }
+        }
         //pubic searchChat()
         //{
         //    //sample code
