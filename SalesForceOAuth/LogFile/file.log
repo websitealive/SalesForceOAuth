@@ -657,3 +657,4 @@ Parameter name: Organization Name
 6/20/2018 3:40:58 PM ==> SalesForce Error: Invalid AccountType for Business Account the AccountType is 0 & for Personal Account AccountType is 1
 6/21/2018 11:40:20 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.
 6/21/2018 11:42:59 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.
+6/22/2018 11:06:49 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Lead With Id = 4357974b-e275-e811-a95d-000d3a33efbc Does Not Exist

@@ -66,17 +66,17 @@ namespace SalesForceOAuth.Controllers
                             }
                             else if (ItemType.Contains("lead"))
                             {
-                                registration = new Entity("gol_leadalivechat");
-                                registration["gol_leadid"] = new EntityReference("lead", new Guid(ItemId));
-                                registration["gol_name"] = "AliveChat ID: " + lData.SessionId;
-                                registration["gol_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                registration = new Entity("ayu_leadalivechat");
+                                registration["ayu_leadid"] = new EntityReference("lead", new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                registration["ayu_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else if (ItemType.Contains("contact"))
                             {
-                                registration = new Entity("gol_contactalivechat");
-                                registration["gol_contactid"] = new EntityReference("contact", new Guid(ItemId));
-                                registration["gol_name"] = "AliveChat ID: " + lData.SessionId;
-                                registration["gol_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                registration = new Entity("ayu_contactalivechat");
+                                registration["ayu_contactid"] = new EntityReference("contact", new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                registration["ayu_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else
                             {
