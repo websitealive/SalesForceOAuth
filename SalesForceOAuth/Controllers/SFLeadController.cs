@@ -26,7 +26,7 @@ namespace SalesForceOAuth.Controllers
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(LeadData lData)
         {
             string outputPayload;//
-            try 
+            try
             {
                 outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
@@ -58,15 +58,33 @@ namespace SalesForceOAuth.Controllers
                 }
                 SuccessResponse sR;
                 dynamic newLead = new ExpandoObject();
+
+
                 newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
                 newLead.Email = lData.Email;
                 lData.Phone = lData.Phone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
                 newLead.Phone = String.Format("{0:(###) ###-####}", lData.Phone);
+
+                #region Dynamic Inout Fields
+                if (lData.InputFields != null)
+                {
+                    foreach (InputFields inputField in lData.InputFields)
+                    {
+                        if (inputField.Value != null)
+                        {
+                            MyAppsDb.AddProperty(newLead, inputField.FieldName, inputField.Value);
+                            //dictionaryLead.Add(inputField.FieldName, inputField.Value);
+                        }
+
+                    }
+                }
+                #endregion
+
                 Decimal value;
                 if (Decimal.TryParse(lData.Phone, out value))
                     newLead.Phone = String.Format("{0:(###) ###-####}", value);
                 else
-                    return MyAppsDb.ConvertJSONOutput(new Exception("Phone number not in right format",null), "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
+                    return MyAppsDb.ConvertJSONOutput(new Exception("Phone number not in right format", null), "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
 
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {
@@ -123,7 +141,7 @@ namespace SalesForceOAuth.Controllers
                 List<Lead> myLeads = new List<Lead> { };
                 string cSearchField = "";
                 string cSearchFieldLabels = "";
-                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "lead", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField,ref cSearchFieldLabels, urlReferrer);
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "lead", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();
@@ -145,7 +163,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("OR LastName like '%" + SValue + "%' ");
                 query.Append("OR Email like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
-                query.Append(filters.ToString()); 
+                query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
@@ -154,17 +172,17 @@ namespace SalesForceOAuth.Controllers
                     {
                         Lead l = new Lead();
                         l.Id = c.Id;
-                        l.FirstName = (c.FirstName != null ? c.FirstName:"");
-                        l.LastName = (c.LastName != null ? c.LastName:"");
-                        l.Company = (c.Company != null ? c.Company :"");
-                        l.Email = (c.Email != null ? c.Email :"") ;
+                        l.FirstName = (c.FirstName != null ? c.FirstName : "");
+                        l.LastName = (c.LastName != null ? c.LastName : "");
+                        l.Company = (c.Company != null ? c.Company : "");
+                        l.Email = (c.Email != null ? c.Email : "");
                         l.Phone = (c.Phone != null ? c.Phone : "");
                         if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                
+
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -175,7 +193,7 @@ namespace SalesForceOAuth.Controllers
                                         MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
                                         i++;
                                     }
-                                    
+
                                 }
                             }
                         }
@@ -183,7 +201,7 @@ namespace SalesForceOAuth.Controllers
                     }
                 }
                 return MyAppsDb.ConvertJSONPOutput(callback, myLeads, HttpStatusCode.OK, false);
-                
+
             }
             catch (Exception ex)
             {
@@ -192,7 +210,7 @@ namespace SalesForceOAuth.Controllers
         }
     }
 
-   
+
     public class PostedObjectDetail
     {
         public string ObjectName { get; set; }
@@ -215,6 +233,12 @@ namespace SalesForceOAuth.Controllers
     {
         public string field { get; set; }
     }
+    public class InputFields
+    {
+        public string FieldName { get; set; }
+        public string Value { get; set; }
+    }
+
 
     public class LeadData : MyValidation
     {
@@ -229,6 +253,7 @@ namespace SalesForceOAuth.Controllers
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
         public List<CustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
     }
 
     public class SearchLeadData : SecureInfo

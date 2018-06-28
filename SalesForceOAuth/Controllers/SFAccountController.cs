@@ -136,10 +136,7 @@ namespace SalesForceOAuth.Controllers
                 {
                     newAccount.FirstName = lData.FirstName;
                     newAccount.LastName = lData.LastName;
-                    //newAccount.Active__c = lData.Active;
-                    //newAccount.SLA__c = lData.SLA;
-                    //newAccount.SLAExpirationDate__c = lData.SLAExpirationDate;
-                    //newAccount.SLASerialNumber__c = lData.SLASerialNumber;
+
                 }
                 else
                 {
@@ -150,6 +147,21 @@ namespace SalesForceOAuth.Controllers
                 {
                     MyAppsDb.AddProperty(newAccount, "OwnerId", ownerId);
                 }
+
+                #region Dynamic Inout Fields
+                if (lData.InputFields != null)
+                {
+                    foreach (InputFields inputField in lData.InputFields)
+                    {
+                        if (inputField.Value != null)
+                        {
+                            MyAppsDb.AddProperty(newAccount, inputField.FieldName, inputField.Value);
+                        }
+
+                    }
+                }
+                #endregion
+
                 if (lData.CustomFields != null)
                 {
                     foreach (CustomObject c in lData.CustomFields)
@@ -292,6 +304,7 @@ namespace SalesForceOAuth.Controllers
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
         public List<CustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
     }
     public class Account
     {

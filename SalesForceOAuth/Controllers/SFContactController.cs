@@ -57,6 +57,21 @@ namespace SalesForceOAuth.Controllers
                 {
                     MyAppsDb.AddProperty(newContact, "OwnerId", ownerId);
                 }
+
+                #region Dynamic Inout Fields
+                if (lData.InputFields != null)
+                {
+                    foreach (InputFields inputField in lData.InputFields)
+                    {
+                        if (inputField.Value != null)
+                        {
+                            MyAppsDb.AddProperty(newContact, inputField.FieldName, inputField.Value);
+                        }
+
+                    }
+                }
+                #endregion
+
                 if (lData.CustomFields != null)
                 {
                     foreach (CustomObject c in lData.CustomFields)
@@ -162,7 +177,7 @@ namespace SalesForceOAuth.Controllers
                 string cSearchField = "";
                 //string cSearchField = "";
                 string cSearchFieldLabels = "";
-                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField,ref cSearchFieldLabels, urlReferrer);
+                MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();
@@ -170,8 +185,8 @@ namespace SalesForceOAuth.Controllers
                 StringBuilder filters = new StringBuilder();
                 string[] customSearchFieldArray = cSearchField.Split('|');
                 string[] customSearchLabelArray = cSearchFieldLabels.Split('|');
-                if (cSearchField.Length > 0 )
-                { 
+                if (cSearchField.Length > 0)
+                {
                     foreach (string csA in customSearchFieldArray)
                     {
                         columns.Append("," + csA);
@@ -186,7 +201,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-                QueryResult <dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {
                     foreach (dynamic c in cont.Records)
@@ -202,13 +217,13 @@ namespace SalesForceOAuth.Controllers
                         {
                             l.AccountName = c.Account.Name;
                         }
-                        else l.AccountName = ""; 
+                        else l.AccountName = "";
                         if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0; int i = 0;
                             foreach (Newtonsoft.Json.Linq.JProperty item in c)
                             {
-                                 
+
                                 foreach (string csA in customSearchFieldArray)
                                 {
                                     if (item.Name.ToLower() == csA.ToLower())
@@ -230,7 +245,7 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedLeads", "Unhandled exception", HttpStatusCode.OK);
             }
-      
+
         }
     }
 
@@ -247,6 +262,7 @@ namespace SalesForceOAuth.Controllers
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
         public List<CustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
     }
 
     public class MyContact

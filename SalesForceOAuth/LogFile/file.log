@@ -658,3 +658,15 @@ Parameter name: Organization Name
 6/21/2018 11:40:20 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.
 6/21/2018 11:42:59 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alivechat' entity doesn't contain attribute with Name = 'gol_leadid' and NameMapping = 'Logical'.
 6/22/2018 11:06:49 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Lead With Id = 4357974b-e275-e811-a95d-000d3a33efbc Does Not Exist
+6/26/2018 9:51:32 AM ==> SalesForce Error: Invalid AccountType. For Business Account the AccountType is 0 and for Personal Account AccountType is 1
+6/26/2018 10:33:20 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [Name]
+6/28/2018 9:57:26 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'FieldName' on sobject of type Lead
+6/28/2018 10:12:05 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'test' on sobject of type Lead
+6/28/2018 10:14:51 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'test' on sobject of type Lead
+6/28/2018 10:18:14 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'test' on sobject of type Lead
+6/28/2018 10:22:08 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: An element with the same key 'Title' already exists in the ExpandoObject.
+6/28/2018 10:42:20 AM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+6/28/2018 12:58:03 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'test' on sobject of type Lead
+6/28/2018 3:16:24 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Email: invalid email address: raja.goldevelopers.com
+6/28/2018 3:17:55 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Email: invalid email address: raja.goldevelopers.com
