@@ -66,6 +66,20 @@ namespace SalesForceOAuth.Controllers
                     registration["emailaddress1"] = lData.Email;
                     registration["telephone1"] = lData.Phone;
 
+                    #region Dynamic Inout Fields
+                    if (lData.InputFields != null)
+                    {
+                        foreach (InputFields inputField in lData.InputFields)
+                        {
+                            if (inputField.Value != null)
+                            {
+                                registration[inputField.FieldName] = inputField.Value;
+                            }
+
+                        }
+                    }
+                    #endregion
+
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
@@ -419,6 +433,7 @@ namespace SalesForceOAuth.Controllers
         public string Email { get; set; }
         public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
 
 
         //public string Email { get; set; }

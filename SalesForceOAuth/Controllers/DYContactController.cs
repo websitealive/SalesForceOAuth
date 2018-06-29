@@ -74,6 +74,21 @@ namespace SalesForceOAuth.Controllers
                     registration["lastname"] = lData.LastName;
                     registration["emailaddress1"] = lData.Email;
                     registration["telephone1"] = lData.Phone;
+
+                    #region Dynamic Inout Fields
+                    if (lData.InputFields != null)
+                    {
+                        foreach (InputFields inputField in lData.InputFields)
+                        {
+                            if (inputField.Value != null)
+                            {
+                                registration[inputField.FieldName] = inputField.Value;
+                            }
+
+                        }
+                    }
+                    #endregion
+
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {

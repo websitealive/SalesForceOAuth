@@ -62,6 +62,21 @@ namespace SalesForceOAuth.Controllers
                     registration["accountnumber"] = lData.AccountNumber;
                     registration["description"] = lData.Description;
                     registration["telephone1"] = lData.Phone;
+
+                    #region Dynamic Inout Fields
+                    if (lData.InputFields != null)
+                    {
+                        foreach (InputFields inputField in lData.InputFields)
+                        {
+                            if (inputField.Value != null)
+                            {
+                                registration[inputField.FieldName] = inputField.Value;
+                            }
+
+                        }
+                    }
+                    #endregion
+
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
@@ -308,6 +323,7 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
     }
     public class DYContactPostData : MyValidation
     {
@@ -319,6 +335,7 @@ namespace SalesForceOAuth.Controllers
         public string Email { get; set; }
         public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
+        public List<InputFields> InputFields { get; set; }
         //public string Salesengineer { get; set; }
 
     }
