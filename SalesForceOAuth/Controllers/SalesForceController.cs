@@ -364,7 +364,11 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_type,iscs.label,iscs.sf_variable frOM integration_settings AS ints Left Outer Join integration_salesforce_detailedview_fields AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+                    //string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_type,iscs.label,iscs.sf_variable frOM integration_settings AS ints Left Outer Join integration_salesforce_detailedview_fields AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+
+                    //string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_label,iscs.search_field_name frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
+
+                    string sql = "SELECT ints.id,ints.objectref,ints.groupid,ints.SFAccessToken,ints.SFApiVersion,ints.SFInstanceUrl,iscs.entity_name,iscs.search_label,iscs.search_field_name frOM integration_settings AS ints Left Outer Join integration_salesforce_custom_search AS iscs ON ints.objectref = iscs.objectref AND ints.groupid = iscs.groupid ";
                     sql += " WHERE ints.ObjectRef = '" + ObjectRef + "' AND ints.GroupId = " + GroupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int row = 0; customViewFields = ""; sLabelViewFields = "";
@@ -379,20 +383,27 @@ namespace SalesForceOAuth.Controllers
                                 SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
                                 SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
 
-                                if (rdr["entity_type"].ToString().Equals(entityType))
+                                //if (rdr["entity_type"].ToString().Equals(entityType))
+                                if (rdr["entity_name"].ToString().ToLower().Equals(entityType.ToLower()))
                                 {
                                     if (row == 0)
                                     {
-                                        customViewFields = rdr["sf_variable"].ToString().Trim();
-                                        sLabelViewFields = rdr["label"].ToString().Trim();
-                                        query += ", " + rdr["sf_variable"].ToString().Trim();
+                                        //customViewFields = rdr["sf_variable"].ToString().Trim();
+                                        //sLabelViewFields = rdr["label"].ToString().Trim();
+                                        //query += ", " + rdr["sf_variable"].ToString().Trim();
+                                        customViewFields = rdr["search_field_name"].ToString().Trim();
+                                        sLabelViewFields = rdr["search_label"].ToString().Trim();
+                                        query += ", " + rdr["search_field_name"].ToString().Trim();
                                         row++;
                                     }
                                     else
                                     {
-                                        query += ", " + rdr["sf_variable"].ToString().Trim();
-                                        customViewFields += "|" + rdr["sf_variable"].ToString().Trim();
-                                        sLabelViewFields += "|" + rdr["label"].ToString().Trim();
+                                        //query += ", " + rdr["sf_variable"].ToString().Trim();
+                                        //customViewFields += "|" + rdr["sf_variable"].ToString().Trim();
+                                        //sLabelViewFields += "|" + rdr["label"].ToString().Trim();
+                                        query += ", " + rdr["search_field_name"].ToString().Trim();
+                                        customViewFields += "|" + rdr["search_field_name"].ToString().Trim();
+                                        sLabelViewFields += "|" + rdr["search_label"].ToString().Trim();
                                     }
                                 }
 

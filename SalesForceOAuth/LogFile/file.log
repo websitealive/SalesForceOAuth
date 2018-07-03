@@ -670,3 +670,30 @@ Parameter name: key
 6/28/2018 12:58:03 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: No such column 'test' on sobject of type Lead
 6/28/2018 3:16:24 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Email: invalid email address: raja.goldevelopers.com
 6/28/2018 3:17:55 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Email: invalid email address: raja.goldevelopers.com
+7/3/2018 12:23:03 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Could not find specified column in results: entity_type
+7/3/2018 12:23:55 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Could not find specified column in results: entity_type
+7/3/2018 12:40:49 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
+                             ^
+ERROR at Row:1:Column:30
+duplicate field selected: pacid__c
+7/3/2018 12:42:30 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
+                             ^
+ERROR at Row:1:Column:30
+duplicate field selected: pacid__c
+7/3/2018 12:43:28 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
+                             ^
+ERROR at Row:1:Column:30
+duplicate field selected: pacid__c
+7/3/2018 12:44:38 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
+                             ^
+ERROR at Row:1:Column:30
+duplicate field selected: pacid__c
+7/3/2018 12:55:54 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
+                             ^
+ERROR at Row:1:Column:30
+duplicate field selected: pacid__c
