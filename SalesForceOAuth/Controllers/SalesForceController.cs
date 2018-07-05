@@ -1238,14 +1238,18 @@ namespace SalesForceOAuth.Controllers
 
         }
 
-        public static HttpResponseMessage ConvertJSONPOutput(string callback, Exception ex, string function, string errorTitle, HttpStatusCode code)
+        public static HttpResponseMessage ConvertJSONPOutput(string callback, Exception ex, string function, string errorTitle, HttpStatusCode code, bool logError = true)
         {
-            //log exception
-            CreateLogFiles log = new CreateLogFiles();
             string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
             string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
-            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
-            //output message
+            if (logError)
+            {
+                //log exception
+                CreateLogFiles log = new CreateLogFiles();
+                log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+                //output message
+            }
+
             string outMsg = errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message;
             if (callback.Equals("internal"))
             {
@@ -1262,14 +1266,18 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
-        public static HttpResponseMessage ConvertJSONOutput(Exception ex, string function, string errorTitle, HttpStatusCode code)
+        public static HttpResponseMessage ConvertJSONOutput(Exception ex, string function, string errorTitle, HttpStatusCode code, bool logError = true)
         {
-            //log exception
-            CreateLogFiles log = new CreateLogFiles();
             string InnerException = (ex.InnerException == null ? "" : ex.InnerException.ToString());
             string Message = (ex.Message.ToString() == null ? "" : ex.Message.ToString());
-            log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
-            //output message
+            if (logError)
+            {
+                //log exception
+                CreateLogFiles log = new CreateLogFiles();
+                log.ErrorLog("Function: " + function + " : " + errorTitle + "--Internal exception : " + InnerException + ", Exception Message: " + Message);
+                //output message
+            }
+
             HttpResponseMessage response = new HttpResponseMessage();
             response.StatusCode = code;
             StringBuilder sb = new StringBuilder();

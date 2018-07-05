@@ -697,3 +697,9 @@ SELECT Id , pacid__c, Title, pacid__c, FirstName, LastName, Company
                              ^
 ERROR at Row:1:Column:30
 duplicate field selected: pacid__c
+7/5/2018 12:24:27 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Parameter cannot be null
+Parameter name: original
+7/5/2018 12:25:20 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Parameter cannot be null
+Parameter name: original
+7/5/2018 12:28:12 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Parameter cannot be null
+Parameter name: original
