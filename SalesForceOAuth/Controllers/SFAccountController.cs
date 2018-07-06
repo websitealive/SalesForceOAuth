@@ -237,6 +237,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("SELECT Id, AccountNumber, Name, Phone " + columns + " From Account ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
+                query.Append("OR AccountNumber like '%" + SValue + "%' ");
                 query.Append(filters.ToString());
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);

@@ -158,6 +158,7 @@ namespace SalesForceOAuth.Controllers
                         filters.Append("OR " + csA + " like '%" + SValue + "%' ");
                     }
                 }
+                //Id, FirstName, LastName, Company, Email, Phone
                 query.Append("SELECT Id, FirstName, LastName, Company, Email, Phone " + columns.ToString() + " From Lead ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR FirstName like '%" + SValue + "%' ");
@@ -178,6 +179,8 @@ namespace SalesForceOAuth.Controllers
                         l.Company = (c.Company != null ? c.Company : "");
                         l.Email = (c.Email != null ? c.Email : "");
                         l.Phone = (c.Phone != null ? c.Phone : "");
+
+
                         if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0; int i = 0;
@@ -392,4 +395,5 @@ namespace SalesForceOAuth.Controllers
         }
 
     }
+
 }

@@ -462,7 +462,7 @@ namespace SalesForceOAuth.Controllers
                                 SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
                                 SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
                                 SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
-                                if (rdr["entity_name"].ToString().Equals(entityType))
+                                if (rdr["entity_name"].ToString().ToLower().Equals(entityType.ToLower()))
                                 {
                                     if (row == 0)
                                     {
@@ -1287,7 +1287,6 @@ namespace SalesForceOAuth.Controllers
             response.Content = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
             return response;
         }
-
 
         #endregion SalesForce Methods
     }
