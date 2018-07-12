@@ -254,6 +254,8 @@ namespace SalesForceOAuth.Controllers
                 //int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
                 int output = MyAppsDb.GetDynamicsCredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref ApplicationURL, ref userName, ref password, ref authType, ref sFieldOptional, urlReferrer);
 
+                var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Contact", urlReferrer);
+
                 Uri organizationUri;
                 Uri homeRealmUri;
                 ClientCredentials credentials = new ClientCredentials();
@@ -270,17 +272,35 @@ namespace SalesForceOAuth.Controllers
                     List<DYContact> listToReturn = new List<DYContact>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
                     QueryExpression query = new QueryExpression("contact");
-                    query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
+
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { "contactid", "firstname", "lastname" });
+                    // Add Default Searched Column
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+                    // Add Custom Searched Column
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var field in getSearchedFileds)
+                        {
+                            query.ColumnSet.AddColumn(field.FieldName);
+                        }
+
+                    }
+
+                    //query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
                     FilterExpression filter1 = new FilterExpression();
 
-                    string[] customSearchArray = sFieldOptional.Split('|');
-                    if (sFieldOptional.Length > 0)
-                    {
-                        foreach (string csA in customSearchArray)
-                        {
-                            query.ColumnSet.AddColumn(csA);
-                        }
-                    }
+                    //string[] customSearchArray = sFieldOptional.Split('|');
+                    //if (sFieldOptional.Length > 0)
+                    //{
+                    //    foreach (string csA in customSearchArray)
+                    //    {
+                    //        query.ColumnSet.AddColumn(csA);
+                    //    }
+                    //}
                     //filter name 
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
@@ -288,12 +308,12 @@ namespace SalesForceOAuth.Controllers
                     filterOwnRcd.Values.Add("%" + SValue + "%");
                     filter1.Conditions.Add(filterOwnRcd);
                     // get list of custom fields 
-                    if (sFieldOptional.Length > 0)
+                    if (getSearchedFileds.Count > 0)
                     {
-                        foreach (string csA in customSearchArray)
+                        foreach (var csA in getSearchedFileds)
                         {
                             ConditionExpression filterOwnRcd2 = new ConditionExpression();
-                            filterOwnRcd2.AttributeName = csA;
+                            filterOwnRcd2.AttributeName = csA.FieldName;
                             filterOwnRcd2.Operator = ConditionOperator.Like;
                             filterOwnRcd2.Values.Add("%" + SValue + "%");
                             filter1.Conditions.Add(filterOwnRcd2);
@@ -320,24 +340,46 @@ namespace SalesForceOAuth.Controllers
                             {
                                 info.lastname = z.Attributes["lastname"].ToString();
                             }
-                            int noOfcustomItems = 0;
-                            if (sFieldOptional.Length > 0)
+                            //int noOfcustomItems = 0;
+                            //if (sFieldOptional.Length > 0)
+                            //{
+                            //    foreach (string csA in customSearchArray)
+                            //    {
+                            //        if (z.Attributes.Contains(csA))
+                            //        {
+                            //            //code to add to custom list
+                            //            noOfcustomItems++;
+                            //            MyAppsDb.AssignCustomVariableValue(info, csA, z.Attributes[csA].ToString(), noOfcustomItems);
+                            //        }
+                            //        else
+                            //        {
+                            //            noOfcustomItems++; // if no value found return empty string 
+                            //            MyAppsDb.AssignCustomVariableValue(info, csA, "", noOfcustomItems);
+                            //        }
+                            //    }
+                            //}
+
+                            // Start Custom Search Filed
+                            List<InputFields> retSearchFields = new List<InputFields>();
+                            if (getSearchedFileds.Count > 0)
                             {
-                                foreach (string csA in customSearchArray)
+                                foreach (var field in getSearchedFileds)
                                 {
-                                    if (z.Attributes.Contains(csA))
+                                    if (z.Attributes.Contains(field.FieldName))
                                     {
-                                        //code to add to custom list
-                                        noOfcustomItems++;
-                                        MyAppsDb.AssignCustomVariableValue(info, csA, z.Attributes[csA].ToString(), noOfcustomItems);
-                                    }
-                                    else
-                                    {
-                                        noOfcustomItems++; // if no value found return empty string 
-                                        MyAppsDb.AssignCustomVariableValue(info, csA, "", noOfcustomItems);
+                                        InputFields Fields = new InputFields();
+                                        Fields.FieldLabel = field.FieldLabel;
+                                        Fields.Value = z.Attributes[field.FieldName].ToString();
+
+                                        retSearchFields.Add(Fields);
                                     }
                                 }
+
                             }
+
+                            info.searchFields = retSearchFields;
+                            // End Custom Search Filed
+
                             listToReturn.Add(info);
                         }
                     }

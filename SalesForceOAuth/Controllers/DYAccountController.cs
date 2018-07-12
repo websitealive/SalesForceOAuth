@@ -245,6 +245,8 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
+                var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Account", urlReferrer);
+
                 Uri organizationUri;
                 Uri homeRealmUri;
                 ClientCredentials credentials = new ClientCredentials();
@@ -275,9 +277,37 @@ namespace SalesForceOAuth.Controllers
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd2);
+                    //Add Custom Search Filters
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var csA in getSearchedFileds)
+                        {
+                            ConditionExpression filterOwnRcd4 = new ConditionExpression();
+                            filterOwnRcd4.AttributeName = csA.FieldName;
+                            filterOwnRcd4.Operator = ConditionOperator.Like;
+                            filterOwnRcd4.Values.Add("%" + SValue + "%");
+                            filter1.Conditions.Add(filterOwnRcd4);
+                        }
+                    }
                     filter1.FilterOperator = LogicalOperator.Or;
                     QueryExpression query = new QueryExpression("account");
-                    query.ColumnSet.AddColumns("accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name");
+
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { "accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name" });
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var field in getSearchedFileds)
+                        {
+                            query.ColumnSet.AddColumn(field.FieldName);
+                        }
+
+                    }
+
+                    //query.ColumnSet.AddColumns("accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name");
                     query.Criteria.AddFilter(filter1);
 
                     EntityCollection result1 = objser.RetrieveMultiple(query);
@@ -299,6 +329,28 @@ namespace SalesForceOAuth.Controllers
                                 info.emailaddress1 = z.Attributes["emailaddress1"].ToString();
                             if (z.Attributes.Contains("name"))
                                 info.name = z.Attributes["name"].ToString();
+                            // Start Custom Search Filed
+                            List<InputFields> retSearchFields = new List<InputFields>();
+                            if (getSearchedFileds.Count > 0)
+                            {
+
+                                foreach (var field in getSearchedFileds)
+                                {
+                                    if (z.Attributes.Contains(field.FieldName))
+                                    {
+                                        InputFields Fields = new InputFields();
+                                        Fields.FieldLabel = field.FieldLabel;
+                                        Fields.Value = z.Attributes[field.FieldName].ToString();
+
+                                        retSearchFields.Add(Fields);
+                                    }
+                                }
+
+                            }
+
+                            info.searchFields = retSearchFields;
+                            // End Custom Search Filed
+
                             listToReturn.Add(info);
                         }
                     }
@@ -368,12 +420,14 @@ namespace SalesForceOAuth.Controllers
         public string address1_telephone1 { get; set; }
         public string emailaddress1 { get; set; }
         public string crmtaskassigneduniqueid { get; set; }
+        public List<InputFields> searchFields { get; set; }
     }
     public class DYContact
     {
         public string contactid { get; set; }
         public string firstname { get; set; }
         public string lastname { get; set; }
+        public List<InputFields> searchFields { get; set; }
         public string Custom1 { get; set; }
         public string Custom2 { get; set; }
         public string Custom3 { get; set; }

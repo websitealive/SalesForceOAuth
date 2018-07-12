@@ -275,6 +275,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLogic\DynamicCommon.cs" />
     <Compile Include="Controllers\DYAdminConfigController.cs" />
     <Compile Include="Controllers\DYChatLiveFiveController.cs" />
     <Compile Include="Controllers\DYConfigController.cs" />

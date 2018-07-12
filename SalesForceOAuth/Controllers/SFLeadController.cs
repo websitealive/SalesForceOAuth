@@ -240,6 +240,7 @@ namespace SalesForceOAuth.Controllers
     public class InputFields
     {
         public string FieldName { get; set; }
+        public string FieldLabel { get; set; }
         public string Value { get; set; }
     }
 

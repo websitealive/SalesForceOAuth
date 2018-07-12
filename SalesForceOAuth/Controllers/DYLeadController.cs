@@ -18,6 +18,7 @@ using System.Text;
 using System.Web.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using SalesForceOAuth.BusinessLogic;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -285,6 +286,8 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
+                var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Lead", urlReferrer);
+
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -317,14 +320,42 @@ namespace SalesForceOAuth.Controllers
                     filterOwnRcd3.Operator = ConditionOperator.Like;
                     filterOwnRcd3.Values.Add("%" + SValue + "%");
 
-
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd2);
                     filter1.Conditions.Add(filterOwnRcd3);
+                    //Add Custom Search Filters
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var csA in getSearchedFileds)
+                        {
+                            ConditionExpression filterOwnRcd4 = new ConditionExpression();
+                            filterOwnRcd4.AttributeName = csA.FieldName;
+                            filterOwnRcd4.Operator = ConditionOperator.Like;
+                            filterOwnRcd4.Values.Add("%" + SValue + "%");
+                            filter1.Conditions.Add(filterOwnRcd4);
+                        }
+                    }
                     filter1.FilterOperator = LogicalOperator.Or;
+
                     QueryExpression query = new QueryExpression("lead");
-                    query.ColumnSet.AddColumns("leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname");
+
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { "leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname" });
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var field in getSearchedFileds)
+                        {
+                            query.ColumnSet.AddColumn(field.FieldName);
+                        }
+
+                    }
+
+                    //query.ColumnSet.AddColumns("leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname");
                     query.Criteria.AddFilter(filter1);
 
                     EntityCollection result1 = objser.RetrieveMultiple(query);
@@ -348,6 +379,29 @@ namespace SalesForceOAuth.Controllers
                                 info.companyname = z.Attributes["companyname"].ToString();
                             if (z.Attributes.Contains("firstname"))
                                 info.firstname = z.Attributes["firstname"].ToString();
+
+                            // Start Custom Search Filed
+                            List<InputFields> retSearchFields = new List<InputFields>();
+                            if (getSearchedFileds.Count > 0)
+                            {
+
+                                foreach (var field in getSearchedFileds)
+                                {
+                                    if (z.Attributes.Contains(field.FieldName))
+                                    {
+                                        InputFields Fields = new InputFields();
+                                        Fields.FieldLabel = field.FieldLabel;
+                                        Fields.Value = z.Attributes[field.FieldName].ToString();
+
+                                        retSearchFields.Add(Fields);
+                                    }
+                                }
+
+                            }
+
+                            info.searchFields = retSearchFields;
+                            // End Custom Search Filed
+
                             listToReturn.Add(info);
                         }
                     }
@@ -460,6 +514,7 @@ namespace SalesForceOAuth.Controllers
         public string emailaddress1 { get; set; }
         public string address1_telephone1 { get; set; }
         public string address1_city { get; set; }
+        public List<InputFields> searchFields { get; set; }
     }
 
     public class DYLeadOutput : DYLead
