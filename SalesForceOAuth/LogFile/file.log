@@ -724,3 +724,64 @@ Parameter name: original
 7/11/2018 3:55:55 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Could not find specified column in results: entity_name
 7/11/2018 4:09:37 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
 7/11/2018 4:29:29 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'Lead' entity doesn't contain attribute with Name = 'leadidaddress1_cityaddress1_cityaddress1_cityaddress1_cityaddress1_cityaddress1_cityaddress1_cityjobtitle' and NameMapping = 'Platform'. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1124739, MinActiveRowVersion=1124739
+7/12/2018 12:40:09 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%d97d910b-0485-e811-a965-000d3a33e5a2%' to attribute 'lead.leadid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+7/12/2018 12:42:41 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%d97d910b-0485-e811-a965-000d3a33e5a2%' to attribute 'lead.leadid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+7/12/2018 12:43:06 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%d97d910b-0485-e811-a965-000d3a33e5a2%' to attribute 'lead.leadid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+7/12/2018 1:55:20 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Fatal error encountered attempting to read the resultset. ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.IOException: The read operation failed, see inner exception. ---> System.TimeoutException: Unable to read data from the transport connection: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. ---> System.IO.IOException: Unable to read data from the transport connection: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   --- End of inner exception stack trace ---
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security._SslStream.StartFrameHeader(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.StartReading(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.ProcessRead(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   --- End of inner exception stack trace ---
+   at System.Net.Security._SslStream.ProcessRead(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Fatal error encountered during command execution.
+7/12/2018 1:58:28 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%d97d910b-0485-e811-a965-000d3a33e5a2%' to attribute 'lead.leadid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+7/12/2018 2:02:16 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+7/13/2018 10:59:37 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/13/2018 11:06:38 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/13/2018 11:09:15 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/13/2018 11:09:18 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Sequence contains no elements
+7/13/2018 11:10:34 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Sequence contains no elements
+7/13/2018 11:34:53 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+7/13/2018 11:50:19 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'Contact' entity doesn't contain attribute with Name = 'subject' and NameMapping = 'Platform'. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1124739, MinActiveRowVersion=1124739

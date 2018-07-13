@@ -19,13 +19,15 @@ using System.Web.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using SalesForceOAuth.BusinessLogic;
+using System.Threading.Tasks;
+using SalesForceOAuth.ModelClasses;
 
 namespace SalesForceOAuth.Controllers
 {
     public class DYLeadController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostLead(DYLeadPostData lData)
+        public async Task<HttpResponseMessage> PostLead(DYLeadPostData lData)
         {
             string outputPayload;
             try
@@ -264,7 +266,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedLeads(string token, string ObjectRef, int GroupId, string SValue, string callback)
+        public async Task<HttpResponseMessage> GetSearchedLeads(string token, string ObjectRef, int GroupId, string SValue, string callback)
         {
             string outputPayload;
             try
@@ -390,6 +392,7 @@ namespace SalesForceOAuth.Controllers
                                     if (z.Attributes.Contains(field.FieldName))
                                     {
                                         InputFields Fields = new InputFields();
+
                                         Fields.FieldLabel = field.FieldLabel;
                                         Fields.Value = z.Attributes[field.FieldName].ToString();
 
