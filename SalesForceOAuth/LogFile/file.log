@@ -922,3 +922,4 @@ Parameter name: original
    at MySql.Data.MySqlClient.NativeDriver.Open()
 7/18/2018 4:53:14 PM ==> "Internal Error: System.Net.Sockets.SocketException (0x80004005): No such host is known\r\n   at System.Net.Dns.GetAddrInfo(String name)\r\n   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)\r\n   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)\r\n   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)\r\n   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)\r\n   at MySql.Data.MySqlClient.NativeDriver.Open()"
 7/18/2018 4:54:56 PM ==> User not registered to use this application.
+7/19/2018 3:10:01 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: The Dynamics 365 organization you are attempting to access is currently disabled.  Please contact your system administrator

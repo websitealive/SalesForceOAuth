@@ -69,14 +69,14 @@ namespace SalesForceOAuth.Controllers
                                 registration = new Entity("ayu_leadalivechat");
                                 registration["ayu_leadid"] = new EntityReference("lead", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                registration["ayu_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else if (ItemType.Contains("contact"))
                             {
                                 registration = new Entity("ayu_contactalivechat");
                                 registration["ayu_contactid"] = new EntityReference("contact", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                registration["ayu_alivechat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             }
                             else
                             {
