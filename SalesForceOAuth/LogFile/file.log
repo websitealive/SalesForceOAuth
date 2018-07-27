@@ -923,3 +923,22 @@ Parameter name: original
 7/18/2018 4:53:14 PM ==> "Internal Error: System.Net.Sockets.SocketException (0x80004005): No such host is known\r\n   at System.Net.Dns.GetAddrInfo(String name)\r\n   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)\r\n   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)\r\n   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)\r\n   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)\r\n   at MySql.Data.MySqlClient.NativeDriver.Open()"
 7/18/2018 4:54:56 PM ==> User not registered to use this application.
 7/19/2018 3:10:01 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: The Dynamics 365 organization you are attempting to access is currently disabled.  Please contact your system administrator
+7/26/2018 11:03:56 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Contact With Id = 084d1f31-9790-e811-a951-000d3a3655ec Does Not Exist
+7/26/2018 11:28:08 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+7/26/2018 11:30:08 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [Name]
+7/26/2018 11:32:02 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [Name]
+7/26/2018 11:36:11 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Account With Id = 8ee78511-9e90-e811-a950-000d3a3ab6b4 Does Not Exist
+7/26/2018 11:45:38 AM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+7/26/2018 11:46:05 AM ==> Function: DyAccount-PostAccount : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+7/26/2018 12:03:39 PM ==> No Chat in queue to publish
+7/26/2018 12:05:45 PM ==> No Chat in queue to publish
+7/26/2018 12:07:47 PM ==> No Chat in queue to publish
+7/26/2018 12:08:14 PM ==> No Chat in queue to publish
+7/26/2018 12:27:29 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Account With Id = fd10c592-a490-e811-81b2-0e4fcc581ae4 Does Not Exist
+7/26/2018 3:24:54 PM ==> Internal Exception: Related To ID: id value of incorrect type: 00Q0Y00000GnuH3UAJ
+7/26/2018 3:29:44 PM ==> Internal Exception: Related To ID: id value of incorrect type: 00Q0Y00000GnuH3UAJ
+7/26/2018 3:32:33 PM ==> Internal Exception: Related To ID: id value of incorrect type: 00Q0Y00000GnuHwUAJ
+7/27/2018 10:49:52 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/27/2018 11:00:35 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/27/2018 11:01:53 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/27/2018 3:02:42 PM ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired authorization code

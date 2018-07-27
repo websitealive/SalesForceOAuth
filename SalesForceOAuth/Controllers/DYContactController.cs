@@ -94,44 +94,43 @@ namespace SalesForceOAuth.Controllers
                     {
                         foreach (DYCustomObject c in lData.CustomFields)
                         {
-                            CrmFieldType type;
-                            switch (c.type.ToLower())
+                            if (c.type != null)
                             {
-                                //case "string":
-                                //    {
-                                //        type = CrmFieldType.String;break;
-                                //    }
-                                case "optionset":
-                                    {
-                                        type = CrmFieldType.CrmDecimal;
-                                        int option = Convert.ToInt32(c.value);
-                                        registration[c.field] = new OptionSetValue(option);
-                                        break;
-                                    }
-                                case "lookup":
-                                    {
-                                        type = CrmFieldType.Lookup;
-                                        if (c.value.ToString().Length > 0)
+                                CrmFieldType type;
+                                switch (c.type.ToLower())
+                                {
+                                    //case "string":
+                                    //    {
+                                    //        type = CrmFieldType.String;break;
+                                    //    }
+                                    case "optionset":
                                         {
-                                            registration[c.field] = new EntityReference("User", new Guid(c.value));//inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));// registration[c.field] = new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table).Value;
+                                            type = CrmFieldType.CrmDecimal;
+                                            int option = Convert.ToInt32(c.value);
+                                            registration[c.field] = new OptionSetValue(option);
+                                            break;
                                         }
-                                        break;
-                                    }
-                                //case "bool":
-                                //    { type = CrmFieldType.CrmBoolean; break; }
-                                default:
-                                    {
-                                        type = CrmFieldType.String;
-                                        registration[c.field] = c.value;
-                                        break;
+                                    case "lookup":
+                                        {
+                                            type = CrmFieldType.Lookup;
+                                            if (c.value.ToString().Length > 0)
+                                            {
+                                                registration[c.field] = new EntityReference("User", new Guid(c.value));//inData.Add(c.field, new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table));// registration[c.field] = new CrmDataTypeWrapper(new Guid(c.value), CrmFieldType.Lookup, c.table).Value;
+                                            }
+                                            break;
+                                        }
+                                    //case "bool":
+                                    //    { type = CrmFieldType.CrmBoolean; break; }
+                                    default:
+                                        {
+                                            type = CrmFieldType.String;
+                                            registration[c.field] = c.value;
+                                            break;
 
-                                    }
+                                        }
+                                }
                             }
-                            //if (type != CrmFieldType.Lookup)
-                            //{
-                            //    //  inData.Add(c.field, new CrmDataTypeWrapper(c.value, type));
-                            //    registration[c.field] = c.value; // new CrmDataTypeWrapper(c.value, type); 
-                            //}
+
                         }
                     }
                     #endregion Custom fields 
@@ -274,7 +273,7 @@ namespace SalesForceOAuth.Controllers
                     QueryExpression query = new QueryExpression("contact");
 
                     List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { "contactid", "firstname", "lastname" });
+                    defaultSearchedColumn.AddRange(new string[] { "contactid", "firstname", "lastname", "emailaddress1", "telephone1" });
                     // Add Default Searched Column
                     foreach (var item in defaultSearchedColumn)
                     {
@@ -290,32 +289,37 @@ namespace SalesForceOAuth.Controllers
 
                     }
 
-                    //query.ColumnSet.AddColumns("contactid", "firstname", "lastname");
                     FilterExpression filter1 = new FilterExpression();
 
-                    //string[] customSearchArray = sFieldOptional.Split('|');
-                    //if (sFieldOptional.Length > 0)
-                    //{
-                    //    foreach (string csA in customSearchArray)
-                    //    {
-                    //        query.ColumnSet.AddColumn(csA);
-                    //    }
-                    //}
                     //filter name 
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
                     filterOwnRcd.Values.Add("%" + SValue + "%");
+                    //Filter Email
+                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                    filterOwnRcd1.AttributeName = "emailaddress1";
+                    filterOwnRcd1.Operator = ConditionOperator.Like;
+                    filterOwnRcd1.Values.Add("%" + SValue + "%");
+
+                    //Filter Phone
+                    ConditionExpression filterOwnRcd2 = new ConditionExpression();
+                    filterOwnRcd2.AttributeName = "telephone1";
+                    filterOwnRcd2.Operator = ConditionOperator.Like;
+                    filterOwnRcd2.Values.Add("%" + SValue + "%");
+
                     filter1.Conditions.Add(filterOwnRcd);
+                    filter1.Conditions.Add(filterOwnRcd1);
+                    filter1.Conditions.Add(filterOwnRcd2);
                     // get list of custom fields 
                     if (getSearchedFileds.Count > 0)
                     {
                         foreach (var csA in getSearchedFileds)
                         {
-                            ConditionExpression filterOwnRcd2 = new ConditionExpression();
-                            filterOwnRcd2.AttributeName = csA.FieldName;
-                            filterOwnRcd2.Operator = ConditionOperator.Like;
-                            filterOwnRcd2.Values.Add("%" + SValue + "%");
+                            ConditionExpression filterOwnRcd3 = new ConditionExpression();
+                            filterOwnRcd3.AttributeName = csA.FieldName;
+                            filterOwnRcd3.Operator = ConditionOperator.Like;
+                            filterOwnRcd3.Values.Add("%" + SValue + "%");
                             filter1.Conditions.Add(filterOwnRcd2);
                         }
                     }
@@ -340,24 +344,14 @@ namespace SalesForceOAuth.Controllers
                             {
                                 info.lastname = z.Attributes["lastname"].ToString();
                             }
-                            //int noOfcustomItems = 0;
-                            //if (sFieldOptional.Length > 0)
-                            //{
-                            //    foreach (string csA in customSearchArray)
-                            //    {
-                            //        if (z.Attributes.Contains(csA))
-                            //        {
-                            //            //code to add to custom list
-                            //            noOfcustomItems++;
-                            //            MyAppsDb.AssignCustomVariableValue(info, csA, z.Attributes[csA].ToString(), noOfcustomItems);
-                            //        }
-                            //        else
-                            //        {
-                            //            noOfcustomItems++; // if no value found return empty string 
-                            //            MyAppsDb.AssignCustomVariableValue(info, csA, "", noOfcustomItems);
-                            //        }
-                            //    }
-                            //}
+                            if (z.Attributes.Contains("emailaddress1"))
+                            {
+                                info.email = z.Attributes["emailaddress1"].ToString();
+                            }
+                            if (z.Attributes.Contains("telephone1"))
+                            {
+                                info.phone = z.Attributes["telephone1"].ToString();
+                            }
 
                             // Start Custom Search Filed
                             List<InputFields> retSearchFields = new List<InputFields>();

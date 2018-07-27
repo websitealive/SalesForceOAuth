@@ -427,6 +427,8 @@ namespace SalesForceOAuth.Controllers
         public string contactid { get; set; }
         public string firstname { get; set; }
         public string lastname { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
         public List<InputFields> searchFields { get; set; }
         public string Custom1 { get; set; }
         public string Custom2 { get; set; }

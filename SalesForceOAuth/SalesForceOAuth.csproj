@@ -282,6 +282,7 @@
     <Compile Include="Controllers\DYContactController.cs" />
     <Compile Include="Controllers\DYDetailedController.cs" />
     <Compile Include="Controllers\SalesForceTokenController.cs" />
+    <Compile Include="Controllers\SFChatLiveFiveController.cs" />
     <Compile Include="Controllers\SFDetailedController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
     <Compile Include="ModelClasses\DynamicClasses.cs" />

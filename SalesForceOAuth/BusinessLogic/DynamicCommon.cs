@@ -133,10 +133,10 @@ namespace SalesForceOAuth.BusinessLogic
             {
                 defaultColumn.AddRange(
                     new EntityColumn[] {
-                        new EntityColumn { Sr = 0, FieldLabel = "First Name", FieldName = "name" },
-                        new EntityColumn { Sr = 1, FieldLabel = "Last Name", FieldName = "accountnumber" },
+                        new EntityColumn { Sr = 0, FieldLabel = "Account Name", FieldName = "name" },
+                        new EntityColumn { Sr = 1, FieldLabel = "Account Number", FieldName = "accountnumber" },
                         new EntityColumn { Sr = 2, FieldLabel = "Phone", FieldName = "telephone1" },
-                        new EntityColumn { Sr = 3, FieldLabel = "Email", FieldName = "description" }
+                        new EntityColumn { Sr = 3, FieldLabel = "Description", FieldName = "description" }
                     }
                 );
             }
