@@ -942,3 +942,56 @@ Parameter name: original
 7/27/2018 11:00:35 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
 7/27/2018 11:01:53 AM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
 7/27/2018 3:02:42 PM ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired authorization code
+7/30/2018 10:23:01 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+7/30/2018 10:25:03 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+7/30/2018 10:27:37 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [Name]
+7/30/2018 1:05:22 PM ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: expired authorization code
+7/31/2018 4:05:48 PM ==> Function: DyLead-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/31/2018 4:08:50 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: identityProvider
+7/31/2018 4:09:07 PM ==> Function: DyLead-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/31/2018 4:10:39 PM ==> Function: DyLead-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/31/2018 4:12:00 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: identityProvider
+8/2/2018 10:25:46 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:30:38 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:34:48 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:35:21 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:50:38 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:50:59 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , Fax, test, FirstName, LastName, Company
+                 ^
+ERROR at Row:1:Column:18
+No such column 'test' on entity 'Lead'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:52:53 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , test, FirstName, LastName, Email
+            ^
+ERROR at Row:1:Column:13
+No such column 'test' on entity 'Contact'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/2/2018 10:53:15 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , test, AccountNumber, Name, Phone
+            ^
+ERROR at Row:1:Column:13
+No such column 'test' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.

@@ -192,7 +192,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string siteRef, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedAccounts(string token, string ObjectRef, int GroupId, string SValue, string siteRef, string callback, bool isOnlyBusinessAccount = false)
         {
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             string outputPayload;
@@ -234,7 +234,7 @@ namespace SalesForceOAuth.Controllers
                         filters.Append("OR " + csA + " like '%" + SValue + "%' ");
                     }
                 }
-                query.Append("SELECT Id, AccountNumber, Name, Phone " + columns + " From Account ");
+                query.Append("SELECT Id, AccountNumber, Name, Phone, FirstName, LastName " + columns + " From Account ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append("OR AccountNumber like '%" + SValue + "%' ");
@@ -246,30 +246,63 @@ namespace SalesForceOAuth.Controllers
                     foreach (dynamic c in cont.Records)
                     {
                         Account l = new Account();
-                        l.Id = c.Id;
-                        l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
-                        l.Name = (c.Name != null ? c.Name : "");
-                        l.Phone = (c.Phone != null ? c.Phone : "");
-                        if (cSearchField.Length > 0)
+                        if (isOnlyBusinessAccount)
                         {
-                            int noOfcustomItems = 0; int i = 0;
-                            foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                            if (c.FirstName == null && c.LastName == null)
                             {
-
-                                foreach (string csA in customSearchFieldArray)
+                                l.Id = c.Id;
+                                l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
+                                l.Name = (c.Name != null ? c.Name : "");
+                                l.Phone = (c.Phone != null ? c.Phone : "");
+                                if (cSearchField.Length > 0)
                                 {
-                                    if (item.Name.ToLower() == csA.ToLower())
+                                    int noOfcustomItems = 0; int i = 0;
+                                    foreach (Newtonsoft.Json.Linq.JProperty item in c)
                                     {
-                                        //code to add to custom list
-                                        noOfcustomItems++;
-                                        MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
-                                        i++;
+
+                                        foreach (string csA in customSearchFieldArray)
+                                        {
+                                            if (item.Name.ToLower() == csA.ToLower())
+                                            {
+                                                //code to add to custom list
+                                                noOfcustomItems++;
+                                                MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                                i++;
+                                            }
+                                        }
+
                                     }
                                 }
-
+                                myAccounts.Add(l);
                             }
                         }
-                        myAccounts.Add(l);
+                        else
+                        {
+                            l.Id = c.Id;
+                            l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
+                            l.Name = (c.Name != null ? c.Name : "");
+                            l.Phone = (c.Phone != null ? c.Phone : "");
+                            if (cSearchField.Length > 0)
+                            {
+                                int noOfcustomItems = 0; int i = 0;
+                                foreach (Newtonsoft.Json.Linq.JProperty item in c)
+                                {
+
+                                    foreach (string csA in customSearchFieldArray)
+                                    {
+                                        if (item.Name.ToLower() == csA.ToLower())
+                                        {
+                                            //code to add to custom list
+                                            noOfcustomItems++;
+                                            MyAppsDb.AssignCustomVariableValue(l, customSearchLabelArray[i], item.Value.ToString(), noOfcustomItems);
+                                            i++;
+                                        }
+                                    }
+
+                                }
+                            }
+                            myAccounts.Add(l);
+                        }
                     }
                 }
                 return MyAppsDb.ConvertJSONPOutput(callback, myAccounts, HttpStatusCode.OK, false);
