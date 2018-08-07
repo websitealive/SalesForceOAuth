@@ -1077,6 +1077,62 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
+        public static bool IsDynamicCredentialsExist(string objectRef, int groupId, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (!rdr.HasRows)
+                        {
+                            rdr.Close();
+                            conn.Close();
+                            return false;
+                        }
+                        else
+                        {
+                            rdr.Close();
+                            conn.Close();
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static void DeleteDynamicCredentials(string objectRef, int groupId, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd.ExecuteNonQuery();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
         public static void UpdateAccessTokenDynamics(string objectRef, string groupId, string accessToken, DateTime expiryDT, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);

@@ -281,11 +281,13 @@
     <Compile Include="Controllers\DYConfigController.cs" />
     <Compile Include="Controllers\DYContactController.cs" />
     <Compile Include="Controllers\DYDetailedController.cs" />
+    <Compile Include="Controllers\DYOrganizationController.cs" />
     <Compile Include="Controllers\SalesForceTokenController.cs" />
     <Compile Include="Controllers\SFChatLiveFiveController.cs" />
     <Compile Include="Controllers\SFDetailedController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
     <Compile Include="ModelClasses\DynamicClasses.cs" />
+    <Compile Include="Models\DYModels.cs" />
     <Compile Include="Web API Helper Code\Authentication.cs" />
     <Compile Include="Web API Helper Code\Configuration.cs" />
     <Compile Include="Web API Helper Code\CreateLogFiles.cs" />
@@ -414,6 +416,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="LogFile\" />
+    <Folder Include="Views\DYOrganization\" />
     <Folder Include="Views\SFChat\" />
   </ItemGroup>
   <ItemGroup>
