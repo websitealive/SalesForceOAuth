@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using SalesForceOAuth.Controllers;
 using SalesForceOAuth.ModelClasses;
+using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +99,6 @@ namespace SalesForceOAuth.BusinessLogic
             return returnFileds;
         }
 
-
         public static List<EntityColumn> GetDefaultFields(string entityName)
         {
             List<EntityColumn> defaultColumn = new List<EntityColumn>();
@@ -144,5 +144,7 @@ namespace SalesForceOAuth.BusinessLogic
 
             return defaultColumn;
         }
+
+
     }
 }

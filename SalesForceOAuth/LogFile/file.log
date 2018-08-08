@@ -995,3 +995,5 @@ SELECT Id , test, AccountNumber, Name, Phone
             ^
 ERROR at Row:1:Column:13
 No such column 'test' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+8/8/2018 11:39:34 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Could not find specified column in results: search_field_label
+8/8/2018 12:55:29 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Could not find specified column in results: entityname
