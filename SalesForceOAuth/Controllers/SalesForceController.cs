@@ -40,19 +40,26 @@ namespace SalesForceOAuth.Controllers
                 {
                     sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url, urlReferrer, objectRef);
 
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url, state: siteRef);
                     return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
                 }
                 else
                 {
-                    sf_callback_url = siteRef;
+                    //sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url, urlReferrer, objectRef);
 
-                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
+                    string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url, state: siteRef);
                     return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
+
+                    //sf_callback_url = siteRef;
+                    //string urlReferrer = Request.RequestUri.Authority.ToString();
+                    //MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
+
+                    //string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url);
+                    //return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
                 }
 
             }
@@ -79,7 +86,7 @@ namespace SalesForceOAuth.Controllers
                 expandoDict.Add(propertyName, propertyValue);
         }
 
-        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, ref string sf_callback_url, string urlReferrer, string objectRef)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -97,7 +104,7 @@ namespace SalesForceOAuth.Controllers
                             {
                                 sf_authoize_url = rdr["sf_authoize_url"].ToString();
                                 sf_clientid = rdr["sf_clientid"].ToString();
-                                //sf_callback_url = rdr["sf_callback_url"].ToString();
+                                sf_callback_url = rdr["sf_callback_url"].ToString();
                             }
                         }
                         else
