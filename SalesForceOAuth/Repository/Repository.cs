@@ -3,6 +3,7 @@ using SalesForceOAuth.Controllers;
 using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 
@@ -12,7 +13,7 @@ namespace SalesForceOAuth
     {
         #region Dynamic Custom Fields
 
-        public static List<FieldModel> GetDYExportFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
         {
             List<FieldModel> returnFileds = new List<FieldModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -29,18 +30,15 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entityname"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    exportFields.FieldName = rdr["fieldname"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entityname"].ToString().Trim();
-                                    exportFields.ValueType = rdr["valuetype"].ToString().Trim();
-                                    exportFields.ValueType = rdr["valuedetail"].ToString().Trim();
+                                FieldModel exportFields = new FieldModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFields.EntityType = rdr["entityname"].ToString().Trim();
+                                exportFields.ValueType = rdr["valuetype"].ToString().Trim();
+                                exportFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();
@@ -133,7 +131,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetDYSearchFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldModel> GetDYSearchFields(string objectRef, int groupId, string urlReferrer)
         {
             List<FieldModel> returnFileds = new List<FieldModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -150,16 +148,13 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entity_name"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["search_field_label"].ToString().Trim();
-                                    exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                FieldModel exportFields = new FieldModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["search_field_label"].ToString().Trim();
+                                exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();
@@ -227,7 +222,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetDYDetailFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldModel> GetDYDetailFields(string objectRef, int groupId, string urlReferrer)
         {
             List<FieldModel> returnFileds = new List<FieldModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -244,16 +239,13 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entity_name"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["detail_field_label"].ToString().Trim();
-                                    exportFields.FieldName = rdr["detail_field_name"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                FieldModel exportFields = new FieldModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["detail_field_label"].ToString().Trim();
+                                exportFields.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();

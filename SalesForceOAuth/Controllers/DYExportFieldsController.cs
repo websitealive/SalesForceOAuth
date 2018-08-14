@@ -13,7 +13,7 @@ namespace SalesForceOAuth.Controllers
     public class DYExportFieldsController : ApiController
     {
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string token, string ObjectRef, int GroupId, string Entity, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string token, string ObjectRef, int GroupId, string callback)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
@@ -28,7 +28,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetDYExportFields(ObjectRef, GroupId, Entity, urlReferrer);
+                var FieldsList = Repository.GetDYExportFields(ObjectRef, GroupId, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -53,7 +53,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.AddDYExportFields(ExportFieldData, urlReferrer);
+                var message = Repository.AddDYExportFields(ExportFieldData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteExportFields(string Token, int Id, string ObjectRef)
         {
             //check payload if a right jwt token is submitted

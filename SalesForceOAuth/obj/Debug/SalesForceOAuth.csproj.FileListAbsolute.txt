@@ -222,3 +222,4 @@ D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreCompileInputs.cache
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
+D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojResolveAssemblyReference.cache

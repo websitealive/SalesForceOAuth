@@ -13,7 +13,7 @@ namespace SalesForceOAuth.Controllers
     public class DYSearchFieldsController : ApiController
     {
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchFields(string token, string ObjectRef, int GroupId, string Entity, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchFields(string token, string ObjectRef, int GroupId, string callback)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
@@ -28,7 +28,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetDYSearchFields(ObjectRef, GroupId, Entity, urlReferrer);
+                var FieldsList = Repository.GetDYSearchFields(ObjectRef, GroupId, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteSearchFields(string Token, int Id, string ObjectRef)
         {
             //check payload if a right jwt token is submitted
