@@ -1001,3 +1001,23 @@ No such column 'test' on entity 'Account'. If you are attempting to use a custom
 8/10/2018 5:55:18 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'int)' at line 1
 8/10/2018 5:57:26 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'int)' at line 1
 8/10/2018 6:01:06 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'int)' at line 1
+8/17/2018 4:23:27 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+8/17/2018 4:24:12 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+8/17/2018 4:25:25 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+8/17/2018 4:34:31 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+8/17/2018 4:34:33 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+8/17/2018 4:40:18 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The Dynamics 365 organization you are attempting to access is currently disabled.  Please contact your system administrator
+8/17/2018 4:41:57 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The Dynamics 365 organization you are attempting to access is currently disabled.  Please contact your system administrator
+8/17/2018 4:41:58 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+8/17/2018 4:44:33 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 'Contact' entity doesn't contain attribute with Name = 'test search' and NameMapping = 'Platform'. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1113997, MinActiveRowVersion=1113997

@@ -37,13 +37,13 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostDetailFields(ExportFieldsModel ExportFieldData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostDetailFields(FieldsModel ExportFieldData)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
             try
             {
-                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpDelete]
         public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteDetailFields(string Token, int Id, string ObjectRef)
         {
             //check payload if a right jwt token is submitted
@@ -76,9 +76,12 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
+                string ErrorMessage;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.DeleteDYDetailFields(Id, ObjectRef, urlReferrer);
-                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+                MessageResponce retMessage = new MessageResponce();
+                retMessage.Success = Repository.DeleteDYDetailFields(Id, ObjectRef, urlReferrer, out ErrorMessage);
+                retMessage.Error = ErrorMessage;
+                return MyAppsDb.ConvertJSONOutput(retMessage, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {

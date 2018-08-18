@@ -12,13 +12,13 @@ namespace SalesForceOAuth.Controllers
     public class SFSearchFieldsController : ApiController
     {
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchFields(string token, string ObjectRef, int GroupId, string Entity, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchFields(string Token, string ObjectRef, int GroupId, string callback)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
             try
             {
-                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
             catch (Exception ex)
             {
@@ -27,7 +27,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetSFSearchFields(ObjectRef, GroupId, Entity, urlReferrer);
+                var FieldsList = Repository.GetSFSearchFields(ObjectRef, GroupId, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -37,13 +37,13 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostSearchFields(ExportFieldsModel ExportFieldData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostSearchFields(FieldsModel ExportFieldData)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
             try
             {
-                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
             catch (Exception ex)
             {
@@ -76,9 +76,12 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
+                string ErrorMessage;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.DeleteSFSearchFields(Id, ObjectRef, urlReferrer);
-                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+                MessageResponce retMessage = new MessageResponce();
+                retMessage.Success = Repository.DeleteSFSearchFields(Id, ObjectRef, urlReferrer, out ErrorMessage);
+                retMessage.Error = ErrorMessage;
+                return MyAppsDb.ConvertJSONOutput(retMessage, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {

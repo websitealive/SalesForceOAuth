@@ -4,6 +4,7 @@ using Microsoft.Owin.Security.OAuth;
 using System.Web.Http.Cors;
 using WebApiContrib.Formatting.Jsonp;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 
 namespace SalesForceOAuth
 {
@@ -18,16 +19,21 @@ namespace SalesForceOAuth
 
             //var cors = new EnableCorsAttribute(origins: "http://www-dev0.websitealive.com,https://dev0.websitealive.com,http://localhost:56786,", headers: "*", methods: "*"); 
             //config.EnableCors(cors);
-
-            config.EnableCors();
+            var cors = new EnableCorsAttribute(origins: "*", headers: "*", methods: "*");
+            config.EnableCors(cors);
 
 
             var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().FirstOrDefault();
             // Create Jsonp formatter
             var jsonpFormatter = new JsonpMediaTypeFormatter(jsonFormatter);
             // Add jsonp to the formatters list
-           // config.Formatters.Add(jsonpFormatter);
+            // config.Formatters.Add(jsonpFormatter);
             config.Formatters.Insert(0, jsonpFormatter);
+
+
+            //  Add json formater
+            config.Formatters.JsonFormatter.MediaTypeMappings.Add(
+                new QueryStringMapping("type", "json", new MediaTypeHeaderValue("application/json")));
 
 
             // Web API routes
@@ -36,7 +42,7 @@ namespace SalesForceOAuth
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional ,format = RouteParameter.Optional}
+                defaults: new { id = RouteParameter.Optional, format = RouteParameter.Optional }
             );
         }
     }

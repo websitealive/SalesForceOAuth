@@ -13,9 +13,9 @@ namespace SalesForceOAuth
     {
         #region Dynamic Custom Fields
 
-        public static List<FieldModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
+        public static List<FieldsModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -30,7 +30,7 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                FieldModel exportFields = new FieldModel();
+                                FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                 exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
                                 exportFields.FieldName = rdr["fieldname"].ToString().Trim();
@@ -59,7 +59,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddDYExportFields(ExportFieldsModel ExportFields, string urlReferrer)
+        public static string AddDYExportFields(FieldsModel ExportFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -108,7 +108,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteDYExportFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteDYExportFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -119,8 +119,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_dynamics_custom_fields WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Detail Field Deleted Successfully";
+                    ErrorMessage = null;
+                    return true;
 
                 }
                 catch (Exception ex)
@@ -131,9 +131,9 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetDYSearchFields(string objectRef, int groupId, string urlReferrer)
+        public static List<FieldsModel> GetDYSearchFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -148,7 +148,7 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                FieldModel exportFields = new FieldModel();
+                                FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                 exportFields.FiledLabel = rdr["search_field_label"].ToString().Trim();
                                 exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
@@ -175,7 +175,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddDYSearchFields(ExportFieldsModel SearchFields, string urlReferrer)
+        public static string AddDYSearchFields(FieldsModel SearchFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, SearchFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -199,7 +199,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteDYSearchFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteDYSearchFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -210,8 +210,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_dynamics_custom_search WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Search Field Deleted Successfully";
+                    ErrorMessage = null;
+                    return true;
 
                 }
                 catch (Exception ex)
@@ -222,9 +222,9 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetDYDetailFields(string objectRef, int groupId, string urlReferrer)
+        public static List<FieldsModel> GetDYDetailFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -239,7 +239,7 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                FieldModel exportFields = new FieldModel();
+                                FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                 exportFields.FiledLabel = rdr["detail_field_label"].ToString().Trim();
                                 exportFields.FieldName = rdr["detail_field_name"].ToString().Trim();
@@ -266,7 +266,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddDYDetailFields(ExportFieldsModel DetailFields, string urlReferrer)
+        public static string AddDYDetailFields(FieldsModel DetailFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, DetailFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -290,8 +290,9 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteDYDetailFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteDYDetailFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
+
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -301,8 +302,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_dynamic_detailedview_fields WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Detail Field Deleted Successfully";
+                    ErrorMessage = null;
+                    return true;
 
                 }
                 catch (Exception ex)
@@ -317,9 +318,9 @@ namespace SalesForceOAuth
 
         #region SaleForce Custom Fields
 
-        public static List<FieldModel> GetSFExportFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldsModel> GetSFExportFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -334,18 +335,15 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entity_name"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    exportFields.FieldName = rdr["fieldname"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entity_name"].ToString().Trim();
-                                    exportFields.ValueType = rdr["valuetype"].ToString().Trim();
-                                    exportFields.ValueType = rdr["valuedetail"].ToString().Trim();
+                                FieldsModel exportFields = new FieldsModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                exportFields.ValueType = rdr["valuetype"].ToString().Trim();
+                                exportFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();
@@ -366,7 +364,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddSFExportFields(ExportFieldsModel ExportFields, string urlReferrer)
+        public static string AddSFExportFields(FieldsModel ExportFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -415,7 +413,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteSFExportFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteSFExportFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMesssage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -426,8 +424,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_salesforce_custom_fields WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Export Field Deleted Successfully";
+                    ErrorMesssage = null;
+                    return true;
 
                 }
                 catch (Exception ex)
@@ -438,9 +436,9 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetSFSearchFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldsModel> GetSFSearchFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -455,16 +453,13 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entity_name"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["search_label"].ToString().Trim();
-                                    exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                FieldsModel exportFields = new FieldsModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["search_label"].ToString().Trim();
+                                exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();
@@ -485,7 +480,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddSFSearchFields(ExportFieldsModel SearchFields, string urlReferrer)
+        public static string AddSFSearchFields(FieldsModel SearchFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, SearchFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -509,7 +504,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteSFSearchFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteSFSearchFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -520,8 +515,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_salesforce_custom_search WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Search Field Deleted Successfully";
+                    ErrorMessage = null;
+                    return true;
 
                 }
                 catch (Exception ex)
@@ -532,9 +527,9 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldModel> GetSFDetailFields(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<FieldsModel> GetSFDetailFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<FieldModel> returnFileds = new List<FieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -549,16 +544,13 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                if (rdr["entity_type"].ToString().ToLower().Equals(entityName.ToLower()))
-                                {
-                                    FieldModel exportFields = new FieldModel();
-                                    exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                    exportFields.FiledLabel = rdr["label"].ToString().Trim();
-                                    exportFields.FieldName = rdr["sf_variable"].ToString().Trim();
-                                    exportFields.EntityType = rdr["entity_type"].ToString().Trim();
+                                FieldsModel exportFields = new FieldsModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FiledLabel = rdr["label"].ToString().Trim();
+                                exportFields.FieldName = rdr["sf_variable"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_type"].ToString().Trim();
 
-                                    returnFileds.Add(exportFields);
-                                }
+                                returnFileds.Add(exportFields);
                             }
                         }
                         rdr.Close();
@@ -579,7 +571,7 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static string AddSFDetailFields(ExportFieldsModel DetailFields, string urlReferrer)
+        public static string AddSFDetailFields(FieldsModel DetailFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, DetailFields.ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -603,7 +595,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static string DeleteSFDetailFields(int Id, string ObjectRef, string urlReferrer)
+        public static bool DeleteSFDetailFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -614,8 +606,8 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_salesforce_detailedview_fields WHERE id = " + Id;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
-
-                    return "Detail Field Deleted Successfully";
+                    ErrorMessage = null;
+                    return true;
 
                 }
                 catch (Exception ex)

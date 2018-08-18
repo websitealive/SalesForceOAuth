@@ -15,9 +15,11 @@ namespace SalesForceOAuth.Models
         public int GroupId { get; set; }
     }
 
-    public class ExportFieldsModel
+    public class FieldsModel
     {
-        public string token { get; set; }
+        public int ID { get; set; }
+
+        public string Token { get; set; }
 
         public string ObjectRef { get; set; }
 
@@ -38,18 +40,10 @@ namespace SalesForceOAuth.Models
         public int MaxLength { get; set; }
     }
 
-    public class FieldModel
+    public class MessageResponce
     {
-        public int ID { get; set; }
+        public bool Success { get; set; }
 
-        public string FieldName { get; set; }
-
-        public string FiledLabel { get; set; }
-
-        public string EntityType { get; set; }
-
-        public string ValueType { get; set; }
-
-        public string ValueDetail { get; set; }
+        public string Error { get; set; }
     }
 }
