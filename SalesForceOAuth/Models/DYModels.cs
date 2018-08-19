@@ -40,6 +40,21 @@ namespace SalesForceOAuth.Models
         public int MaxLength { get; set; }
     }
 
+    public class ExportFieldModel
+    {
+        public int Sr { get; set; }
+
+        public string FieldName { get; set; }
+
+        public string FiledLabel { get; set; }
+
+        public int BusinessRequired { get; set; }
+
+        public int MaxLength { get; set; }
+
+        public string FieldType { get; set; }
+    }
+
     public class MessageResponce
     {
         public bool Success { get; set; }

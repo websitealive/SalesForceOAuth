@@ -13,7 +13,7 @@ namespace SalesForceOAuth.Controllers
     public class DYExportFieldsController : ApiController
     {
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string Token, string ObjectRef, int GroupId, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string Token, string ObjectRef, int GroupId, string callback, string EntityForm = null)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
@@ -28,8 +28,16 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetDYExportFields(ObjectRef, GroupId, urlReferrer);
-                return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+                if (string.IsNullOrEmpty(EntityForm))
+                {
+                    var FieldsList = Repository.GetDYExportFields(ObjectRef, GroupId, urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    var FieldsList = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer, EntityForm);
+                    return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+                }
             }
             catch (Exception ex)
             {

@@ -11,7 +11,148 @@ namespace SalesForceOAuth
 {
     public class Repository
     {
+        public enum Crm
+        {
+            SalesForce,
+            Dynamic
+        };
+
+        public static List<ExportFieldModel> GetDefaultFields(string entityName, Crm crmType)
+        {
+            List<ExportFieldModel> defaultColumn = new List<ExportFieldModel>();
+
+            //Add Default Fields
+            if (entityName.ToLower() == "lead")
+            {
+                if (crmType == Crm.Dynamic)
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "Subject", FieldName = "subject" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+                        new ExportFieldModel { Sr = 3, FiledLabel = "Company", FieldName = "companyname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+                        new ExportFieldModel { Sr = 5, FiledLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 }
+                    });
+                }
+                else
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default"  , BusinessRequired = 1 , MaxLength = 25 },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Company", FieldName = "Company", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 3, FiledLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                    });
+                }
+
+            }
+            if (entityName.ToLower() == "contact")
+            {
+                if (crmType == Crm.Dynamic)
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 3, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+                    });
+                }
+                else
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 3, FiledLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 5, FiledLabel = "AccountId", FieldName = "AccountId", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+                    });
+                }
+            }
+            if (entityName.ToLower() == "account")
+            {
+                if (crmType == Crm.Dynamic)
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "Account Name", FieldName = "name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "Account Number", FieldName = "accountnumber", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 3, FiledLabel = "Description", FieldName = "description", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+                    });
+                }
+                else
+                {
+                    defaultColumn.AddRange(
+                    new ExportFieldModel[] {
+                        new ExportFieldModel { Sr = 0, FiledLabel = "AccountNumber", FieldName = "AccountNumber" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 1, FiledLabel = "Account Name", FieldName = "Name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                        new ExportFieldModel { Sr = 2, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+                    });
+                }
+
+            }
+            //End Add Default Fields
+
+            return defaultColumn;
+        }
+
         #region Dynamic Custom Fields
+
+
+
+        public static List<ExportFieldModel> GetDYFormExportFields(string objectRef, int groupId, string urlReferrer, string entityName)
+        {
+            List<ExportFieldModel> returnFileds = new List<ExportFieldModel>();
+            var counter = GetDefaultFields(entityName, Crm.Dynamic).Count;
+            returnFileds.AddRange(GetDefaultFields(entityName, Crm.Dynamic));
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamics_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                ExportFieldModel exportFields = new ExportFieldModel();
+                                exportFields.Sr = counter;
+                                exportFields.FieldType = "Custom";
+                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFields.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                exportFields.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                returnFileds.Add(exportFields);
+                                counter = counter + 1;
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
 
         public static List<FieldsModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
         {
@@ -317,6 +458,53 @@ namespace SalesForceOAuth
         #endregion
 
         #region SaleForce Custom Fields
+
+        public static List<ExportFieldModel> GetSFFormExportFields(string objectRef, int groupId, string urlReferrer, string entityName)
+        {
+            List<ExportFieldModel> returnFileds = new List<ExportFieldModel>();
+            var counter = GetDefaultFields(entityName, Crm.SalesForce).Count;
+            returnFileds.AddRange(GetDefaultFields(entityName, Crm.SalesForce));
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_salesforce_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                ExportFieldModel exportFields = new ExportFieldModel();
+                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFields.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                exportFields.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+
+                                returnFileds.Add(exportFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
 
         public static List<FieldsModel> GetSFExportFields(string objectRef, int groupId, string urlReferrer)
         {
