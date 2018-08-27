@@ -40,6 +40,13 @@ namespace SalesForceOAuth.Models
         public int MaxLength { get; set; }
     }
 
+    public class ExportFields
+    {
+        public string Entity { get; set; }
+
+        public List<ExportFieldModel> ExportFieldsList { get; set; }
+    }
+
     public class ExportFieldModel
     {
         public int Sr { get; set; }
