@@ -219,7 +219,7 @@ D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Secur
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Twitter.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
+D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojResolveAssemblyReference.cache
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreCompileInputs.cache
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
-D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojResolveAssemblyReference.cache

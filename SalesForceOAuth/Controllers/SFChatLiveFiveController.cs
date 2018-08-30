@@ -18,109 +18,83 @@ using MySql.Data.MySqlClient;
 using SalesForceOAuth.Web_API_Helper_Code;
 using Microsoft.Xrm.Sdk.Query;
 using System.Dynamic;
+using SalesForceOAuth.Models;
 
 namespace SalesForceOAuth.Controllers
 {
     public class SFChatLiveFiveController : ApiController
     {
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageData lData)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
         {
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "SfChats-PostChats", "Your request isn't authorized!", HttpStatusCode.OK);
+            }
             string AccessToken = "";
             string urlReferrer = Request.RequestUri.Authority.ToString();
-            if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
+            //Access token update
+            try
             {
-                //Access token update
-                try
-                {
-                    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
-                    if (msg.StatusCode != HttpStatusCode.OK)
-                    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, true); }
-                }
-                catch (Exception eee)
-                {
-                    return MyAppsDb.ConvertJSONOutput("--Internal Exception: " + eee.Message, HttpStatusCode.OK, true);
-                }
-                try
-                {
-                    string InstanceUrl = "", ApiVersion = "", ItemId = "", ItemType = "";
-                    MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
-                    int chatId = 0; string OwnerEmail = "";
-                    MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerEmail, urlReferrer);
-                    if (chatId == 0)
-                    {
-                        return MyAppsDb.ConvertJSONOutput("No chat in queue!", HttpStatusCode.OK, false);
-                    }
-                    ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    ////find lead owner user
-                    OwnerEmail = (OwnerEmail == null ? "" : OwnerEmail);
-                    QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
-                        "where Username like '%" + OwnerEmail + "%' " +
-                        "OR Email like '%" + OwnerEmail + "%' ").ConfigureAwait(false);
-                    string ownerId = "";
-                    foreach (dynamic c in cont.Records)
-                    {
-                        ownerId = c.Id;
-                    }
-                    SuccessResponse sR;
-                    dynamic lTemp = new ExpandoObject();
-                    lTemp.Subject = lData.Subject;
-                    lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                    lTemp.Status = "Completed";
-                    if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
-                    if (ownerId != "" && OwnerEmail != "")
-                    {
-                        MyAppsDb.AddProperty(lTemp, "OwnerId", ownerId);
-                    }
-                    //if (lData.CustomFields != null)
-                    //{
-                    //    foreach (CustomObject c in lData.CustomFields)
-                    //    {
-                    //        if (c.field.ToLower().Equals("subject"))
-                    //            lTemp.Subject = c.value;
-                    //        else
-                    //            MyAppsDb.AddProperty(lTemp, c.field, c.value);
-                    //    }
-                    //}
+                HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
+                if (msg.StatusCode != HttpStatusCode.OK)
+                { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, true); }
+            }
+            catch (Exception eee)
+            {
+                return MyAppsDb.ConvertJSONOutput("--Internal Exception: " + eee.Message, HttpStatusCode.OK, true);
+            }
+            try
+            {
+                string InstanceUrl = "", ApiVersion = "";
+                string ChatId;
+                MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId);
+                ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                PostedObjectDetail output = new PostedObjectDetail();
+                SuccessResponse sR;
+                dynamic lTemp = new ExpandoObject();
+                lTemp.Subject = lData.Subject;
+                lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                lTemp.Status = "Completed";
+                if (lData.EntitytType.ToLower() == "Lead" || lData.EntitytType.ToLower() == "Contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
 
-                    sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
-                    if (sR.Success == true)
-                    {
-                        MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef);
-                        PostedObjectDetail output = new PostedObjectDetail();
-                        output.Id = sR.Id;
-                        output.ObjectName = "Chat";
-                        output.Message = "Chat added successfully!";
-                        return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
-                    }
-                    else
-                    {
-                        return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
-                    }
-                    //return MyAppsDb.ConvertJSONOutput("SalesForce Error: ", HttpStatusCode.OK, true);
-                }
-                catch (Exception ex)
+                if (string.IsNullOrEmpty(ChatId))
                 {
-                    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.OK, true);
+                    sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                    output.Id = sR.Id;
+                    output.ObjectName = "Chat";
+                    output.Message = "Chat added successfully!";
+                    Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, sR.Id.ToString());
+                }
+                else
+                {
+                    sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
+                    output.Id = sR.Id;
+                    output.ObjectName = "Chat";
+                    output.Message = "Chat updated successfully!";
+                }
+
+                if (sR.Success == true)
+                {
+                    return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                 }
             }
-            return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized, true);
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.OK, true);
+            }
         }
 
-        public class MessageDataCopy : MyValidation
-        {
-            public string siteRef { get; set; }
-            public string token { get; set; }
-            public string ObjectRef { get; set; }
-            public int GroupId { get; set; }
-            public int SessionId { get; set; }
-            public Guid ChatId { get; set; }
-            public string LeadId { get; set; }
-            //public string ItemId { get; set; }
-            public string Subject { get; set; }
-            public string Message { get; set; }
-            public List<CustomObject> CustomFields { get; set; }
-        }
     }
 }

@@ -1023,3 +1023,14 @@ No such column 'test' on entity 'Account'. If you are attempting to use a custom
 8/17/2018 4:44:33 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 'Contact' entity doesn't contain attribute with Name = 'test search' and NameMapping = 'Platform'. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1113997, MinActiveRowVersion=1113997
 8/19/2018 2:28:08 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'undefined' with namemapping = 'Logical' was not found in the MetadataCache. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1113997, MinActiveRowVersion=1113997
 8/27/2018 3:04:16 PM ==> Function: Dy GetExportFields : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/28/2018 5:42:20 PM ==> Your request isn't authorized!
+8/28/2018 5:46:19 PM ==> Your request isn't authorized!
+8/28/2018 5:59:13 PM ==> Your request isn't authorized!
+8/28/2018 6:00:36 PM ==> Your request isn't authorized!
+8/28/2018 6:07:32 PM ==> Function: DyContact-PostContact : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/29/2018 10:01:20 AM ==> Function: DyContact-PostContact : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/29/2018 10:01:50 AM ==> Function: DyContact-PostContact : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/29/2018 10:23:00 AM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_alive5sms' entity doesn't contain attribute with Name = 'account' and NameMapping = 'Logical'.
+8/30/2018 10:49:02 AM ==> Your request isn't authorized!
+8/30/2018 11:37:44 AM ==> Function: DyContact-PostContact : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+8/30/2018 12:00:55 PM ==> Internal Exception: entity is deleted

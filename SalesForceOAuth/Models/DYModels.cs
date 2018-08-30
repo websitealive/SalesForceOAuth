@@ -68,4 +68,18 @@ namespace SalesForceOAuth.Models
 
         public string Error { get; set; }
     }
+
+    public class MessageDataCopy
+    {
+        public string siteRef { get; set; }
+        public string token { get; set; }
+        public string ObjectRef { get; set; }
+        public int GroupId { get; set; }
+        public int SessionId { get; set; }
+        public Guid ChatId { get; set; }
+        public string EntitytId { get; set; }
+        public string EntitytType { get; set; }
+        public string Subject { get; set; }
+        public string Message { get; set; }
+    }
 }
