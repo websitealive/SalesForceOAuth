@@ -82,4 +82,24 @@ namespace SalesForceOAuth.Models
         public string Subject { get; set; }
         public string Message { get; set; }
     }
+
+    public class InputFields
+    {
+        public string FieldName { get; set; }
+        public string FieldLabel { get; set; }
+        public string Value { get; set; }
+    }
+
+    public enum Crm
+    {
+        SalesForce,
+        Dynamic
+    }
+
+    public enum EntityName
+    {
+        Account,
+        Contact,
+        Lead
+    }
 }

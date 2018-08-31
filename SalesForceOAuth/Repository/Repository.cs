@@ -11,12 +11,6 @@ namespace SalesForceOAuth
 {
     public class Repository
     {
-        public enum Crm
-        {
-            SalesForce,
-            Dynamic
-        };
-
         public static List<ExportFieldModel> GetDefaultFields(string entityName, Crm crmType)
         {
             List<ExportFieldModel> defaultColumn = new List<ExportFieldModel>();
@@ -219,6 +213,51 @@ namespace SalesForceOAuth
                                 exportFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
 
                                 returnFileds.Add(exportFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static List<InputFields> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, EntityName entity)
+        {
+            List<InputFields> returnFileds = new List<InputFields>();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string fieldType = "user_constant";
+                    string sql = "SELECT * from integration_dynamics_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND valuetype = '" + fieldType + "'   ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                if (rdr["entityname"].ToString().Trim().ToLower() == entity.ToString().ToLower())
+                                {
+                                    InputFields customInputFields = new InputFields();
+                                    customInputFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                    customInputFields.Value = rdr["valuedetail"].ToString().Trim();
+                                    returnFileds.Add(customInputFields);
+                                }
                             }
                         }
                         rdr.Close();

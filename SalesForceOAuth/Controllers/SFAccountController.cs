@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
+using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

@@ -21,6 +21,7 @@ using System.Net.Security;
 using SalesForceOAuth.BusinessLogic;
 using System.Threading.Tasks;
 using SalesForceOAuth.ModelClasses;
+using SalesForceOAuth.Models;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -83,6 +84,21 @@ namespace SalesForceOAuth.Controllers
                     }
                     #endregion
 
+                    // New Functionality for Custom Fileds
+                    var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Lead);
+                    if (customFields != null)
+                    {
+                        foreach (InputFields inputField in customFields)
+                        {
+                            if (inputField.Value != null)
+                            {
+                                registration[inputField.FieldName] = inputField.Value;
+                            }
+
+                        }
+                    }
+
+                    // Custom Fields Region will be remove as we handle these on server site. i.e these fields are not posted form client sides.
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
+using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -76,7 +77,21 @@ namespace SalesForceOAuth.Controllers
                         }
                     }
                     #endregion
+                    // New Functionality for Custom Fileds
+                    var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Account);
+                    if (customFields != null)
+                    {
+                        foreach (InputFields inputField in customFields)
+                        {
+                            if (inputField.Value != null)
+                            {
+                                registration[inputField.FieldName] = inputField.Value;
+                            }
 
+                        }
+                    }
+
+                    // Custom Fields Region will be remove as we handle these on server site. i.e these fields are not posted form client sides.
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
@@ -388,7 +403,6 @@ namespace SalesForceOAuth.Controllers
         public string Phone { get; set; }
         public List<DYCustomObject> CustomFields { get; set; }
         public List<InputFields> InputFields { get; set; }
-        //public string Salesengineer { get; set; }
 
     }
 

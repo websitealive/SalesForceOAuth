@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
+using SalesForceOAuth.Models;
 using SalesForceOAuth.Web_API_Helper_Code;
 using System;
 using System.Collections;
@@ -237,12 +238,7 @@ namespace SalesForceOAuth.Controllers
     {
         public string field { get; set; }
     }
-    public class InputFields
-    {
-        public string FieldName { get; set; }
-        public string FieldLabel { get; set; }
-        public string Value { get; set; }
-    }
+
 
 
     public class LeadData : MyValidation
