@@ -1036,3 +1036,8 @@ No such column 'test' on entity 'Account'. If you are attempting to use a custom
 8/30/2018 12:00:55 PM ==> Internal Exception: entity is deleted
 8/31/2018 12:42:03 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'new_source'.
 8/31/2018 12:49:48 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 'contact' entity doesn't contain attribute with Name = 'new_source'.
+9/4/2018 4:46:42 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: identityProvider
+9/4/2018 4:50:23 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The remote server returned an error: (503) Server Unavailable.
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout), Exception Message: The HTTP service located at https://login.microsoftonline.com/RST2.srf is unavailable.  This could be because the service is too busy or because no endpoint was found listening at the specified address. Please ensure that the address is correct and try accessing the service again later.

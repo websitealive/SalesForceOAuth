@@ -45,6 +45,32 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
+        [HttpDelete]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFieldByID(string Token, string ObjectRef, int GroupId, int ExportFieldId)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var FieldsList = Repository.GetDYExportFields(ObjectRef, GroupId, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(FieldsList, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy GetExportFields", "Message", HttpStatusCode.InternalServerError);
+            }
+        }
+
+
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostExportFields(FieldsModel ExportFieldData)
         {

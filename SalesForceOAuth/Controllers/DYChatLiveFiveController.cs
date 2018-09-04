@@ -59,12 +59,12 @@ namespace SalesForceOAuth.Controllers
 
                 string ChatEntityName = string.Empty;
                 string RelationField = string.Empty;
-                if (lData.EntitytType == "Account")
+                if (lData.EntitytType.ToLower() == "account")
                 {
                     RelationField = "ayu_accountid";
                     ChatEntityName = "ayu_alive5sms";
                 }
-                else if (lData.EntitytType == "Contact")
+                else if (lData.EntitytType.ToLower() == "contact")
                 {
                     RelationField = "ayu_contactid";
                     ChatEntityName = "ayu_contactalive5sms";

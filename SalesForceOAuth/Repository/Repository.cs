@@ -187,6 +187,12 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
+        public static bool GetDYExportFieldsById(int ExportFieldID)
+        {
+
+            return true;
+        }
+
         public static List<FieldsModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
         {
             List<FieldsModel> returnFileds = new List<FieldsModel>();

@@ -86,7 +86,15 @@ namespace SalesForceOAuth.Controllers
                                             .Select(y => y.Value).FirstOrDefault();
                                 if (fieldValue != null)
                                 {
-                                    retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = fieldValue.ToString());
+                                    if (fieldValue.ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                    {
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = fieldValue.ToString());
+                                    }
+                                    else
+                                    {
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.EntityReference)fieldValue).Name.ToString());
+                                    }
+
                                 }
                             }
                         }
