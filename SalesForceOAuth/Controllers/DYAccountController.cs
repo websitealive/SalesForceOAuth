@@ -281,16 +281,21 @@ namespace SalesForceOAuth.Controllers
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "name";
                     filterOwnRcd.Operator = ConditionOperator.Like;
-                    filterOwnRcd.Values.Add("%" + SValue + "%");
+                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
                     //filter email
                     ConditionExpression filterOwnRcd2 = new ConditionExpression();
                     filterOwnRcd2.AttributeName = "emailaddress1";
                     filterOwnRcd2.Operator = ConditionOperator.Like;
-                    filterOwnRcd2.Values.Add("%" + SValue + "%");
-
+                    filterOwnRcd2.Values.Add("%" + SValue.Trim() + "%");
+                    //filter phone
+                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                    filterOwnRcd1.AttributeName = "telephone1";
+                    filterOwnRcd1.Operator = ConditionOperator.Like;
+                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
 
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
+                    filter1.Conditions.Add(filterOwnRcd1);
                     filter1.Conditions.Add(filterOwnRcd2);
                     //Add Custom Search Filters
                     if (getSearchedFileds.Count > 0)
@@ -300,7 +305,7 @@ namespace SalesForceOAuth.Controllers
                             ConditionExpression filterOwnRcd4 = new ConditionExpression();
                             filterOwnRcd4.AttributeName = csA.FieldName;
                             filterOwnRcd4.Operator = ConditionOperator.Like;
-                            filterOwnRcd4.Values.Add("%" + SValue + "%");
+                            filterOwnRcd4.Values.Add("%" + SValue.Trim() + "%");
                             filter1.Conditions.Add(filterOwnRcd4);
                         }
                     }

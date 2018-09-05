@@ -311,18 +311,18 @@ namespace SalesForceOAuth.Controllers
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
-                    filterOwnRcd.Values.Add("%" + SValue + "%");
+                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
                     //Filter Email
                     ConditionExpression filterOwnRcd1 = new ConditionExpression();
                     filterOwnRcd1.AttributeName = "emailaddress1";
                     filterOwnRcd1.Operator = ConditionOperator.Like;
-                    filterOwnRcd1.Values.Add("%" + SValue + "%");
+                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
 
                     //Filter Phone
                     ConditionExpression filterOwnRcd2 = new ConditionExpression();
                     filterOwnRcd2.AttributeName = "telephone1";
                     filterOwnRcd2.Operator = ConditionOperator.Like;
-                    filterOwnRcd2.Values.Add("%" + SValue + "%");
+                    filterOwnRcd2.Values.Add("%" + SValue.Trim() + "%");
 
                     filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd1);
@@ -335,8 +335,8 @@ namespace SalesForceOAuth.Controllers
                             ConditionExpression filterOwnRcd3 = new ConditionExpression();
                             filterOwnRcd3.AttributeName = csA.FieldName;
                             filterOwnRcd3.Operator = ConditionOperator.Like;
-                            filterOwnRcd3.Values.Add("%" + SValue + "%");
-                            filter1.Conditions.Add(filterOwnRcd2);
+                            filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
+                            filter1.Conditions.Add(filterOwnRcd3);
                         }
                     }
                     filter1.FilterOperator = LogicalOperator.Or;

@@ -1041,3 +1041,8 @@ Parameter name: identityProvider
 9/4/2018 4:50:23 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The remote server returned an error: (503) Server Unavailable.
    at System.Net.HttpWebRequest.GetResponse()
    at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout), Exception Message: The HTTP service located at https://login.microsoftonline.com/RST2.srf is unavailable.  This could be because the service is too busy or because no endpoint was found listening at the specified address. Please ensure that the address is correct and try accessing the service again later.
+9/4/2018 5:41:46 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: identityProvider
+9/4/2018 5:48:05 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The remote server returned an error: (503) Server Unavailable.
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout), Exception Message: The HTTP service located at https://login.microsoftonline.com/RST2.srf is unavailable.  This could be because the service is too busy or because no endpoint was found listening at the specified address. Please ensure that the address is correct and try accessing the service again later.

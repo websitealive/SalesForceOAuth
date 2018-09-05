@@ -326,20 +326,26 @@ namespace SalesForceOAuth.Controllers
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
-                    filterOwnRcd.Values.Add("%" + SValue + "%");
+                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
+                    //filter phone
+                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                    filterOwnRcd1.AttributeName = "telephone1";
+                    filterOwnRcd1.Operator = ConditionOperator.Like;
+                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
                     //filter email
                     ConditionExpression filterOwnRcd2 = new ConditionExpression();
                     filterOwnRcd2.AttributeName = "emailaddress1";
                     filterOwnRcd2.Operator = ConditionOperator.Like;
-                    filterOwnRcd2.Values.Add("%" + SValue + "%");
+                    filterOwnRcd2.Values.Add("%" + SValue.Trim() + "%");
                     //filter subject
                     ConditionExpression filterOwnRcd3 = new ConditionExpression();
                     filterOwnRcd3.AttributeName = "subject";
                     filterOwnRcd3.Operator = ConditionOperator.Like;
-                    filterOwnRcd3.Values.Add("%" + SValue + "%");
+                    filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
 
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
+                    filter1.Conditions.Add(filterOwnRcd1);
                     filter1.Conditions.Add(filterOwnRcd2);
                     filter1.Conditions.Add(filterOwnRcd3);
                     //Add Custom Search Filters
@@ -397,6 +403,8 @@ namespace SalesForceOAuth.Controllers
                                 info.companyname = z.Attributes["companyname"].ToString();
                             if (z.Attributes.Contains("firstname"))
                                 info.firstname = z.Attributes["firstname"].ToString();
+                            if (z.Attributes.Contains("telephone1"))
+                                info.address1_telephone1 = z.Attributes["telephone1"].ToString();
 
                             // Start Custom Search Filed
                             List<InputFields> retSearchFields = new List<InputFields>();
