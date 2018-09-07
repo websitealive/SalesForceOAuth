@@ -1046,3 +1046,10 @@ Parameter name: identityProvider
 9/4/2018 5:48:05 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The remote server returned an error: (503) Server Unavailable.
    at System.Net.HttpWebRequest.GetResponse()
    at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout), Exception Message: The HTTP service located at https://login.microsoftonline.com/RST2.srf is unavailable.  This could be because the service is too busy or because no endpoint was found listening at the specified address. Please ensure that the address is correct and try accessing the service again later.
+9/6/2018 12:27:19 PM ==> Internal Exception: Related To ID: id value of incorrect type: 7c8d5b07-3baf-e811-81b9-0e4fcc581ae4
+9/6/2018 12:29:31 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Lead With Id = 7c8d5b07-3baf-e811-81b9-0e4fcc581ae4 Does Not Exist
+9/6/2018 12:30:28 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Lead With Id = 7c8d5b07-3baf-e811-81b9-0e4fcc581ae4 Does Not Exist
+9/7/2018 11:04:32 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: 'lead' entity doesn't contain attribute with Name = 'ayu_isactive'.
+9/7/2018 3:29:54 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+9/7/2018 3:30:38 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+9/7/2018 3:58:19 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'User' with namemapping = 'Logical' was not found in the MetadataCache. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1168546, MinActiveRowVersion=1168546

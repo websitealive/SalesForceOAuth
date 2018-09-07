@@ -282,6 +282,7 @@
     <Compile Include="Controllers\DYContactController.cs" />
     <Compile Include="Controllers\DYDetailedController.cs" />
     <Compile Include="Controllers\DYDetailFieldsController.cs" />
+    <Compile Include="Controllers\DyEntityController.cs" />
     <Compile Include="Controllers\DYExportFieldsController.cs" />
     <Compile Include="Controllers\DYOrganizationController.cs" />
     <Compile Include="Controllers\DYSearchFieldsController.cs" />

@@ -83,8 +83,29 @@ namespace SalesForceOAuth.Controllers
                         {
                             if (inputField.Value != null)
                             {
-                                registration[inputField.FieldName] = inputField.Value;
+                                if (inputField.FieldType == "textbox")
+                                {
+                                    registration[inputField.FieldName] = inputField.Value;
+                                }
+                                if (inputField.FieldType == "boolean")
+                                {
+                                    bool flag = true;
+                                    if (inputField.Value == "1")
+                                    {
+                                        flag = true;
+                                    }
+                                    else
+                                    {
+                                        flag = false;
+                                    }
+                                    registration[inputField.FieldName] = flag;
+                                }
+                                if (inputField.FieldType == "lookup")
+                                {
+                                    registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
+                                }
                             }
+
 
                         }
                     }

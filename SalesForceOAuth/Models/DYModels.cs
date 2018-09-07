@@ -83,11 +83,19 @@ namespace SalesForceOAuth.Models
         public string Message { get; set; }
     }
 
+    public class EntityModel
+    {
+        public string EntityPrimaryKey { get; set; }
+        public string EntityPrimaryName { get; set; }
+    }
+
     public class InputFields
     {
         public string FieldName { get; set; }
         public string FieldLabel { get; set; }
         public string Value { get; set; }
+        public string FieldType { get; set; }
+        public string RelatedEntity { get; set; }
     }
 
     public enum Crm
