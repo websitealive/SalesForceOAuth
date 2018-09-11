@@ -1053,3 +1053,7 @@ Parameter name: identityProvider
 9/7/2018 3:29:54 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 9/7/2018 3:30:38 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 9/7/2018 3:58:19 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'User' with namemapping = 'Logical' was not found in the MetadataCache. MetadataCacheDetails: ProviderType=Dynamic, StandardCache=True, IsLoadedInStagedContext = False, Timestamp=1168546, MinActiveRowVersion=1168546
+9/10/2018 2:48:09 PM ==> Function: DyContact-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Value cannot be null.
+Parameter name: key
+9/10/2018 5:49:21 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/10/2018 5:50:26 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified

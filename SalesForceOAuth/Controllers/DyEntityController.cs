@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Tooling.Connector;
 using Newtonsoft.Json;
@@ -52,18 +54,22 @@ namespace SalesForceOAuth.Controllers
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
+                    RetrieveEntityRequest retrieveEntityRequest = new RetrieveEntityRequest
+                    {
+                        EntityFilters = EntityFilters.Attributes,
+                        LogicalName = Entity
+                    };
+                    RetrieveEntityResponse retrieveEntityResponse = (RetrieveEntityResponse)proxyservice.Execute(retrieveEntityRequest);
+                    EntityMetadata RetrieveEntityInfo = retrieveEntityResponse.EntityMetadata;
+
+
                     List<EntityModel> listToReturn = new List<EntityModel>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
                     //filter name 
                     ConditionExpression filterOwnRcd = new ConditionExpression();
-                    filterOwnRcd.AttributeName = "firstname";
+                    filterOwnRcd.AttributeName = RetrieveEntityInfo.PrimaryNameAttribute;
                     filterOwnRcd.Operator = ConditionOperator.Like;
                     filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
-
-                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
-                    filterOwnRcd1.AttributeName = "lastname";
-                    filterOwnRcd1.Operator = ConditionOperator.Like;
-                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
 
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
@@ -73,7 +79,7 @@ namespace SalesForceOAuth.Controllers
                     QueryExpression query = new QueryExpression(Entity);
 
                     List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { "systemuserid", "firstname", "lastname" });
+                    defaultSearchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
                     foreach (var item in defaultSearchedColumn)
                     {
                         query.ColumnSet.AddColumn(item);
@@ -88,10 +94,10 @@ namespace SalesForceOAuth.Controllers
                         foreach (var z in result1.Entities)
                         {
                             EntityModel info = new EntityModel();
-                            if (z.Attributes.Contains("systemuserid"))
-                                info.EntityPrimaryKey = z.Attributes["systemuserid"].ToString();
-                            if (z.Attributes.Contains("fullname"))
-                                info.EntityPrimaryName = z.Attributes["fullname"].ToString();
+                            if (z.Attributes.Contains(RetrieveEntityInfo.PrimaryIdAttribute))
+                                info.EntityPrimaryKey = z.Attributes[RetrieveEntityInfo.PrimaryIdAttribute].ToString();
+                            if (z.Attributes.Contains(RetrieveEntityInfo.PrimaryNameAttribute))
+                                info.EntityPrimaryName = z.Attributes[RetrieveEntityInfo.PrimaryNameAttribute].ToString();
 
                             listToReturn.Add(info);
                         }
