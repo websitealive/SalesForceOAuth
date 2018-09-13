@@ -353,11 +353,14 @@ namespace SalesForceOAuth.Controllers
                     {
                         foreach (var csA in getSearchedFileds)
                         {
-                            ConditionExpression filterOwnRcd3 = new ConditionExpression();
-                            filterOwnRcd3.AttributeName = csA.FieldName;
-                            filterOwnRcd3.Operator = ConditionOperator.Like;
-                            filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
-                            filter1.Conditions.Add(filterOwnRcd3);
+                            if (csA.FieldType != "lookup")
+                            {
+                                ConditionExpression filterOwnRcd3 = new ConditionExpression();
+                                filterOwnRcd3.AttributeName = csA.FieldName;
+                                filterOwnRcd3.Operator = ConditionOperator.Like;
+                                filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
+                                filter1.Conditions.Add(filterOwnRcd3);
+                            }
                         }
                     }
                     filter1.FilterOperator = LogicalOperator.Or;
@@ -400,7 +403,14 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         InputFields Fields = new InputFields();
                                         Fields.FieldLabel = field.FieldLabel;
-                                        Fields.Value = z.Attributes[field.FieldName].ToString();
+                                        if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                        {
+                                            Fields.Value = z.Attributes[field.FieldName].ToString();
+                                        }
+                                        else
+                                        {
+                                            Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                        }
 
                                         retSearchFields.Add(Fields);
                                     }

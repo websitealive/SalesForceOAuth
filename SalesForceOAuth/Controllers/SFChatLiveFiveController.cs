@@ -52,9 +52,9 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string InstanceUrl = "", ApiVersion = "";
-                string ChatId;
+                string ChatId, RowId;
                 MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
-                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 PostedObjectDetail output = new PostedObjectDetail();
@@ -63,7 +63,7 @@ namespace SalesForceOAuth.Controllers
                 lTemp.Subject = lData.Subject;
                 lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                 lTemp.Status = "Completed";
-                if (lData.EntitytType.ToLower() == "Lead" || lData.EntitytType.ToLower() == "Contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
+                if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
 
                 if (string.IsNullOrEmpty(ChatId))
                 {
@@ -75,10 +75,23 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
-                    sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
-                    output.Id = sR.Id;
-                    output.ObjectName = "Chat";
-                    output.Message = "Chat updated successfully!";
+                    try
+                    {
+                        sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
+                        output.Id = sR.Id;
+                        output.ObjectName = "Chat";
+                        output.Message = "Chat updated successfully!";
+                    }
+                    catch (Exception)
+                    {
+                        sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                        output.Id = sR.Id;
+                        output.ObjectName = "Chat";
+                        output.Message = "Chat added successfully!";
+                        Repository.DeleteChatInfo(lData.ObjectRef, urlReferrer, RowId);
+                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, sR.Id.ToString());
+                    }
+
                 }
 
                 if (sR.Success == true)

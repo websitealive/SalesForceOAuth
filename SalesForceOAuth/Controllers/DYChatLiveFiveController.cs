@@ -42,9 +42,9 @@ namespace SalesForceOAuth.Controllers
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string ChatId;
+                string ChatId, RowId;
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -74,11 +74,13 @@ namespace SalesForceOAuth.Controllers
                     RelationField = "ayu_leadid";
                     ChatEntityName = "ayu_leadalive5sms";
                 }
+                Guid newChatId = Guid.Empty;
+                PostedObjectDetail pObject = new PostedObjectDetail();
                 //In chats in CRM
                 if (!flag)
                 {
                     // Inserting the new chat
-                    Guid newChatId;
+
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
@@ -93,7 +95,6 @@ namespace SalesForceOAuth.Controllers
                     }
                     if (newChatId != Guid.Empty)
                     {
-                        PostedObjectDetail pObject = new PostedObjectDetail();
                         pObject.Id = newChatId.ToString();
                         pObject.ObjectName = "Chat";
                         pObject.Message = "Chat added successfully!";
@@ -115,21 +116,52 @@ namespace SalesForceOAuth.Controllers
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
-                        Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
+                        try
+                        {
+                            Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
+                            var newChats = lData.Message;
+                            retrievedChats.Attributes["ayu_alive5sms"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                            proxyservice.Update(retrievedChats);
+                        }
+                        catch (Exception)
+                        {
+                            #region set properties
+                            IOrganizationService objser = (IOrganizationService)proxyservice;
+                            Entity registration = new Entity(ChatEntityName);
+                            registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+                            registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                            registration["ayu_alive5sms"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            #endregion set properties
+                            newChatId = objser.Create(registration);
+                        }
 
-                        var prChats = retrievedChats.Attributes["ayu_alive5sms"];
-                        var newChats = retrievedChats.Attributes["ayu_alive5sms"] + "|" + lData.Message;
-                        retrievedChats.Attributes["ayu_alive5sms"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
-                        proxyservice.Update(retrievedChats);
+                        // Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
+                        // var newChats = lData.Message;
+                        // retrievedChats.Attributes["ayu_alive5sms"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                        // proxyservice.Update(retrievedChats);
                     }
+                    if (newChatId != Guid.Empty)
+                    {
+                        pObject.Id = newChatId.ToString();
+                        pObject.ObjectName = "Chat";
+                        pObject.Message = "Chat added successfully!";
 
-                    PostedObjectDetail pObject = new PostedObjectDetail();
-                    pObject.Id = lData.ChatId.ToString();
-                    pObject.ObjectName = "Chat";
-                    pObject.Message = "Chat added successfully!";
+                        Repository.DeleteChatInfo(lData.ObjectRef, urlReferrer, RowId);
+                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, newChatId.ToString());
 
-                    return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
-
+                        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+                    }
+                    else if (newChatId == Guid.Empty)
+                    {
+                        pObject.Id = lData.ChatId.ToString();
+                        pObject.ObjectName = "Chat";
+                        pObject.Message = "Chat Updated successfully!";
+                        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+                    }
+                    else
+                    {
+                        return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                    }
                 }
 
                 #endregion code for post add message  

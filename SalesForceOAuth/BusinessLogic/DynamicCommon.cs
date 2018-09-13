@@ -33,6 +33,7 @@ namespace SalesForceOAuth.BusinessLogic
                                     InputFields searchFields = new InputFields();
                                     searchFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
                                     searchFields.FieldName = rdr["search_field_name"].ToString().Trim();
+                                    searchFields.FieldType = rdr["search_field_type"].ToString().Trim();
                                     returnFieldList.Add(searchFields);
                                 }
 

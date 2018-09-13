@@ -935,9 +935,10 @@ namespace SalesForceOAuth
         #endregion
 
         #region Alive 5 Chats
-        public static bool IsChatExist(string EntityId, string EntityType, string objectRef, string urlReferrer, out string ChatId)
+        public static bool IsChatExist(string EntityId, string EntityType, string objectRef, string urlReferrer, out string ChatId, out string RowId)
         {
             ChatId = string.Empty;
+            RowId = string.Empty;
             bool flag = false;
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -954,6 +955,7 @@ namespace SalesForceOAuth
                             while (rdr.Read())
                             {
                                 flag = true;
+                                RowId = rdr["id"].ToString();
                                 ChatId = rdr["chat_id"].ToString();
                             }
                         }
@@ -988,6 +990,28 @@ namespace SalesForceOAuth
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static bool DeleteChatInfo(string objectRef, string urlReferrer, string RowId)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_crm_chats WHERE chat_id = " + RowId;
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd1.ExecuteNonQuery();
+                    return true;
+
                 }
                 catch (Exception ex)
                 {

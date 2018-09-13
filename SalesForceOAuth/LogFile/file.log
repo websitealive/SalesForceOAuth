@@ -1057,3 +1057,9 @@ Parameter name: identityProvider
 Parameter name: key
 9/10/2018 5:49:21 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
 9/10/2018 5:50:26 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/13/2018 10:39:04 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%Test Account%' to attribute 'account.ayu_salesperson'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+9/13/2018 10:40:05 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: attributeName
+9/13/2018 2:12:58 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: ayu_alive5sms With Id = 10fc93dd-34b7-e811-a966-000d3a33eeed Does Not Exist
+9/13/2018 2:49:46 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unknown column '10fc93dd' in 'where clause'
+9/13/2018 2:52:44 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unknown column '10fc93dd' in 'where clause'
+9/13/2018 3:39:51 PM ==> Internal Exception: Name ID: id value of incorrect type: 00Q1n00000IC6nsEA
