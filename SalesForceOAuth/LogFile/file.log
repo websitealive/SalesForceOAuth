@@ -1063,3 +1063,10 @@ Parameter name: key
 9/13/2018 2:49:46 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unknown column '10fc93dd' in 'where clause'
 9/13/2018 2:52:44 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unknown column '10fc93dd' in 'where clause'
 9/13/2018 3:39:51 PM ==> Internal Exception: Name ID: id value of incorrect type: 00Q1n00000IC6nsEA
+9/14/2018 11:29:32 AM ==> Function: DYConfig-GetConfigurationStatus : Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open(), Exception Message: Unable to connect to any of the specified MySQL hosts.

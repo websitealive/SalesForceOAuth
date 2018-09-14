@@ -83,7 +83,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYConfig-GetConfigurationStatus", "Unhandled exception", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYConfig-GetConfigurationStatus", "Unhandled exception", HttpStatusCode.InternalServerError, false);
             }
 
         }
@@ -148,7 +148,7 @@ namespace SalesForceOAuth.Controllers
                         return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.OK, true);
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
