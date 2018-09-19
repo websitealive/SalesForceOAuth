@@ -133,31 +133,43 @@ namespace SalesForceOAuth
                                 if (rdr["entityname"].ToString().Trim().ToLower() == "contact")
                                 {
                                     ExportFieldModel contactExportFieldsList = new ExportFieldModel();
-                                    contactExportFieldsList.FieldType = "Custom";
+                                    // contactExportFieldsList.FieldType = "Custom";
+                                    contactExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
                                     contactExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
                                     contactExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
                                     contactExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                     contactExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+
+                                    contactExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                    contactExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
                                     contactFieldsList.Add(contactExportFieldsList);
                                 }
                                 if (rdr["entityname"].ToString().Trim().ToLower() == "lead")
                                 {
                                     ExportFieldModel leadExportFieldsList = new ExportFieldModel();
-                                    leadExportFieldsList.FieldType = "Custom";
+                                    // leadExportFieldsList.FieldType = "Custom";
+                                    leadExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
                                     leadExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
                                     leadExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
                                     leadExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                     leadExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+
+                                    leadExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                    leadExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
                                     leadFieldsList.Add(leadExportFieldsList);
                                 }
                                 if (rdr["entityname"].ToString().Trim().ToLower() == "account")
                                 {
                                     ExportFieldModel accountExportFieldsList = new ExportFieldModel();
-                                    accountExportFieldsList.FieldType = "Custom";
+                                    // accountExportFieldsList.FieldType = "Custom";
+                                    accountExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
                                     accountExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
                                     accountExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
                                     accountExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                     accountExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+
+                                    accountExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                    accountExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
                                     accountFieldsList.Add(accountExportFieldsList);
                                 }
 
@@ -212,7 +224,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
                                 exportFields.FieldName = rdr["fieldname"].ToString().Trim();
                                 exportFields.EntityType = rdr["entityname"].ToString().Trim();
                                 exportFields.ValueType = rdr["valuetype"].ToString().Trim();
@@ -311,8 +323,8 @@ namespace SalesForceOAuth
 
                     if (flag)
                     {
-                        string sql = "INSERT INTO integration_dynamics_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FiledLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "' )";
+                        string sql = "INSERT INTO integration_dynamics_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity)";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();
@@ -375,7 +387,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["search_field_label"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
                                 exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
@@ -409,7 +421,7 @@ namespace SalesForceOAuth
                 {
                     conn.Open();
                     string sql = "INSERT INTO integration_dynamics_custom_search (objectref, groupid, entity_name, search_field_name, search_field_label)";
-                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FiledLabel + "' )";
+                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -466,7 +478,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["detail_field_label"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 exportFields.FieldName = rdr["detail_field_name"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
@@ -500,7 +512,7 @@ namespace SalesForceOAuth
                 {
                     conn.Open();
                     string sql = "INSERT INTO integration_dynamic_detailedview_fields (objectref, groupid, entity_name, detail_field_name, detail_field_label)";
-                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FiledLabel + "' )";
+                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -651,7 +663,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
                                 exportFields.FieldName = rdr["fieldname"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_name"].ToString().Trim();
                                 exportFields.ValueType = rdr["valuetype"].ToString().Trim();
@@ -706,7 +718,7 @@ namespace SalesForceOAuth
                     if (flag)
                     {
                         string sql = "INSERT INTO integration_salesforce_custom_fields (objectref, groupid, integration_id, entity_name, fieldname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FiledLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "' )";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();
@@ -769,7 +781,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["search_label"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["search_label"].ToString().Trim();
                                 exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_name"].ToString().Trim();
 
@@ -803,7 +815,7 @@ namespace SalesForceOAuth
                 {
                     conn.Open();
                     string sql = "INSERT INTO integration_salesforce_custom_search (objectref, groupid, entity_name, search_field_name, search_label)";
-                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FiledLabel + "' )";
+                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -860,7 +872,7 @@ namespace SalesForceOAuth
                             {
                                 FieldsModel exportFields = new FieldsModel();
                                 exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FiledLabel = rdr["label"].ToString().Trim();
+                                exportFields.FieldLabel = rdr["label"].ToString().Trim();
                                 exportFields.FieldName = rdr["sf_variable"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_type"].ToString().Trim();
 
@@ -894,7 +906,7 @@ namespace SalesForceOAuth
                 {
                     conn.Open();
                     string sql = "INSERT INTO integration_salesforce_detailedview_fields (objectref, groupid, entity_type, sf_variable, label)";
-                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FiledLabel + "' )";
+                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();

@@ -27,13 +27,17 @@ namespace SalesForceOAuth.Models
 
         public string FieldName { get; set; }
 
-        public string FiledLabel { get; set; }
+        public string FieldLabel { get; set; }
+
+        public string FieldType { get; set; }
 
         public string EntityType { get; set; }
 
         public string ValueType { get; set; }
 
         public string ValueDetail { get; set; }
+
+        public string RelatedEntity { get; set; }
 
         public int BusinessRequired { get; set; }
 
@@ -51,9 +55,13 @@ namespace SalesForceOAuth.Models
     {
         public int Sr { get; set; }
 
+        public int Id { get; set; }
+
         public string FieldName { get; set; }
 
         public string FiledLabel { get; set; }
+
+        public string RelatedEntity { get; set; }
 
         public int BusinessRequired { get; set; }
 
