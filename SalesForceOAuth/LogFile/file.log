@@ -1070,3 +1070,5 @@ Parameter name: key
    at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
    at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
    at MySql.Data.MySqlClient.NativeDriver.Open(), Exception Message: Unable to connect to any of the specified MySQL hosts.
+9/25/2018 2:03:21 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''0' at line 1
+9/26/2018 5:54:39 PM ==> Function: DY Detail Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'chat_id' in 'where clause'

@@ -98,8 +98,6 @@ namespace SalesForceOAuth
 
         #region Dynamic Custom Fields
 
-
-
         public static List<ExportFields> GetDYFormExportFields(string objectRef, int groupId, string urlReferrer)
         {
             List<ExportFields> returnFileds = new List<ExportFields>();
@@ -199,10 +197,51 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static bool GetDYExportFieldsById(int ExportFieldID)
+        public static FieldsModel GetDYExportFieldsById(int ExportFieldID, string ObjectRef, string urlReferrer)
         {
-
-            return true;
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamics_custom_fields where id = '" + ExportFieldID + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                returnFileds.FieldName = rdr["fieldname"].ToString().Trim();
+                                returnFileds.FieldType = rdr["fieldtype"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entityname"].ToString().Trim();
+                                returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
+                                returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
+                                returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                returnFileds.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                returnFileds.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
         }
 
         public static List<FieldsModel> GetDYExportFields(string objectRef, int groupId, string urlReferrer)
@@ -345,6 +384,29 @@ namespace SalesForceOAuth
             }
         }
 
+        public static string UpdateDyExportFields(FieldsModel ExportFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_dynamics_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "'";
+                    sql += " WHERE id = " + ExportFields.ID;
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return "Export Fields Updated Successfully";
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
         public static bool DeleteDYExportFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
@@ -385,13 +447,54 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                FieldsModel exportFields = new FieldsModel();
-                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
-                                exportFields.FieldName = rdr["search_field_name"].ToString().Trim();
-                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                FieldsModel searchFields = new FieldsModel();
+                                searchFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                searchFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
+                                searchFields.FieldName = rdr["search_field_name"].ToString().Trim();
+                                searchFields.EntityType = rdr["entity_name"].ToString().Trim();
 
-                                returnFileds.Add(exportFields);
+                                returnFileds.Add(searchFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static FieldsModel GetDYSearchFieldsById(int SearchFieldID, string ObjectRef, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamics_custom_search where id = '" + SearchFieldID + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["search_field_label"].ToString().Trim();
+                                returnFileds.FieldName = rdr["search_field_name"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -427,6 +530,29 @@ namespace SalesForceOAuth
                     conn.Close();
                     return "Search Fields Added Successfully";
 
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static string UpdateDySearchFields(FieldsModel SearchFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, SearchFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_dynamics_custom_search Set entity_name = '" + SearchFields.EntityType + "', search_field_name = '" + SearchFields.FieldName + "', search_field_label = '" + SearchFields.FieldLabel + "'";
+                    sql += " WHERE id = " + SearchFields.ID;
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return "Search Fields Updated Successfully";
                 }
                 catch (Exception ex)
                 {
@@ -476,13 +602,54 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                FieldsModel exportFields = new FieldsModel();
-                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
-                                exportFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
-                                exportFields.FieldName = rdr["detail_field_name"].ToString().Trim();
-                                exportFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                FieldsModel detailFields = new FieldsModel();
+                                detailFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                detailFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
+                                detailFields.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                detailFields.EntityType = rdr["entity_name"].ToString().Trim();
 
-                                returnFileds.Add(exportFields);
+                                returnFileds.Add(detailFields);
+                            }
+                            rdr.Close();
+                        }
+                        conn.Close();
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static FieldsModel GetDYDetailFieldsById(int DetailFieldID, string ObjectRef, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamic_detailedview_fields where id = '" + DetailFieldID + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["detail_field_label"].ToString().Trim();
+                                returnFileds.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -518,6 +685,29 @@ namespace SalesForceOAuth
                     conn.Close();
                     return "Detail Fields Added Successfully";
 
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static string UpdateDyDetailFields(FieldsModel DetailFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, DetailFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_dynamic_detailedview_fields Set entity_name = '" + DetailFields.EntityType + "', detail_field_name = '" + DetailFields.FieldName + "', detail_field_label = '" + DetailFields.FieldLabel + "'";
+                    sql += " WHERE id = " + DetailFields.ID;
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return "Detail Fields Updated Successfully";
                 }
                 catch (Exception ex)
                 {
@@ -642,7 +832,6 @@ namespace SalesForceOAuth
             }
             return returnFileds;
         }
-
 
         public static List<FieldsModel> GetSFExportFields(string objectRef, int groupId, string urlReferrer)
         {
@@ -1022,6 +1211,7 @@ namespace SalesForceOAuth
                     string sqlDel = "DELETE FROM integration_crm_chats WHERE chat_id = " + RowId;
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
+                    conn.Close();
                     return true;
 
                 }
@@ -1032,6 +1222,159 @@ namespace SalesForceOAuth
                 }
             }
         }
+        #endregion
+
+        #region Dynamic Entity Setting
+        public static EntitySettings GetEntitySettings(string ObjectRef, int GroupId, string UrlReferrer)
+        {
+            EntitySettings returnEntitySettings = new EntitySettings();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(UrlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamic_entity WHERE ObjectRef = '" + ObjectRef + "' AND GroupId = " + GroupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnEntitySettings.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
+                                returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
+                                returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnEntitySettings;
+        }
+
+        public static EntitySettings GetEntitySettingsById(string ObjectRef, int Id, string UrlReferrer)
+        {
+            EntitySettings returnEntitySettings = new EntitySettings();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(UrlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamic_entity WHERE id = '" + Id + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnEntitySettings.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
+                                returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
+                                returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnEntitySettings;
+        }
+
+        public static string AddEntitySettings(EntitySettings EntitySettingsName, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, EntitySettingsName.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "INSERT INTO integration_dynamic_entity (objectref, groupid, leads_required, contacts_required, accounts_required)";
+                    sql += "VALUES ('" + EntitySettingsName.ObjectRef + "','" + EntitySettingsName.GroupId + "','" + EntitySettingsName.IsLeadRequired + "','" + EntitySettingsName.IsContactRequired + "','" + EntitySettingsName.IsAccountRequired + "')";
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return "Entiity Settings Added Successfully";
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static string UpdateEntitySettings(EntitySettings EntitySettingsName, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, EntitySettingsName.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_dynamic_entity Set leads_required = '" + EntitySettingsName.IsLeadRequired + "', contacts_required = '" + EntitySettingsName.IsContactRequired + "', accounts_required = '" + EntitySettingsName.IsAccountRequired + "'";
+                    sql += " WHERE id = " + EntitySettingsName.ID;
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return "Entity Settings Updated Successfully";
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static bool DeleteEntitySettings(string ObjectRef, string UrlReferrer, int RowId)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(UrlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_dynamic_entity  WHERE id = " + RowId;
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
         #endregion
     }
 }

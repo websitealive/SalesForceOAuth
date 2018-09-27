@@ -238,10 +238,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/05/2018 15:41:28</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>09/19/2018 12:41:45</publishTime>
+      <publishTime>09/27/2018 10:56:49</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.pdb">
-      <publishTime>09/19/2018 12:41:44</publishTime>
+      <publishTime>09/27/2018 10:56:49</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>06/05/2018 15:41:28</publishTime>

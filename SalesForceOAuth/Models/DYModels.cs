@@ -8,22 +8,16 @@ namespace SalesForceOAuth.Models
     // string token, string ObjectRef, int GroupId
     public class DYOrganizationDetail
     {
-        public string token { get; set; }
+        public string Token { get; set; }
 
         public string ObjectRef { get; set; }
 
         public int GroupId { get; set; }
     }
 
-    public class FieldsModel
+    public class FieldsModel : DYOrganizationDetail
     {
         public int ID { get; set; }
-
-        public string Token { get; set; }
-
-        public string ObjectRef { get; set; }
-
-        public int GroupId { get; set; }
 
         public string FieldName { get; set; }
 
@@ -104,6 +98,14 @@ namespace SalesForceOAuth.Models
         public string Value { get; set; }
         public string FieldType { get; set; }
         public string RelatedEntity { get; set; }
+    }
+
+    public class EntitySettings : DYOrganizationDetail
+    {
+        public int ID { get; set; }
+        public int IsAccountRequired { get; set; }
+        public int IsContactRequired { get; set; }
+        public int IsLeadRequired { get; set; }
     }
 
     public enum Crm

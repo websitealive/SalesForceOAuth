@@ -107,7 +107,114 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedAccounts", "Unhandled exception", HttpStatusCode.Conflict);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+            }
+        }
+
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetEntitySettings(string Token, string ObjectRef, int GroupId, string callback, int Id = 0)
+        {
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                if (Id == 0)
+                {
+                    var entitySettings = Repository.GetEntitySettings(ObjectRef, GroupId, urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    var entitySettings = Repository.GetEntitySettingsById(ObjectRef, Id, urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+            }
+        }
+
+        [HttpPost]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostEntitySettings(EntitySettings lData)
+        {
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DyAccount-PostEntiySettings", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var messgae = Repository.AddEntitySettings(lData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpPut]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UpdateEntitySettings(EntitySettings lData)
+        {
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DyAccount-UpdateEntitySettings", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var messgae = Repository.UpdateEntitySettings(lData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteEntitySettings(string Token, int Id, string ObjectRef)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Detail Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var messgae = Repository.DeleteEntitySettings(ObjectRef, urlReferrer, Id);
+                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+                //
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DY Detail Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
 

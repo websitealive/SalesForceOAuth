@@ -51,7 +51,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 // Verify Token
-                JWT.JsonWebToken.Decode(orgDetail.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                JWT.JsonWebToken.Decode(orgDetail.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
 
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 MyAppsDb.DeleteDynamicCredentials(orgDetail.ObjectRef, orgDetail.GroupId, urlReferrer);

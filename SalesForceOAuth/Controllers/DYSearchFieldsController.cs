@@ -37,14 +37,39 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> PostSearchFields(FieldsModel ExportFieldData)
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchFieldByID(string Token, string ObjectRef, int FieldId, string callback)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
             try
             {
-                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Search Field By Id", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var FieldsList = Repository.GetDYSearchFieldsById(FieldId, ObjectRef, urlReferrer);
+                return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetExportFields", "Message", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostSearchFields(FieldsModel SearchFieldData)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(SearchFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
             }
             catch (Exception ex)
             {
@@ -53,12 +78,37 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.AddDYSearchFields(ExportFieldData, urlReferrer);
+                string message = Repository.AddDYSearchFields(SearchFieldData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "Dy Detail Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UpdateSearchFields(FieldsModel SearchFieldData)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(SearchFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var message = Repository.UpdateDyDetailFields(SearchFieldData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
 

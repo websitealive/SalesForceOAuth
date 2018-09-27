@@ -36,6 +36,31 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetDetailFieldByID(string Token, string ObjectRef, int FieldId, string callback)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Search Field By Id", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var FieldsList = Repository.GetDYDetailFieldsById(FieldId, ObjectRef, urlReferrer);
+                return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetExportFields", "Message", HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostDetailFields(FieldsModel ExportFieldData)
         {
@@ -58,6 +83,31 @@ namespace SalesForceOAuth.Controllers
             catch (Exception ex)
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "Dy Detail Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UpdateDetailFields(FieldsModel DetailFieldData)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(DetailFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var message = Repository.UpdateDyDetailFields(DetailFieldData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
 
