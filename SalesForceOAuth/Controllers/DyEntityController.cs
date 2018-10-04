@@ -128,12 +128,12 @@ namespace SalesForceOAuth.Controllers
             {
                 if (Id == 0)
                 {
-                    var entitySettings = Repository.GetEntitySettings(ObjectRef, GroupId, urlReferrer);
+                    var entitySettings = Repository.GetDyEntitySettings(ObjectRef, GroupId, urlReferrer);
                     return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
                 }
                 else
                 {
-                    var entitySettings = Repository.GetEntitySettingsById(ObjectRef, Id, urlReferrer);
+                    var entitySettings = Repository.GetDyEntitySettingsById(ObjectRef, Id, urlReferrer);
                     return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
                 }
 
@@ -159,7 +159,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var messgae = Repository.AddEntitySettings(lData, urlReferrer);
+                var messgae = Repository.AddDyEntitySettings(lData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -183,7 +183,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var messgae = Repository.UpdateEntitySettings(lData, urlReferrer);
+                var messgae = Repository.UpdateDyEntitySettings(lData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
@@ -208,8 +208,8 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var messgae = Repository.DeleteEntitySettings(ObjectRef, urlReferrer, Id);
-                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+                var message = Repository.DeleteDyEntitySettings(ObjectRef, urlReferrer, Id);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
                 //
             }
             catch (Exception ex)

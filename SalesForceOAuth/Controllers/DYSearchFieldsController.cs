@@ -103,7 +103,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var message = Repository.UpdateDyDetailFields(SearchFieldData, urlReferrer);
+                var message = Repository.UpdateDySearchFields(SearchFieldData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
             catch (Exception ex)

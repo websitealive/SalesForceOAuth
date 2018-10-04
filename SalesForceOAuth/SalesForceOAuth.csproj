@@ -290,6 +290,7 @@
     <Compile Include="Controllers\SFChatLiveFiveController.cs" />
     <Compile Include="Controllers\SFDetailedController.cs" />
     <Compile Include="Controllers\SFDetailFieldsController.cs" />
+    <Compile Include="Controllers\SFEntityController.cs" />
     <Compile Include="Controllers\SFExportFieldsController.cs" />
     <Compile Include="Controllers\SFSearchFieldsController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
