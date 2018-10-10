@@ -57,12 +57,18 @@ namespace SalesForceOAuth.Controllers
                             #region set properties
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration;
+                            Entity post = new Entity("post");
+                            post["source"] = new OptionSetValue(2);
+                            post["type"] = new OptionSetValue(4);
                             if (ItemType.Contains("account"))
                             {
                                 registration = new Entity("ayu_alivechat");
                                 registration["ayu_account"] = new EntityReference("account", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                post["regardingobjectid"] = new EntityReference("account", new Guid(ItemId)); ;
+                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
                             }
                             else if (ItemType.Contains("lead"))
                             {
@@ -70,6 +76,9 @@ namespace SalesForceOAuth.Controllers
                                 registration["ayu_leadid"] = new EntityReference("lead", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                post["regardingobjectid"] = new EntityReference("lead", new Guid(ItemId)); ;
+                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
                             }
                             else if (ItemType.Contains("contact"))
                             {
@@ -77,16 +86,22 @@ namespace SalesForceOAuth.Controllers
                                 registration["ayu_contactid"] = new EntityReference("contact", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                post["regardingobjectid"] = new EntityReference("contact", new Guid(ItemId)); ;
+                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
+
                             }
                             else
                             {
                                 registration = new Entity();
                                 newChatId = Guid.Empty;
+
                                 return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
                             }
 
                             #endregion
                             newChatId = objser.Create(registration);
+                            Guid newPostID = objser.Create(post);
                         }
                         if (newChatId != Guid.Empty)
                         {
