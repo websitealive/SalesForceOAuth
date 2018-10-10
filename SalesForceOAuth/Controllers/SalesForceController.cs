@@ -993,8 +993,8 @@ namespace SalesForceOAuth.Controllers
             else if (url.Contains("api-apps-dotnet.websitealive.com"))
             {
                 connectionString = "server=dbmain.alivechat.websitealive.com;user=apps;database=apps;port=3306;password=wXa8823v123!;";
-                //connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
-                connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
+                // connectionString = Environment.GetEnvironmentVariable("liveappsConnStr");
+                // connectionString = connectionString.Replace("alivechat", "alivechat_" + objectRef);
             }
             else
                 connectionString = "";
