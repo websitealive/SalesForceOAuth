@@ -1080,3 +1080,5 @@ Parameter name: key
 10/8/2018 12:02:45 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: An unexpected error occurred.
 10/8/2018 12:33:58 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'Post' was not found in the MetadataCache.
 10/8/2018 2:25:34 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+10/10/2018 12:04:52 PM ==> No Chat in queue to publish
+10/10/2018 12:06:51 PM ==> No Chat in queue to publish
