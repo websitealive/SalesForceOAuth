@@ -24,6 +24,93 @@ namespace SalesForceOAuth.Controllers
     public class DyEntityController : ApiController
     {
         [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> IsEntityRecordExist(string token, string ObjectRef, int GroupId, string Entity, string SValue, string callback)
+        {
+
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string ApplicationURL = "", userName = "", password = "", authType = "";
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                Uri organizationUri;
+                Uri homeRealmUri;
+                ClientCredentials credentials = new ClientCredentials();
+                ClientCredentials deviceCredentials = new ClientCredentials();
+                credentials.UserName.UserName = userName;
+                credentials.UserName.Password = password;
+                deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
+                deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
+                organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
+                homeRealmUri = null;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
+                {
+                    RetrieveEntityRequest retrieveEntityRequest = new RetrieveEntityRequest
+                    {
+                        EntityFilters = EntityFilters.Attributes,
+                        LogicalName = Entity
+                    };
+                    RetrieveEntityResponse retrieveEntityResponse = (RetrieveEntityResponse)proxyservice.Execute(retrieveEntityRequest);
+                    EntityMetadata RetrieveEntityInfo = retrieveEntityResponse.EntityMetadata;
+
+                    IOrganizationService objser = (IOrganizationService)proxyservice;
+                    //filter name 
+                    ConditionExpression filterOwnRcd = new ConditionExpression();
+                    if (Entity == "account")
+                    {
+                        filterOwnRcd.AttributeName = "accountnumber";
+                    }
+                    else
+                    {
+                        filterOwnRcd.AttributeName = "emailaddress1";
+                    }
+                    filterOwnRcd.Operator = ConditionOperator.Like;
+                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
+
+                    FilterExpression filter1 = new FilterExpression();
+                    filter1.Conditions.Add(filterOwnRcd);
+                    //Add Custom Search Filters
+
+                    filter1.FilterOperator = LogicalOperator.Or;
+                    QueryExpression query = new QueryExpression(Entity);
+
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+
+                    query.Criteria.AddFilter(filter1);
+
+                    EntityCollection result1 = objser.RetrieveMultiple(query);
+                    if (result1.Entities.Count > 0)
+                    {
+                        return MyAppsDb.ConvertJSONPOutput(callback, "true", HttpStatusCode.OK, false);
+                    }
+                    else
+                    {
+                        return MyAppsDb.ConvertJSONPOutput(callback, "false", HttpStatusCode.OK, false);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+            }
+        }
+
+        [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedEntities(string token, string ObjectRef, int GroupId, string Entity, string SValue, string callback)
         {
 

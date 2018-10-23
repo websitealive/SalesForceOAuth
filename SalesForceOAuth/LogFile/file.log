@@ -1080,3 +1080,11 @@ Parameter name: key
 10/8/2018 12:02:45 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: An unexpected error occurred.
 10/8/2018 12:33:58 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'Post' was not found in the MetadataCache.
 10/8/2018 2:25:34 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+10/17/2018 3:41:03 PM ==> Function: SalesForce-GetRedirectURL : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+10/18/2018 2:27:32 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 'Account' entity doesn't contain attribute with Name = 'querytype'.
+10/18/2018 2:34:12 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: attributeName
+10/18/2018 2:35:19 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: attributeName
+10/18/2018 3:10:02 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 'Account' entity doesn't contain attribute with Name = 'savedquery'.
+10/19/2018 9:48:01 AM ==> Function: SalesForceToken-GetAuthorizationToken : Unhandled exception--Internal exception : , Exception Message: redirect_uri must match configuration
+10/22/2018 3:57:08 PM ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+10/22/2018 3:59:59 PM ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
