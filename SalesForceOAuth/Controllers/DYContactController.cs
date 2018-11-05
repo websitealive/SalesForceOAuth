@@ -279,10 +279,6 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                //Connect to SDK 
-                //Test system
-                //string ApplicationURL = "https://alan365.crm.dynamics.com", userName = "alan@alan365.onmicrosoft.com",
-                //    password = "Getthat$$$5", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -307,6 +303,42 @@ namespace SalesForceOAuth.Controllers
                 {
                     List<DYContact> listToReturn = new List<DYContact>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
+
+                    List<string> contactId = new List<string>();
+                    // Start Related Entity
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var csA in getSearchedFileds)
+                        {
+                            if (csA.FieldType == "relatedEntity")
+                            {
+                                QueryExpression queryRelatedEntity = new QueryExpression(csA.RelatedEntity);
+                                queryRelatedEntity.ColumnSet.AddColumn(csA.RelatedEntityFieldName);
+                                FilterExpression relatedEntityFilter = new FilterExpression();
+                                ConditionExpression relatedSearchField = new ConditionExpression()
+                                {
+                                    AttributeName = csA.FieldName,
+                                    Operator = ConditionOperator.Like,
+                                    Values = { "%" + SValue.Trim() + "%" }
+
+                                };
+                                relatedEntityFilter.Conditions.Add(relatedSearchField);
+                                queryRelatedEntity.Criteria.AddFilter(relatedEntityFilter);
+                                EntityCollection result = objser.RetrieveMultiple(queryRelatedEntity);
+                                if (result.Entities.Count > 0)
+                                {
+                                    foreach (var item in result.Entities)
+                                    {
+                                        if (item.Attributes.Contains(csA.RelatedEntityFieldName))
+                                            contactId.Add(((Microsoft.Xrm.Sdk.EntityReference)item.Attributes[csA.RelatedEntityFieldName]).Id.ToString());
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    // End Related Entity
+
                     QueryExpression query = new QueryExpression("contact");
 
                     List<string> defaultSearchedColumn = new List<string>();
@@ -321,9 +353,11 @@ namespace SalesForceOAuth.Controllers
                     {
                         foreach (var field in getSearchedFileds)
                         {
-                            query.ColumnSet.AddColumn(field.FieldName);
+                            if (field.FieldType != "relatedEntity")
+                            {
+                                query.ColumnSet.AddColumn(field.FieldName);
+                            }
                         }
-
                     }
 
                     FilterExpression filter1 = new FilterExpression();
@@ -353,7 +387,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         foreach (var csA in getSearchedFileds)
                         {
-                            if (csA.FieldType != "lookup")
+                            if (csA.FieldType == "textbox" || csA.FieldType == "boolean")
                             {
                                 ConditionExpression filterOwnRcd3 = new ConditionExpression();
                                 filterOwnRcd3.AttributeName = csA.FieldName;
@@ -366,6 +400,24 @@ namespace SalesForceOAuth.Controllers
                     filter1.FilterOperator = LogicalOperator.Or;
                     query.Criteria.AddFilter(filter1);
                     EntityCollection result1 = objser.RetrieveMultiple(query);
+
+                    foreach (var item in contactId)
+                    {
+                        if (result1.Entities.Count > 0)
+                        {
+                            if (result1.Entities.Where(c => c.Attributes["contactid"].ToString() == item).FirstOrDefault() == null)
+                            {
+                                Entity result2 = objser.Retrieve("contact", new Guid(item), query.ColumnSet);
+                                result1.Entities.Add(result2);
+                            }
+                        }
+                        else
+                        {
+                            Entity result2 = objser.Retrieve("contact", new Guid(item), query.ColumnSet);
+                            result1.Entities.Add(result2);
+                        }
+                    }
+
                     if (result1.Entities.Count > 0)
                     {
 

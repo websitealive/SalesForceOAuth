@@ -34,6 +34,10 @@ namespace SalesForceOAuth.BusinessLogic
                                     searchFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
                                     searchFields.FieldName = rdr["search_field_name"].ToString().Trim();
                                     searchFields.FieldType = rdr["search_field_type"].ToString().Trim();
+
+                                    searchFields.RelatedEntity = rdr["related_entity_name"].ToString().Trim();
+                                    searchFields.RelatedEntityFieldName = rdr["related_entity_field_name"].ToString().Trim();
+
                                     returnFieldList.Add(searchFields);
                                 }
 

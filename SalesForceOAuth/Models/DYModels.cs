@@ -98,6 +98,7 @@ namespace SalesForceOAuth.Models
         public string Value { get; set; }
         public string FieldType { get; set; }
         public string RelatedEntity { get; set; }
+        public string RelatedEntityFieldName { get; set; }
     }
 
     public class EntitySettings : DYOrganizationDetail

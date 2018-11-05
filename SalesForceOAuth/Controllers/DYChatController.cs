@@ -14,6 +14,7 @@ using System.Web.Http;
 using System.ServiceModel.Description;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -45,9 +46,9 @@ namespace SalesForceOAuth.Controllers
                     deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                     organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                     homeRealmUri = null;
-                    string ItemId = "", ItemType = "";
+                    string ItemId = "", ItemType = "", OwnerId = "";
                     int chatId = 0;
-                    MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, urlReferrer);
+                    MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, urlReferrer);
                     if (chatId != 0)
                     {
                         Guid newChatId;
@@ -55,40 +56,67 @@ namespace SalesForceOAuth.Controllers
                         using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                         {
                             #region set properties
+                            string postMessage;
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration;
                             Entity post = new Entity("post");
                             post["source"] = new OptionSetValue(2);
                             post["type"] = new OptionSetValue(4);
+
+                            if (OwnerId != "")
+                            {
+                                ColumnSet entityColumn = new ColumnSet();
+                                entityColumn.AddColumn("fullname");
+                                Entity chk = objser.Retrieve("systemuser", new Guid(OwnerId), entityColumn);
+
+                                postMessage = "Chat with AliveChat ID: " + lData.SessionId + " Created By " + chk.Attributes["fullname"];
+                            }
+                            else
+                            {
+                                postMessage = "AliveChat ID: " + lData.SessionId + " is Created.";
+                            }
+
                             if (ItemType.Contains("account"))
                             {
                                 registration = new Entity("ayu_alivechat");
                                 registration["ayu_account"] = new EntityReference("account", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
 
                                 post["regardingobjectid"] = new EntityReference("account", new Guid(ItemId)); ;
-                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
+                                post["text"] = postMessage;
                             }
                             else if (ItemType.Contains("lead"))
                             {
                                 registration = new Entity("ayu_leadalivechat");
                                 registration["ayu_leadid"] = new EntityReference("lead", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
 
                                 post["regardingobjectid"] = new EntityReference("lead", new Guid(ItemId)); ;
-                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
+                                post["text"] = postMessage;
                             }
                             else if (ItemType.Contains("contact"))
                             {
                                 registration = new Entity("ayu_contactalivechat");
                                 registration["ayu_contactid"] = new EntityReference("contact", new Guid(ItemId));
                                 registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
                                 registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
 
                                 post["regardingobjectid"] = new EntityReference("contact", new Guid(ItemId)); ;
-                                post["text"] = "AliveChat ID: " + lData.SessionId + " is Created.";
+                                post["text"] = postMessage;
 
                             }
                             else
@@ -240,7 +268,7 @@ namespace SalesForceOAuth.Controllers
             //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback)
+        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback, string OwnerId)
         {
             #region JWT Token 
             string outputPayload;
@@ -256,7 +284,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, ObjType, ObjId, urlReferrer);
+                MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, ObjType, ObjId, OwnerId, urlReferrer);
                 PostedObjectDetail output = new PostedObjectDetail();
                 output.ObjectName = "TagChat";
                 output.Message = "Chat Tagged successfully!";

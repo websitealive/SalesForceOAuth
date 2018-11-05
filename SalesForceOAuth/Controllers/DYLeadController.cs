@@ -315,10 +315,6 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                //Connect to SDK 
-                //Test system
-                //string ApplicationURL = "https://alive5.crm11.dynamics.com", userName = "alive5@alive5.onmicrosoft.com",
-                //password = "Passw0rd1", authType = "Office365";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -342,7 +338,61 @@ namespace SalesForceOAuth.Controllers
                 {
                     List<DYLead> listToReturn = new List<DYLead>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
-                    //filter name 
+
+                    List<string> leadId = new List<string>();
+                    // Start Related Entity
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var csA in getSearchedFileds)
+                        {
+                            if (csA.FieldType == "relatedEntity")
+                            {
+                                QueryExpression queryRelatedEntity = new QueryExpression(csA.RelatedEntity);
+                                queryRelatedEntity.ColumnSet.AddColumn(csA.RelatedEntityFieldName);
+                                FilterExpression relatedEntityFilter = new FilterExpression();
+                                ConditionExpression relatedSearchField = new ConditionExpression()
+                                {
+                                    AttributeName = csA.FieldName,
+                                    Operator = ConditionOperator.Like,
+                                    Values = { "%" + SValue.Trim() + "%" }
+
+                                };
+                                relatedEntityFilter.Conditions.Add(relatedSearchField);
+                                queryRelatedEntity.Criteria.AddFilter(relatedEntityFilter);
+                                EntityCollection result = objser.RetrieveMultiple(queryRelatedEntity);
+                                if (result.Entities.Count > 0)
+                                {
+                                    foreach (var item in result.Entities)
+                                    {
+                                        if (item.Attributes.Contains(csA.RelatedEntityFieldName))
+                                            leadId.Add(((Microsoft.Xrm.Sdk.EntityReference)item.Attributes[csA.RelatedEntityFieldName]).Id.ToString());
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    // End Related Entity
+
+                    //filter name
+                    QueryExpression query = new QueryExpression("lead");
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { "leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname" });
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var field in getSearchedFileds)
+                        {
+                            if (field.FieldType != "relatedEntity")
+                            {
+                                query.ColumnSet.AddColumn(field.FieldName);
+                            }
+                        }
+                    }
+
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "fullname";
                     filterOwnRcd.Operator = ConditionOperator.Like;
@@ -385,27 +435,28 @@ namespace SalesForceOAuth.Controllers
                     }
                     filter1.FilterOperator = LogicalOperator.Or;
 
-                    QueryExpression query = new QueryExpression("lead");
-
-                    List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { "leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname" });
-                    foreach (var item in defaultSearchedColumn)
-                    {
-                        query.ColumnSet.AddColumn(item);
-                    }
-                    if (getSearchedFileds.Count > 0)
-                    {
-                        foreach (var field in getSearchedFileds)
-                        {
-                            query.ColumnSet.AddColumn(field.FieldName);
-                        }
-
-                    }
-
                     //query.ColumnSet.AddColumns("leadid", "address1_city", "subject", "lastname", "telephone1", "emailaddress1", "companyname", "firstname");
                     query.Criteria.AddFilter(filter1);
 
                     EntityCollection result1 = objser.RetrieveMultiple(query);
+
+                    foreach (var item in leadId)
+                    {
+                        if (result1.Entities.Count > 0)
+                        {
+                            if (result1.Entities.Where(c => c.Attributes["leadid"].ToString() == item).FirstOrDefault() == null)
+                            {
+                                Entity result2 = objser.Retrieve("lead", new Guid(item), query.ColumnSet);
+                                result1.Entities.Add(result2);
+                            }
+                        }
+                        else
+                        {
+                            Entity result2 = objser.Retrieve("lead", new Guid(item), query.ColumnSet);
+                            result1.Entities.Add(result2);
+                        }
+                    }
+
                     if (result1.Entities.Count > 0)
                     {
 

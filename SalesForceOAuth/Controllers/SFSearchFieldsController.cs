@@ -112,7 +112,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpDelete]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteDetailFields(string Token, int Id, string ObjectRef)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteSearchFields(string Token, int Id, string ObjectRef)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;

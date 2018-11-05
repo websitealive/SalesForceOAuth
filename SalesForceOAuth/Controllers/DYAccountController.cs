@@ -270,13 +270,6 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                //Connect to SDK 
-                //Test system
-                //string ApplicationURL = "https://alan365.crm.dynamics.com", userName = "alan@alan365.onmicrosoft.com",
-                //    password = "Getthat$$$5", authType = "Office365";
-                //Test system IFD
-                //string ApplicationURL = "https://msdynamics.websitealive.com", userName = @"wsa\administrator",
-                //    password = "bX9bTkYv)Td", authType = "IFD";
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
@@ -299,7 +292,64 @@ namespace SalesForceOAuth.Controllers
                 {
                     List<DYAccount> listToReturn = new List<DYAccount>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
-                    //filter name 
+
+                    List<string> accountId = new List<string>();
+                    // Start Related Entity
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var csA in getSearchedFileds)
+                        {
+                            if (csA.FieldType == "relatedEntity")
+                            {
+                                QueryExpression queryRelatedEntity = new QueryExpression(csA.RelatedEntity);
+                                queryRelatedEntity.ColumnSet.AddColumn(csA.RelatedEntityFieldName);
+                                FilterExpression relatedEntityFilter = new FilterExpression();
+                                ConditionExpression relatedSearchField = new ConditionExpression()
+                                {
+                                    AttributeName = csA.FieldName,
+                                    Operator = ConditionOperator.Like,
+                                    Values = { "%" + SValue.Trim() + "%" }
+
+                                };
+                                relatedEntityFilter.Conditions.Add(relatedSearchField);
+                                queryRelatedEntity.Criteria.AddFilter(relatedEntityFilter);
+                                EntityCollection result = objser.RetrieveMultiple(queryRelatedEntity);
+                                if (result.Entities.Count > 0)
+                                {
+                                    foreach (var item in result.Entities)
+                                    {
+                                        if (item.Attributes.Contains(csA.RelatedEntityFieldName))
+                                            accountId.Add(((Microsoft.Xrm.Sdk.EntityReference)item.Attributes[csA.RelatedEntityFieldName]).Id.ToString());
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                    // End Related Entity
+
+                    //filter name
+                    QueryExpression query = new QueryExpression("account");
+
+                    List<string> defaultSearchedColumn = new List<string>();
+                    defaultSearchedColumn.AddRange(new string[] { "accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name" });
+                    foreach (var item in defaultSearchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                    }
+                    if (getSearchedFileds.Count > 0)
+                    {
+                        foreach (var field in getSearchedFileds)
+                        {
+                            if (field.FieldType != "relatedEntity")
+                            {
+                                query.ColumnSet.AddColumn(field.FieldName);
+                            }
+                        }
+
+                    }
+
+                    FilterExpression filter1 = new FilterExpression();
                     ConditionExpression filterOwnRcd = new ConditionExpression();
                     filterOwnRcd.AttributeName = "name";
                     filterOwnRcd.Operator = ConditionOperator.Like;
@@ -315,16 +365,16 @@ namespace SalesForceOAuth.Controllers
                     filterOwnRcd1.Operator = ConditionOperator.Like;
                     filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
 
-                    FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd1);
                     filter1.Conditions.Add(filterOwnRcd2);
+
                     //Add Custom Search Filters
                     if (getSearchedFileds.Count > 0)
                     {
                         foreach (var csA in getSearchedFileds)
                         {
-                            if (csA.FieldType != "lookup")
+                            if (csA.FieldType == "textbox" || csA.FieldType == "boolean")
                             {
                                 ConditionExpression filterOwnRcd4 = new ConditionExpression();
                                 filterOwnRcd4.AttributeName = csA.FieldName;
@@ -335,30 +385,30 @@ namespace SalesForceOAuth.Controllers
                         }
                     }
                     filter1.FilterOperator = LogicalOperator.Or;
-                    QueryExpression query = new QueryExpression("account");
 
-                    List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { "accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name" });
-                    foreach (var item in defaultSearchedColumn)
-                    {
-                        query.ColumnSet.AddColumn(item);
-                    }
-                    if (getSearchedFileds.Count > 0)
-                    {
-                        foreach (var field in getSearchedFileds)
-                        {
-                            query.ColumnSet.AddColumn(field.FieldName);
-                        }
-
-                    }
-
-                    //query.ColumnSet.AddColumns("accountid", "address1_city", "accountnumber", "telephone1", "emailaddress1", "name");
                     query.Criteria.AddFilter(filter1);
 
                     EntityCollection result1 = objser.RetrieveMultiple(query);
+
+                    foreach (var item in accountId)
+                    {
+                        if (result1.Entities.Count > 0)
+                        {
+                            if (result1.Entities.Where(c => c.Attributes["accountid"].ToString() == item).FirstOrDefault() == null)
+                            {
+                                Entity result2 = objser.Retrieve("account", new Guid(item), query.ColumnSet);
+                                result1.Entities.Add(result2);
+                            }
+                        }
+                        else
+                        {
+                            Entity result2 = objser.Retrieve("account", new Guid(item), query.ColumnSet);
+                            result1.Entities.Add(result2);
+                        }
+                    }
+
                     if (result1.Entities.Count > 0)
                     {
-
                         foreach (var z in result1.Entities)
                         {
                             DYAccount info = new DYAccount();
@@ -381,19 +431,22 @@ namespace SalesForceOAuth.Controllers
 
                                 foreach (var field in getSearchedFileds)
                                 {
-                                    if (z.Attributes.Contains(field.FieldName))
+                                    if (field.FieldType != "relatedEntity")
                                     {
-                                        InputFields Fields = new InputFields();
-                                        Fields.FieldLabel = field.FieldLabel;
-                                        if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                        if (z.Attributes.Contains(field.FieldName))
                                         {
-                                            Fields.Value = z.Attributes[field.FieldName].ToString();
+                                            InputFields Fields = new InputFields();
+                                            Fields.FieldLabel = field.FieldLabel;
+                                            if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                            {
+                                                Fields.Value = z.Attributes[field.FieldName].ToString();
+                                            }
+                                            else
+                                            {
+                                                Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                            }
+                                            retSearchFields.Add(Fields);
                                         }
-                                        else
-                                        {
-                                            Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
-                                        }
-                                        retSearchFields.Add(Fields);
                                     }
                                 }
 
