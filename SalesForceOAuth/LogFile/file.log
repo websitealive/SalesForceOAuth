@@ -1114,3 +1114,4 @@ Parameter name: key
 11/5/2018 12:28:23 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'post' entity doesn't contain attribute with Name = 'ownerid'.
 11/5/2018 3:21:59 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unrecognized Guid format.
 11/5/2018 3:28:07 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unrecognized Guid format.
+11/6/2018 3:34:44 PM ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.

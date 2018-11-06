@@ -40,16 +40,16 @@ namespace SalesForceOAuth.Controllers
                 {
                     sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
                     string urlReferrer = Request.RequestUri.Authority.ToString();
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url, urlReferrer, objectRef);
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
 
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url, state: siteRef);
                     return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
                 }
                 else
                 {
-                    //sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
+                    sf_callback_url = siteRef;
                     string urlReferrer = Request.RequestUri.Authority.ToString();
-                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, ref sf_callback_url, urlReferrer, objectRef);
+                    MyAppsDb.GetRedirectURLParameters(ref sf_authoize_url, ref sf_clientid, urlReferrer, objectRef);
 
                     string url = Common.FormatAuthUrl(sf_authoize_url, ResponseTypes.Code, sf_clientid, sf_callback_url, state: siteRef);
                     return MyAppsDb.ConvertJSONPOutput(callback, url, HttpStatusCode.OK, false);
@@ -188,46 +188,46 @@ namespace SalesForceOAuth.Controllers
                 expandoDict.Add(propertyName, propertyValue);
         }
 
-        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, ref string sf_callback_url, string urlReferrer, string objectRef)
+        public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)
         {
-            sf_authoize_url = "https://login.salesforce.com/services/oauth2/authorize";
-            sf_clientid = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
-            sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
+            //Dve Enviroment
+            //sf_authoize_url = "https://login.salesforce.com/services/oauth2/authorize";
+            //sf_clientid = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
+            //sf_callback_url = "https://login.salesforce.com/apex/OauthSetup";
 
-            // 
-            //string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            //using (MySqlConnection conn = new MySqlConnection(connStr))
-            //{
-            //    try
-            //    {
-            //        conn.Open();
-            //        string sql = "SELECT * FROM integrations_constants where id = 1";
-            //        MySqlCommand cmd = new MySqlCommand(sql, conn);
-            //        using (MySqlDataReader rdr = cmd.ExecuteReader())
-            //        {
-            //            if (rdr.HasRows)
-            //            {
-            //                while (rdr.Read())
-            //                {
-            //                    sf_authoize_url = rdr["sf_authoize_url"].ToString();
-            //                    sf_clientid = rdr["sf_clientid"].ToString();
-            //                    sf_callback_url = rdr["sf_callback_url"].ToString();
-            //                }
-            //            }
-            //            else
-            //            {
-            //                Console.WriteLine("No rows found.");
-            //            }
-            //            rdr.Close();
-            //        }
-            //        conn.Close();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        conn.Close();
-            //        throw;
-            //    }
-            //}
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integrations_constants where id = 1";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                sf_authoize_url = rdr["sf_authoize_url"].ToString();
+                                sf_clientid = rdr["sf_clientid"].ToString();
+                                // sf_callback_url = rdr["sf_callback_url"].ToString();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
         }
 
         public static void UpdateIntegrationSettingForUserDynamics(string objectRef, int groupId, string refresh_token, string access_token, string resource, string urlReferrer)
@@ -254,47 +254,48 @@ namespace SalesForceOAuth.Controllers
 
         public static void GetTokenParameters(ref string sf_clientid, ref string sf_consumer_key, ref string sf_consumer_secret, ref string sf_token_req_end_point, string urlReferrer, string objectRef)
         {
-            sf_clientid = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
-            // sf_callback_url = rdr["sf_callback_url"].ToString();
-            sf_consumer_key = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
-            sf_consumer_secret = "5637675798303765853";
-            sf_token_req_end_point = "https://login.salesforce.com/services/oauth2/token";
+            // Dev Enviroment
+            //sf_clientid = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
+            //// sf_callback_url = rdr["sf_callback_url"].ToString();
+            //sf_consumer_key = "3MVG9HxRZv05HarR4hvgt_5_wf.YbdkZdaXp9MyDXlrIGiCXI9p06lTrPdH1nT1M9ZBM5bmIJYB_uDxzMSrCH";
+            //sf_consumer_secret = "5637675798303765853";
+            //sf_token_req_end_point = "https://login.salesforce.com/services/oauth2/token";
 
-            //string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
-            //using (MySqlConnection conn = new MySqlConnection(connStr))
-            //{
-            //    try
-            //    {
-            //        conn.Open();
-            //        string sql = "SELECT * FROM integrations_constants where id = 1";
-            //        MySqlCommand cmd = new MySqlCommand(sql, conn);
-            //        using (MySqlDataReader rdr = cmd.ExecuteReader())
-            //        {
-            //            if (rdr.HasRows)
-            //            {
-            //                while (rdr.Read())
-            //                {
-            //                    sf_clientid = rdr["sf_clientid"].ToString();
-            //                    // sf_callback_url = rdr["sf_callback_url"].ToString();
-            //                    sf_consumer_key = rdr["sf_consumer_key"].ToString();
-            //                    sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
-            //                    sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
-            //                }
-            //            }
-            //            else
-            //            {
-            //                Console.WriteLine("No rows found.");
-            //            }
-            //            rdr.Close();
-            //        }
-            //        conn.Close();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        conn.Close();
-            //        throw;
-            //    }
-            //}
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integrations_constants where id = 1";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                sf_clientid = rdr["sf_clientid"].ToString();
+                                // sf_callback_url = rdr["sf_callback_url"].ToString();
+                                sf_consumer_key = rdr["sf_consumer_key"].ToString();
+                                sf_consumer_secret = rdr["sf_consumer_secret"].ToString();
+                                sf_token_req_end_point = rdr["sf_token_req_end_point"].ToString();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
         }
 
         public static void CreateNewIntegrationSettingForUser(string ObjectRef, int GroupId, string SFRefreshToken, string SFAccessToken, string SFApiVersion, string SFInstanceUrl, string urlReferrer)
