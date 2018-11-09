@@ -33,6 +33,8 @@ namespace SalesForceOAuth.Models
 
         public string RelatedEntity { get; set; }
 
+        public string RelatedField { get; set; }
+
         public int BusinessRequired { get; set; }
 
         public int MaxLength { get; set; }

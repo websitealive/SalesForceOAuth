@@ -1115,3 +1115,48 @@ Parameter name: key
 11/5/2018 3:21:59 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unrecognized Guid format.
 11/5/2018 3:28:07 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unrecognized Guid format.
 11/6/2018 3:34:44 PM ==> Function: Salesforce-GetRedirectURL : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+11/7/2018 10:52:44 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+11/7/2018 10:53:32 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+11/7/2018 11:10:18 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+11/7/2018 11:10:25 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Invalid length for a Base-64 char array or string.
+11/7/2018 11:11:40 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Invalid length for a Base-64 char array or string.
+11/7/2018 11:31:31 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+11/7/2018 11:55:09 AM ==> Function: DyOrganization : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+11/7/2018 12:20:59 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: expired access/refresh token
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+11/7/2018 12:40:12 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: expired access/refresh token
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+11/8/2018 2:55:10 PM ==> Function: Dy Detail Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/9/2018 5:05:38 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel. ---> System.Security.Authentication.AuthenticationException: The remote certificate is invalid according to the validation procedure.
+   at System.Net.Security.SslState.StartSendAuthResetSignal(ProtocolToken message, AsyncProtocolRequest asyncRequest, Exception exception)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessReceivedBlob(Byte[] buffer, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReadFrame(Byte[] buffer, Int32 readBytes, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessReceivedBlob(Byte[] buffer, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReadFrame(Byte[] buffer, Int32 readBytes, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessReceivedBlob(Byte[] buffer, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReadFrame(Byte[] buffer, Int32 readBytes, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.

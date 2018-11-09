@@ -235,7 +235,7 @@ namespace SalesForceOAuth.Controllers
                         filters.Append("OR " + csA + " like '%" + SValue + "%' ");
                     }
                 }
-                query.Append("SELECT Id, AccountNumber, Name, Phone, FirstName, LastName " + columns + " From Account ");
+                query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append("OR AccountNumber like '%" + SValue + "%' ");
