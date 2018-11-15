@@ -64,7 +64,7 @@ namespace SalesForceOAuth.Controllers
 
                 newLead.FirstName = lData.FirstName; newLead.LastName = lData.LastName; newLead.Company = companyName;
                 newLead.Email = lData.Email;
-                lData.Phone = lData.Phone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
+                // lData.Phone = lData.Phone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
                 newLead.Phone = String.Format("{0:(###) ###-####}", lData.Phone);
 
                 #region Dynamic Inout Fields
@@ -82,11 +82,11 @@ namespace SalesForceOAuth.Controllers
                 }
                 #endregion
 
-                Decimal value;
-                if (Decimal.TryParse(lData.Phone, out value))
-                    newLead.Phone = String.Format("{0:(###) ###-####}", value);
-                else
-                    return MyAppsDb.ConvertJSONOutput(new Exception("Phone number not in right format", null), "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
+                //Decimal value;
+                //if (Decimal.TryParse(lData.Phone, out value))
+                //    newLead.Phone = String.Format("{0:(###) ###-####}", value);
+                //else
+                //    return MyAppsDb.ConvertJSONOutput(new Exception("Phone number not in right format", null), "SFLead-PostLead", "Unhandled exception", HttpStatusCode.OK);
 
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {

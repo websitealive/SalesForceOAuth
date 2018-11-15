@@ -43,6 +43,15 @@ namespace SalesForceOAuth.Controllers
                     {
                         return MyAppsDb.ConvertJSONOutput("No chat in queue!", HttpStatusCode.OK, false);
                     }
+
+                    // Get Back End Fields and create object for update
+                    var getBackEndFeields = Repository.GetBackendFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
+                    dynamic UpdateRecord = new ExpandoObject();
+                    foreach (var item in getBackEndFeields)
+                    {
+                        MyAppsDb.AddProperty(UpdateRecord, item.FieldName, item.ValueDetail);
+                    }
+
                     ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     //find lead owner user
@@ -55,6 +64,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         ownerId = c.Id;
                     }
+
                     SuccessResponse sR;
                     dynamic lTemp = new ExpandoObject();
                     lTemp.Subject = lData.Subject;
@@ -70,8 +80,8 @@ namespace SalesForceOAuth.Controllers
                         foreach (CustomObject c in lData.CustomFields)
                         {
                             if (c.field.ToLower().Equals("subject"))
-                                lTemp.Subject = c.value; 
-                            else 
+                                lTemp.Subject = c.value;
+                            else
                                 MyAppsDb.AddProperty(lTemp, c.field, c.value);
                         }
                     }
@@ -91,9 +101,15 @@ namespace SalesForceOAuth.Controllers
                     //    if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
 
                     //}
+
                     sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
+                        if (getBackEndFeields.Count > 0)
+                        {
+                            await client.UpdateAsync(ItemType, ItemId, UpdateRecord);
+                        }
+
                         MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef);
                         PostedObjectDetail output = new PostedObjectDetail();
                         output.Id = sR.Id;

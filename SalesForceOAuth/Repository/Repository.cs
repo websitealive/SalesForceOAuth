@@ -1333,6 +1333,58 @@ namespace SalesForceOAuth
             }
         }
 
+        public static List<FieldsModel> GetBackendFields(string objectRef, int groupId, string urlReferrer, string entity = null)
+        {
+            List<FieldsModel> returnFields = new List<FieldsModel>();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql;
+                    if (entity == null)
+                    {
+                        sql = "SELECT * from integration_salesforce_backend_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    }
+                    else
+                    {
+                        sql = "SELECT * from integration_salesforce_backend_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND entity = '" + entity + "' ";
+                    }
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                FieldsModel backendFields = new FieldsModel();
+                                backendFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                backendFields.FieldName = rdr["backend_field_name"].ToString().Trim();
+                                backendFields.ValueDetail = rdr["backend_field_value"].ToString().Trim();
+                                backendFields.EntityType = rdr["entity"].ToString().Trim();
+
+                                returnFields.Add(backendFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFields;
+        }
+
         #endregion
 
         #region Alive 5 Chats

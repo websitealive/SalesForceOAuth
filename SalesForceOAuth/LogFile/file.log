@@ -1160,3 +1160,6 @@ Parameter name: key
    at System.Net.HttpWebRequest.GetResponse()
    at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
    at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+11/14/2018 12:59:23 PM ==> Function: SalesForceToken-GetAuthorizationToken : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+11/14/2018 2:46:56 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Phone number not in right format
+11/14/2018 2:50:45 PM ==> Function: SFLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Phone number not in right format
