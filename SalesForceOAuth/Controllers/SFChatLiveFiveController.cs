@@ -53,6 +53,7 @@ namespace SalesForceOAuth.Controllers
             {
                 string InstanceUrl = "", ApiVersion = "";
                 string ChatId, RowId;
+                string HeadingSms = " Chat Request Information (not visible to visitor): |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |   Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
                 MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
@@ -61,7 +62,7 @@ namespace SalesForceOAuth.Controllers
                 SuccessResponse sR;
                 dynamic lTemp = new ExpandoObject();
                 lTemp.Subject = lData.Subject;
-                lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                lTemp.Description = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                 lTemp.Status = "Completed";
                 if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
 

@@ -76,6 +76,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 Guid newChatId = Guid.Empty;
                 PostedObjectDetail pObject = new PostedObjectDetail();
+                string HeadingSms = " Chat Request Information (not visible to visitor): |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |   Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
                 //In chats in CRM
                 if (!flag)
                 {
@@ -88,8 +89,8 @@ namespace SalesForceOAuth.Controllers
                         IOrganizationService objser = (IOrganizationService)proxyservice;
                         Entity registration = new Entity(ChatEntityName);
                         registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                        registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                        registration["ayu_alive5sms"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                        registration["ayu_name"] = "Alive SMS: " + lData.OwnerPhone;
+                        registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                         #endregion set properties
                         newChatId = objser.Create(registration);
                     }
@@ -120,7 +121,7 @@ namespace SalesForceOAuth.Controllers
                         {
                             Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
                             var newChats = lData.Message;
-                            retrievedChats.Attributes["ayu_alive5sms"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                            retrievedChats.Attributes["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
                             proxyservice.Update(retrievedChats);
                         }
                         catch (Exception)
@@ -129,8 +130,8 @@ namespace SalesForceOAuth.Controllers
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration = new Entity(ChatEntityName);
                             registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                            registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                            registration["ayu_alive5sms"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            registration["ayu_name"] = lData.Subject;
+                            registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             #endregion set properties
                             newChatId = objser.Create(registration);
                         }
