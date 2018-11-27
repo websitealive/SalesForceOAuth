@@ -66,9 +66,21 @@ namespace SalesForceOAuth.Controllers
                 lTemp.Status = "Completed";
                 if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
 
+                // Get Back End Fields and create object for update
+                var getBackEndFeields = Repository.GetBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntitytType.ToLower());
+                dynamic UpdateRecord = new ExpandoObject();
+                foreach (var item in getBackEndFeields)
+                {
+                    MyAppsDb.AddProperty(UpdateRecord, item.FieldName, item.ValueDetail);
+                }
+
                 if (string.IsNullOrEmpty(ChatId))
                 {
                     sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                    if (getBackEndFeields.Count > 0)
+                    {
+                        await client.UpdateAsync(lData.EntitytType, lData.EntitytId, UpdateRecord);
+                    }
                     output.Id = sR.Id;
                     output.ObjectName = "Chat";
                     output.Message = "Chat added successfully!";
@@ -79,6 +91,10 @@ namespace SalesForceOAuth.Controllers
                     try
                     {
                         sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
+                        if (getBackEndFeields.Count > 0)
+                        {
+                            await client.UpdateAsync(lData.EntitytType, lData.EntitytId, UpdateRecord);
+                        }
                         output.Id = sR.Id;
                         output.ObjectName = "Chat";
                         output.Message = "Chat updated successfully!";
@@ -86,6 +102,10 @@ namespace SalesForceOAuth.Controllers
                     catch (Exception)
                     {
                         sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
+                        if (getBackEndFeields.Count > 0)
+                        {
+                            await client.UpdateAsync(lData.EntitytType, lData.EntitytId, UpdateRecord);
+                        }
                         output.Id = sR.Id;
                         output.ObjectName = "Chat";
                         output.Message = "Chat added successfully!";

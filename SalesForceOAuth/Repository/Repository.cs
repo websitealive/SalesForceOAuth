@@ -1333,7 +1333,7 @@ namespace SalesForceOAuth
             }
         }
 
-        public static List<FieldsModel> GetBackendFields(string objectRef, int groupId, string urlReferrer, string entity = null)
+        public static List<FieldsModel> GetBackEndFields(string objectRef, int groupId, string urlReferrer, string entity = null)
         {
             List<FieldsModel> returnFields = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -1383,6 +1383,117 @@ namespace SalesForceOAuth
                 }
             }
             return returnFields;
+        }
+
+        public static FieldsModel GetSFBackEndFieldsById(int BackEndFieldID, string ObjectRef, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_salesforce_backend_fields where id = '" + BackEndFieldID + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldName = rdr["backend_field_name"].ToString().Trim();
+                                returnFileds.ValueDetail = rdr["backend_field_value"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entity"].ToString().Trim();
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static string AddSFBackEndFields(FieldsModel BackEndFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, BackEndFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "INSERT INTO integration_salesforce_backend_fields (objectref, groupid, entity, backend_field_name, backend_field_value)";
+                    sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.ValueDetail + "' )";
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return "Back End Fields Added Successfully";
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static string UpdateSFBackEndFields(FieldsModel BackEndFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, BackEndFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_salesforce_backend_fields Set backend_field_name = '" + BackEndFields.FieldName + "', backend_field_value = '" + BackEndFields.ValueDetail + "', entity = '" + BackEndFields.EntityType + "'";
+                    sql += " WHERE id = " + BackEndFields.ID;
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return "Detail Fields Updated Successfully";
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static bool DeleteSFBackEndFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_salesforce_backend_fields WHERE id = " + Id;
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd1.ExecuteNonQuery();
+                    ErrorMessage = null;
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
         }
 
         #endregion

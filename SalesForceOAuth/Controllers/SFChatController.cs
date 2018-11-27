@@ -45,7 +45,7 @@ namespace SalesForceOAuth.Controllers
                     }
 
                     // Get Back End Fields and create object for update
-                    var getBackEndFeields = Repository.GetBackendFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
+                    var getBackEndFeields = Repository.GetBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
                     dynamic UpdateRecord = new ExpandoObject();
                     foreach (var item in getBackEndFeields)
                     {
