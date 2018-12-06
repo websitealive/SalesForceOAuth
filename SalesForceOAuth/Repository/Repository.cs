@@ -1499,7 +1499,7 @@ namespace SalesForceOAuth
         #endregion
 
         #region Alive 5 Chats
-        public static bool IsChatExist(string EntityId, string EntityType, string objectRef, string urlReferrer, out string ChatId, out string RowId)
+        public static bool IsChatExist(string EntityId, string EntityType, string App, string objectRef, string urlReferrer, out string ChatId, out string RowId)
         {
             ChatId = string.Empty;
             RowId = string.Empty;
@@ -1510,7 +1510,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * from integration_crm_chats where entity_id = '" + EntityId + "' AND entity_type = '" + EntityType + "' ";
+                    string sql = "SELECT * from integration_crm_chats where entity_id = '" + EntityId + "' AND entity_type = '" + EntityType + "' AND app = '" + App + "' ";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -1541,7 +1541,7 @@ namespace SalesForceOAuth
             return flag;
         }
 
-        public static void AddChatInfo(string objectRef, string urlReferrer, string CRM, string EntityId, string EntityType, string ChatId)
+        public static void AddChatInfo(string objectRef, string urlReferrer, string CRM, string EntityId, string EntityType, string App, string ChatId)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -1549,8 +1549,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_crm_chats (crm, entity_type, entity_id, chat_id, is_active)";
-                    sql += "VALUES ('" + CRM + "','" + EntityType + "','" + EntityId + "','" + ChatId + "','" + true + "')";
+                    string sql = "INSERT INTO integration_crm_chats (crm, entity_type, entity_id, chat_id, is_active, app)";
+                    sql += "VALUES ('" + CRM + "','" + EntityType + "','" + EntityId + "','" + ChatId + "','" + true + "','" + App + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();

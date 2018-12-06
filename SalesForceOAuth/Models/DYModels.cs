@@ -88,6 +88,7 @@ namespace SalesForceOAuth.Models
         public string OwnerName { get; set; }
         public string OwnerEmail { get; set; }
         public string OwnerPhone { get; set; }
+        public string App { get; set; }
     }
 
     public class EntityModel

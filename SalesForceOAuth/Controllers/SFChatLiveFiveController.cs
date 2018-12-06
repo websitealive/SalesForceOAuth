@@ -53,9 +53,9 @@ namespace SalesForceOAuth.Controllers
             {
                 string InstanceUrl = "", ApiVersion = "";
                 string ChatId, RowId;
-                string HeadingSms = " Chat Request Information (not visible to visitor): |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |   Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
+                string HeadingSms = " App: " + lData.App + " |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |  Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
                 MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
-                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 PostedObjectDetail output = new PostedObjectDetail();
@@ -84,7 +84,7 @@ namespace SalesForceOAuth.Controllers
                     output.Id = sR.Id;
                     output.ObjectName = "Chat";
                     output.Message = "Chat added successfully!";
-                    Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, sR.Id.ToString());
+                    Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, lData.App, sR.Id.ToString());
                 }
                 else
                 {
@@ -110,7 +110,7 @@ namespace SalesForceOAuth.Controllers
                         output.ObjectName = "Chat";
                         output.Message = "Chat added successfully!";
                         Repository.DeleteChatInfo(lData.ObjectRef, urlReferrer, RowId);
-                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, sR.Id.ToString());
+                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "SaleForce", lData.EntitytId, lData.EntitytType, lData.App, sR.Id.ToString());
                     }
 
                 }

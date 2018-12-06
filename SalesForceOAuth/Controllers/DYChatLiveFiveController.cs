@@ -44,7 +44,7 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 string ChatId, RowId;
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -76,7 +76,7 @@ namespace SalesForceOAuth.Controllers
                 }
                 Guid newChatId = Guid.Empty;
                 PostedObjectDetail pObject = new PostedObjectDetail();
-                string HeadingSms = " Chat Request Information (not visible to visitor): |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |   Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
+                string HeadingSms = " App: " + lData.App + " |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |  Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
                 //In chats in CRM
                 if (!flag)
                 {
@@ -89,7 +89,8 @@ namespace SalesForceOAuth.Controllers
                         IOrganizationService objser = (IOrganizationService)proxyservice;
                         Entity registration = new Entity(ChatEntityName);
                         registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                        registration["ayu_name"] = "Alive SMS: " + lData.OwnerPhone;
+                        registration["ayu_name"] = lData.OwnerEmail ?? (lData.OwnerPhone ?? lData.OwnerName);
+                        registration["ayu_app"] = lData.App;
                         registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                         #endregion set properties
                         newChatId = objser.Create(registration);
@@ -100,7 +101,7 @@ namespace SalesForceOAuth.Controllers
                         pObject.ObjectName = "Chat";
                         pObject.Message = "Chat added successfully!";
 
-                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, newChatId.ToString());
+                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
 
                         return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
                     }
@@ -130,7 +131,8 @@ namespace SalesForceOAuth.Controllers
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration = new Entity(ChatEntityName);
                             registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                            registration["ayu_name"] = lData.Subject;
+                            registration["ayu_name"] = lData.OwnerEmail ?? (lData.OwnerPhone ?? lData.OwnerName);
+                            registration["ayu_app"] = lData.App;
                             registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                             #endregion set properties
                             newChatId = objser.Create(registration);
@@ -148,7 +150,7 @@ namespace SalesForceOAuth.Controllers
                         pObject.Message = "Chat added successfully!";
 
                         Repository.DeleteChatInfo(lData.ObjectRef, urlReferrer, RowId);
-                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, newChatId.ToString());
+                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
 
                         return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
                     }
