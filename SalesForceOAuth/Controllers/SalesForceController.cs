@@ -539,6 +539,10 @@ namespace SalesForceOAuth.Controllers
                         {
                             query += "," + ConfigurationManager.AppSettings["SFContactDefault"];
                         }
+                        else if (entityType.ToLower() == "opportunity")
+                        {
+                            query += "," + ConfigurationManager.AppSettings["SFOpportunityDefault"];
+                        }
 
                         query += " from " + entityType;
 

@@ -222,18 +222,18 @@ namespace SalesForceOAuth.Controllers
         public string Id { get; set; }
         public string Message { get; set; }
     }
-    public class CustomObject
-    {
-        public string field { get; set; }
-        public string value { get; set; }
-    }
-    public class DYCustomObject
-    {
-        public string field { get; set; }
-        public string type { get; set; }
-        public string table { get; set; }
-        public string value { get; set; }
-    }
+    //public class CustomObject
+    //{
+    //    public string field { get; set; }
+    //    public string value { get; set; }
+    //}
+    //public class DYCustomObject
+    //{
+    //    public string field { get; set; }
+    //    public string type { get; set; }
+    //    public string table { get; set; }
+    //    public string value { get; set; }
+    //}
     public class CustomFields
     {
         public string field { get; set; }

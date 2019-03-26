@@ -117,7 +117,7 @@ namespace SalesForceOAuth.Controllers
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
-                        foreach (DYCustomObject c in lData.CustomFields)
+                        foreach (CustomObject c in lData.CustomFields)
                         {
                             CrmFieldType type;
                             switch (c.type.ToLower())
@@ -295,6 +295,7 @@ namespace SalesForceOAuth.Controllers
 
                     List<string> accountId = new List<string>();
                     // Start Related Entity
+
                     if (getSearchedFileds.Count > 0)
                     {
                         foreach (var csA in getSearchedFileds)
@@ -478,7 +479,7 @@ namespace SalesForceOAuth.Controllers
         public string Name { get; set; }
         public string Description { get; set; }
         public string Phone { get; set; }
-        public List<DYCustomObject> CustomFields { get; set; }
+        public List<CustomObject> CustomFields { get; set; }
         public List<InputFields> InputFields { get; set; }
     }
     public class DYContactPostData : MyValidation
@@ -490,7 +491,7 @@ namespace SalesForceOAuth.Controllers
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public List<DYCustomObject> CustomFields { get; set; }
+        public List<CustomObject> CustomFields { get; set; }
         public List<InputFields> InputFields { get; set; }
 
     }

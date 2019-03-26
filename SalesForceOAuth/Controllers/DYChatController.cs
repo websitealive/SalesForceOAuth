@@ -119,6 +119,36 @@ namespace SalesForceOAuth.Controllers
                                 post["text"] = postMessage;
 
                             }
+                            else if (ItemType.Contains("opportunity"))
+                            {
+                                registration = new Entity("ayu_opportunityalivechat");
+                                registration["ayu_opportunityid"] = new EntityReference("opportunity", new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                post["regardingobjectid"] = new EntityReference("opportunity", new Guid(ItemId)); ;
+                                post["text"] = postMessage;
+
+                            }
+                            else if (ItemType.Contains("incident"))
+                            {
+                                registration = new Entity("ayu_casealivechat");
+                                registration["ayu_caseid"] = new EntityReference("incident", new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                post["regardingobjectid"] = new EntityReference("incident", new Guid(ItemId)); ;
+                                post["text"] = postMessage;
+
+                            }
                             else
                             {
                                 registration = new Entity();

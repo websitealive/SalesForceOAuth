@@ -145,6 +145,23 @@ namespace SalesForceOAuth.BusinessLogic
                     }
                 );
             }
+            if (entityName.ToLower() == "opportunity")
+            {
+                defaultColumn.AddRange(
+                    new EntityColumn[] {
+                        new EntityColumn { Sr = 0, FieldLabel = "Opportunity Name", FieldName = "name" },
+                    }
+                );
+            }
+            if (entityName.ToLower() == "incident")
+            {
+                defaultColumn.AddRange(
+                    new EntityColumn[] {
+                        new EntityColumn { Sr = 0, FieldLabel = "Title", FieldName = "title" },
+                        new EntityColumn { Sr = 0, FieldLabel = "Customer", FieldName = "customerid" }
+                    }
+                );
+            }
             //End Add Default Fields
 
             return defaultColumn;

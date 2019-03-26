@@ -235,7 +235,9 @@ namespace SalesForceOAuth.Controllers
                         filters.Append("OR " + csA + " like '%" + SValue + "%' ");
                     }
                 }
-                query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
+                // 1.Issues when Personal Account are not enabled on clint org.
+                //query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
+                query.Append("SELECT Id, AccountNumber, Name, Phone " + columns + " From Account ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append("OR AccountNumber like '%" + SValue + "%' ");
@@ -247,6 +249,7 @@ namespace SalesForceOAuth.Controllers
                     foreach (dynamic c in cont.Records)
                     {
                         Account l = new Account();
+                        // 2. Business account have some issues when Personal account are not configured
                         if (isOnlyBusinessAccount)
                         {
                             if (c.FirstName == null && c.LastName == null)

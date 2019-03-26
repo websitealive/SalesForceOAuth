@@ -11,9 +11,125 @@ using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using System.ServiceModel.Description;
+using System.ServiceModel;
 
 namespace SalesForceOAuth.Controllers
 {
+    public sealed class ManagedTokenOrganizationServiceProxy : OrganizationServiceProxy
+    {
+        private AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService> _proxyManager;
+
+        public ManagedTokenOrganizationServiceProxy(Uri serviceUri, ClientCredentials userCredentials)
+            : base(serviceUri, null, userCredentials, null)
+        {
+            this._proxyManager = new AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService>(this);
+        }
+
+        public ManagedTokenOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement,
+            SecurityTokenResponse securityTokenRes)
+            : base(serviceManagement, securityTokenRes)
+        {
+            this._proxyManager = new AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService>(this);
+        }
+
+        public ManagedTokenOrganizationServiceProxy(IServiceManagement<IOrganizationService> serviceManagement,
+            ClientCredentials userCredentials)
+            : base(serviceManagement, userCredentials)
+        {
+            this._proxyManager = new AutoRefreshSecurityToken<OrganizationServiceProxy, IOrganizationService>(this);
+        }
+
+        protected override void AuthenticateCore()
+        {
+            this._proxyManager.PrepareCredentials();
+            base.AuthenticateCore();
+        }
+
+        protected override void ValidateAuthentication()
+        {
+            this._proxyManager.RenewTokenIfRequired();
+            base.ValidateAuthentication();
+        }
+    }
+
+    ///
+    /// Class that wraps acquiring the security token for a service
+    /// </summary>
+
+    public sealed class AutoRefreshSecurityToken<TProxy, TService>
+        where TProxy : ServiceProxy<TService>
+        where TService : class
+    {
+        private TProxy _proxy;
+
+        ///
+        /// Instantiates an instance of the proxy class
+        /// </summary>
+
+        /// <param name="proxy">Proxy that will be used to authenticate the user</param>
+        public AutoRefreshSecurityToken(TProxy proxy)
+        {
+            if (null == proxy)
+            {
+                throw new ArgumentNullException("proxy");
+            }
+
+            this._proxy = proxy;
+        }
+
+        ///
+        /// Prepares authentication before authenticated
+        /// </summary>
+
+        public void PrepareCredentials()
+        {
+            if (null == this._proxy.ClientCredentials)
+            {
+                return;
+            }
+
+            switch (this._proxy.ServiceConfiguration.AuthenticationType)
+            {
+                case AuthenticationProviderType.ActiveDirectory:
+                    this._proxy.ClientCredentials.UserName.UserName = null;
+                    this._proxy.ClientCredentials.UserName.Password = null;
+                    break;
+                case AuthenticationProviderType.Federation:
+                case AuthenticationProviderType.LiveId:
+                    this._proxy.ClientCredentials.Windows.ClientCredential = null;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        ///
+        /// Renews the token (if it is near expiration or has expired)
+        /// </summary>
+
+        public void RenewTokenIfRequired()
+        {
+            if (null != this._proxy.SecurityTokenResponse &&
+            DateTime.UtcNow.AddMinutes(15) >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
+            {
+                try
+                {
+                    this._proxy.Authenticate();
+                }
+                catch (CommunicationException)
+                {
+                    if (null == this._proxy.SecurityTokenResponse ||
+                        DateTime.UtcNow >= this._proxy.SecurityTokenResponse.Response.Lifetime.Expires)
+                    {
+                        throw;
+                    }
+
+                    // Ignore the exception 
+                }
+            }
+        }
+    }
+
     public class DYConfigController : ApiController
     {
         [HttpGet]
@@ -114,8 +230,67 @@ namespace SalesForceOAuth.Controllers
                 homeRealmUri = null;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+                // testing Start
+
+                IServiceManagement<IOrganizationService> management = ServiceConfigurationFactory.CreateManagement<IOrganizationService>(organizationUri);
+
+                //ClientCredentials credentials = new ClientCredentials();
+                //credentials.UserName.UserName = lData.Username;
+                //credentials.UserName.Password = lData.Password;
+
+                // OrganizationServiceProxy _serviceproxy = new OrganizationServiceProxy(management, credentials);
+
+                AuthenticationCredentials authCredentials = management.Authenticate(new AuthenticationCredentials { ClientCredentials = credentials });
+                SecurityTokenResponse securityTokenResponse = authCredentials.SecurityTokenResponse;
+
+                ManagedTokenOrganizationServiceProxy _serviceproxy = new ManagedTokenOrganizationServiceProxy(management, securityTokenResponse);
+
+                //IOrganizationService objser = (IOrganizationService)_serviceproxy;
+                ////ConditionExpression password = new ConditionExpression();
+
+                //ConditionExpression filterOwnRcd = new ConditionExpression();
+                //filterOwnRcd.AttributeName = "uniquename";
+                //filterOwnRcd.Operator = ConditionOperator.Equal;
+                //filterOwnRcd.Values.Add(ConfigurationManager.AppSettings["DynamicsManagedSolName"].ToString());
+
+
+                //FilterExpression filter1 = new FilterExpression();
+                //filter1.Conditions.Add(filterOwnRcd);
+
+
+                //QueryExpression query = new QueryExpression("solution");
+                //query.ColumnSet.AddColumns("solutionid", "friendlyname", "version", "ismanaged", "uniquename");
+                //query.Criteria.AddFilter(filter1);
+                //EntityCollection result1 = objser.RetrieveMultiple(query);
+                //if (result1.Entities.Count > 0)
+                //{
+                //    string outStr = "Managed Solution Found - Configuration Complete";
+                //    int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
+                //    if (output == 1)
+                //        return MyAppsDb.ConvertJSONOutput("Managed Solution Found - Credentials recorded successfully!", HttpStatusCode.OK, false);
+                //    else
+                //        return MyAppsDb.ConvertJSONOutput("Credentials exists and working.", HttpStatusCode.OK, false);
+                //}
+                //else
+                //{
+                //    return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.NotFound, true);
+                //}
+
+
+                ////AuthenticationCredentials authCredentials = management.Authenticate(new AuthenticationCredentials { ClientCredentials = credentials });
+                ////SecurityTokenResponse securityTokenResponse = authCredentials.SecurityTokenResponse;
+
+                //return null;
+
+                // Testing End 
+
+
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
+
+
+
 
                     IOrganizationService objser = (IOrganizationService)proxyservice;
                     //ConditionExpression password = new ConditionExpression();
@@ -132,7 +307,6 @@ namespace SalesForceOAuth.Controllers
                     QueryExpression query = new QueryExpression("solution");
                     query.ColumnSet.AddColumns("solutionid", "friendlyname", "version", "ismanaged", "uniquename");
                     query.Criteria.AddFilter(filter1);
-
                     EntityCollection result1 = objser.RetrieveMultiple(query);
                     if (result1.Entities.Count > 0)
                     {
@@ -145,7 +319,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.OK, true);
+                        return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.NotFound, true);
                     }
                 }
 

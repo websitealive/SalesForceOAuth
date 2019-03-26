@@ -18,7 +18,7 @@ namespace SalesForceOAuth.Controllers
     public class SFDetailedController : ApiController
     {
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetView(string token, string ObjectRef, int GroupId, string entity, string refId ,string siteRef, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetView(string token, string ObjectRef, int GroupId, string entity, string refId, string siteRef, string callback)
         {
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             string outputPayload;
@@ -41,8 +41,8 @@ namespace SalesForceOAuth.Controllers
                 List<SFDetailedView> myDView = new List<SFDetailedView> { };
                 string sFieldOptional = "";
                 string sLabelOptional = "";
-                string query = ""; 
-                MyAppsDb.GetAPICredentialswithCustomViewFields(ObjectRef, GroupId, entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional,ref sLabelOptional ,ref query, urlReferrer);
+                string query = "";
+                MyAppsDb.GetAPICredentialswithCustomViewFields(ObjectRef, GroupId, entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref sFieldOptional, ref sLabelOptional, ref query, urlReferrer);
                 string[] customSearchArray = sFieldOptional.Split('|');
                 string[] customSearchLabelArray = sLabelOptional.Split('|');
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
@@ -63,7 +63,8 @@ namespace SalesForceOAuth.Controllers
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Company", c.Company.ToString(), noOfcustomItems);
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Email", c.Email.ToString(), noOfcustomItems);
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Phone", c.Phone.ToString(), noOfcustomItems);
-                        } else if(entity == "account")
+                        }
+                        else if (entity == "account")
                         {
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Number", c.AccountNumber.ToString(), noOfcustomItems);
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Name", c.Name.ToString(), noOfcustomItems);
@@ -80,9 +81,15 @@ namespace SalesForceOAuth.Controllers
                                 noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Name", c.Account.Name.ToString(), noOfcustomItems);
                             }
                         }
+                        else if (entity == "opportunity")
+                        {
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Name", c.Name.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Close Date", c.CloseDate.ToString(), noOfcustomItems);
+                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Stage", c.StageName.ToString(), noOfcustomItems);
+                        }
                         //if (sFieldOptional.Length > 0)
                         //{
-                            
+
                         //    foreach (Newtonsoft.Json.Linq.JProperty item in c)
                         //    {
                         //        foreach (string csA in customSearchArray)
@@ -142,9 +149,9 @@ namespace SalesForceOAuth.Controllers
         public string Custom9 { get; set; }
         public string Custom10 { get; set; }
         public string Custom11 { get; set; }
-        public string Custom12{ get; set; }
+        public string Custom12 { get; set; }
         public string Custom13 { get; set; }
-        public string Custom14{ get; set; }
+        public string Custom14 { get; set; }
         public string Custom15 { get; set; }
     }
 }

@@ -129,7 +129,7 @@ namespace SalesForceOAuth.Controllers
                     #region custom fields 
                     if (lData.CustomFields != null)
                     {
-                        foreach (DYCustomObject c in lData.CustomFields)
+                        foreach (CustomObject c in lData.CustomFields)
                         {
                             if (c.type != null)
                             {

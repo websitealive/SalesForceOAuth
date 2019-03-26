@@ -97,15 +97,15 @@ namespace SalesForceOAuth.Models
         public string EntityPrimaryName { get; set; }
     }
 
-    public class InputFields
-    {
-        public string FieldName { get; set; }
-        public string FieldLabel { get; set; }
-        public string Value { get; set; }
-        public string FieldType { get; set; }
-        public string RelatedEntity { get; set; }
-        public string RelatedEntityFieldName { get; set; }
-    }
+    //public class InputFields
+    //{
+    //    public string FieldName { get; set; }
+    //    public string FieldLabel { get; set; }
+    //    public string Value { get; set; }
+    //    public string FieldType { get; set; }
+    //    public string RelatedEntity { get; set; }
+    //    public string RelatedEntityFieldName { get; set; }
+    //}
 
     public class EntitySettings : DYOrganizationDetail
     {
@@ -125,6 +125,8 @@ namespace SalesForceOAuth.Models
     {
         Account,
         Contact,
-        Lead
+        Lead,
+        Opportunity,
+        Case
     }
 }

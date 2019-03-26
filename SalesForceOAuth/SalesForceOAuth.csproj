@@ -277,6 +277,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\DynamicCommon.cs" />
     <Compile Include="Controllers\DYAdminConfigController.cs" />
+    <Compile Include="Controllers\DYCaseController.cs" />
     <Compile Include="Controllers\DYChatLiveFiveController.cs" />
     <Compile Include="Controllers\DYConfigController.cs" />
     <Compile Include="Controllers\DYContactController.cs" />
@@ -284,6 +285,7 @@
     <Compile Include="Controllers\DYDetailFieldsController.cs" />
     <Compile Include="Controllers\DyEntityController.cs" />
     <Compile Include="Controllers\DYExportFieldsController.cs" />
+    <Compile Include="Controllers\DYOpportunityController.cs" />
     <Compile Include="Controllers\DYOrganizationController.cs" />
     <Compile Include="Controllers\DYSearchFieldsController.cs" />
     <Compile Include="Controllers\SalesForceTokenController.cs" />
@@ -293,10 +295,17 @@
     <Compile Include="Controllers\SFDetailFieldsController.cs" />
     <Compile Include="Controllers\SFEntityController.cs" />
     <Compile Include="Controllers\SFExportFieldsController.cs" />
+    <Compile Include="Controllers\SFOpportunitiesController.cs" />
     <Compile Include="Controllers\SFSearchFieldsController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
     <Compile Include="ModelClasses\DynamicClasses.cs" />
+    <Compile Include="Models\Case.cs" />
+    <Compile Include="Models\CustomObject.cs" />
     <Compile Include="Models\DYModels.cs" />
+    <Compile Include="Models\InputFields.cs" />
+    <Compile Include="Models\LookupField.cs" />
+    <Compile Include="Models\Opportunity.cs" />
+    <Compile Include="Models\OrganizationDetail.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Web API Helper Code\Authentication.cs" />
     <Compile Include="Web API Helper Code\Configuration.cs" />
