@@ -1245,3 +1245,94 @@ No such column 'RecordType' on entity 'Account'. If you are attempting to use a 
 3/21/2019 12:27:06 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: SecLib::RetrievePrivilegeForUser failed - no roles are assigned to user. Returned hr = -2147209463, User: 0b5019e8-e246-e911-828b-0e03de9f2e0e
 3/22/2019 10:47:05 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
 3/22/2019 12:34:37 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: ID3242: The security token could not be authenticated or authorized.
+4/3/2019 2:10:34 PM ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id, AccountNumber, Name, Phone, LastName
+           ^
+ERROR at Row:1:Column:12
+No such column 'AccountNumber' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+4/3/2019 2:11:43 PM ==> Function: SFAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id, AccountNumber, Name, Phone, LastName
+           ^
+ERROR at Row:1:Column:12
+No such column 'AccountNumber' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+4/17/2019 2:37:01 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Required member 'LogicalName' missing for field 'Target'
+4/17/2019 4:01:23 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Contact With Id = 1d553827-ff60-e911-828b-0e03de9f2e0e Does Not Exist
+4/18/2019 3:26:20 PM ==> Internal Exception: Cannot deserialize instance of date from VALUE_STRING value 4/18/2019 or request may be missing a required field at [line:1, column:106]
+4/19/2019 3:25:27 PM ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+4/19/2019 3:26:15 PM ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+4/19/2019 3:27:59 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find specified column in results: accounts_required
+4/23/2019 3:19:20 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'ayu_chat' entity doesn't contain attribute with Name = 'ayu_opportunityid'.
+4/23/2019 4:00:01 PM ==> Function: SFLead-PostLead : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+5/2/2019 2:17:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+5/8/2019 10:09:46 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+5/8/2019 10:11:53 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a send. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security.SslState.StartReceiveBlob(Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.CheckCompletionBeforeNextReceive(ProtocolToken message, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.StartSendBlob(Byte[] incoming, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ForceAuthentication(Boolean receiveFirst, Byte[] buffer, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslState.ProcessAuthentication(LazyAsyncResult lazyResult)
+   at System.Net.TlsStream.CallProcessAuthentication(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Net.TlsStream.ProcessAuthentication(LazyAsyncResult result)
+   at System.Net.TlsStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.ConnectStream.WriteHeaders(Boolean async)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://alive5.crm.dynamics.com/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+5/8/2019 10:26:02 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: NavigationPropertyName ayu_opportunity_ayu_chat is not unique within an entity
+5/8/2019 10:57:05 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: NavigationPropertyName ayu_opportunity_ayu_chat is not unique within an entity
+5/8/2019 11:03:06 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: NavigationPropertyName ayu_opportunity_ayu_chat is not unique within an entity
+5/8/2019 11:03:59 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: NavigationPropertyName ayu_opportunity_ayu_chat is not unique within an entity
+5/8/2019 11:39:36 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: NavigationPropertyName ayu_opportunity_ayu_chat is not unique within an entity
+5/14/2019 12:47:44 PM ==> Function: DYEntity-PostEntity : Unhandled exception--Internal exception : System.ServiceModel.FaultException: Authentication Failure, Exception Message: An unsecured or incorrectly secured fault was received from the other party. See the inner FaultException for the fault code and detail.
+5/14/2019 12:51:03 PM ==> Function: DYEntity-PostEntity : Unhandled exception--Internal exception : System.ServiceModel.FaultException: Authentication Failure, Exception Message: An unsecured or incorrectly secured fault was received from the other party. See the inner FaultException for the fault code and detail.
+5/20/2019 12:01:37 PM ==> Function: DyEntity-PostDefaultFieldSettings : Exception!--Internal exception : , Exception Message: Unknown column 'is_visible_account_description' in 'field list'
+5/20/2019 12:21:44 PM ==> Function: SFEntity-PostDefaultFieldSettings : Exception!--Internal exception : , Exception Message: Unknown column 'is_visible_account_description' in 'field list'
+5/20/2019 12:41:35 PM ==> Function: SFEntity-GetDefaultFieldSettings : Exception--Internal exception : , Exception Message: Could not find specified column in results: is_visible_account_description
+5/20/2019 1:53:09 PM ==> Function: DYEntity-GetDefaultFieldSettings : Exception--Internal exception : , Exception Message: Received an unexpected EOF or 0 bytes from the transport stream.
+5/20/2019 1:53:09 PM ==> Function: DF GetBackEndFields : Message--Internal exception : , Exception Message: Received an unexpected EOF or 0 bytes from the transport stream.
+5/20/2019 1:53:09 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Received an unexpected EOF or 0 bytes from the transport stream.
+5/20/2019 2:34:46 PM ==> Function: SFEntity-GetDefaultFieldSettings : Exception--Internal exception : , Exception Message: Could not find specified column in results: is_visible_account_description
+5/20/2019 3:07:33 PM ==> Function: DF GetBackEndFields : Message--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host 'dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed.
+5/20/2019 3:07:33 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host 'dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed.

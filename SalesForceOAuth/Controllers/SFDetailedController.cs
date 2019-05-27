@@ -66,7 +66,7 @@ namespace SalesForceOAuth.Controllers
                         }
                         else if (entity == "account")
                         {
-                            noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Number", c.AccountNumber.ToString(), noOfcustomItems);
+                            //noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Account Number", c.AccountNumber.ToString(), noOfcustomItems);
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Name", c.Name.ToString(), noOfcustomItems);
                             noOfcustomItems++; MyAppsDb.AssignCustomVariableValue(l, "Phone", c.Phone.ToString(), noOfcustomItems);
                         }

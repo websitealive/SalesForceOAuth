@@ -277,6 +277,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\DynamicCommon.cs" />
     <Compile Include="Controllers\DYAdminConfigController.cs" />
+    <Compile Include="Controllers\DYBackEndFieldsController.cs" />
     <Compile Include="Controllers\DYCaseController.cs" />
     <Compile Include="Controllers\DYChatLiveFiveController.cs" />
     <Compile Include="Controllers\DYConfigController.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Models\Case.cs" />
     <Compile Include="Models\CustomObject.cs" />
     <Compile Include="Models\DYModels.cs" />
+    <Compile Include="Models\EntityModel.cs" />
     <Compile Include="Models\InputFields.cs" />
     <Compile Include="Models\LookupField.cs" />
     <Compile Include="Models\Opportunity.cs" />
@@ -435,6 +437,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="LogFile\" />
+    <Folder Include="Views\DYBackEndFields\" />
     <Folder Include="Views\DYExportFields\" />
     <Folder Include="Views\DYOrganization\" />
     <Folder Include="Views\SFChat\" />

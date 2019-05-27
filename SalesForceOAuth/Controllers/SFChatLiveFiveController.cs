@@ -67,7 +67,7 @@ namespace SalesForceOAuth.Controllers
                 if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
 
                 // Get Back End Fields and create object for update
-                var getBackEndFeields = Repository.GetBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntitytType.ToLower());
+                var getBackEndFeields = Repository.GetSFBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntitytType.ToLower());
                 dynamic UpdateRecord = new ExpandoObject();
                 foreach (var item in getBackEndFeields)
                 {

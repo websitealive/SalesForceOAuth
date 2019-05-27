@@ -1,15 +1,28 @@
-﻿using SalesForceOAuth.Models;
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Client;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Salesforce.Common.Models;
+using Salesforce.Force;
+using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.ServiceModel.Description;
+using System.Text;
 using System.Web.Http;
 
 namespace SalesForceOAuth.Controllers
 {
-    public class SFBackEndFieldsController : ApiController
+    public class DYBackEndFieldsController : ApiController
     {
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetBackEndFields(string Token, string ObjectRef, int GroupId, string callback)
@@ -22,17 +35,17 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF Detail Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF Detail Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetSFBackEndFields(ObjectRef, GroupId, urlReferrer);
+                var FieldsList = Repository.GetDYBackEndFields(ObjectRef, GroupId, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SF GetBackEndFields", "Message", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DF GetBackEndFields", "Message", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -47,17 +60,17 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetSFBackEndFieldsById(FieldId, ObjectRef, urlReferrer);
+                var FieldsList = Repository.GetDYBackEndFieldsById(FieldId, ObjectRef, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SF GetBackEndFields", "Message", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DF GetBackEndFields", "Message", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -72,17 +85,17 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.AddSFBackEndFields(ExportFieldData, urlReferrer);
+                string message = Repository.AddDYBackEndFields(ExportFieldData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -97,17 +110,17 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Update Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Update Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string message = Repository.UpdateSFBackEndFields(BackEndFieldData, urlReferrer);
+                string message = Repository.UpdateDYBackEndFields(BackEndFieldData, urlReferrer);
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Update Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Update Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -122,20 +135,20 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF Back End Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF Back End Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
                 string ErrorMessage;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 MessageResponce retMessage = new MessageResponce();
-                retMessage.Success = Repository.DeleteSFBackEndFields(Id, ObjectRef, urlReferrer, out ErrorMessage);
+                retMessage.Success = Repository.DeleteDYBackEndFields(Id, ObjectRef, urlReferrer, out ErrorMessage);
                 retMessage.Error = ErrorMessage;
                 return MyAppsDb.ConvertJSONOutput(retMessage, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONOutput(ex, "SF BackEnd Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONOutput(ex, "DF BackEnd Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
         }
     }

@@ -21,9 +21,10 @@ namespace SalesForceOAuth.Controllers
         {
             string AccessToken = "";
             string urlReferrer = Request.RequestUri.Authority.ToString();
+            int chatId = 0;
+            bool IsChatPushed = false;
             if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
             {
-                //Access token update
                 try
                 {
                     HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
@@ -38,15 +39,17 @@ namespace SalesForceOAuth.Controllers
                 {
                     string InstanceUrl = "", ApiVersion = "", ItemId = "", ItemType = "";
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
-                    int chatId = 0; string OwnerEmail = "";
+                    string OwnerEmail = "";
                     MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerEmail, urlReferrer);
                     if (chatId == 0)
                     {
+                        MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, "No chat in queue!");
                         return MyAppsDb.ConvertJSONOutput("No chat in queue!", HttpStatusCode.OK, false);
                     }
 
                     // Get Back End Fields and create object for update
-                    var getBackEndFeields = Repository.GetBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
+                    var getBackEndFeields = Repository.GetSFBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
+                    var getBackEndFeieldsForActivity = Repository.GetSFBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, "Task");
                     dynamic UpdateRecord = new ExpandoObject();
                     foreach (var item in getBackEndFeields)
                     {
@@ -86,6 +89,14 @@ namespace SalesForceOAuth.Controllers
                                 MyAppsDb.AddProperty(lTemp, c.field, c.value);
                         }
                     }
+                    foreach (var item in getBackEndFeieldsForActivity)
+                    {
+                        if (item.FieldType == "datetime" && item.ValueDetail == "")
+                        {
+                            item.ValueDetail = DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString();
+                        }
+                        MyAppsDb.AddProperty(lTemp, item.FieldName, item.ValueDetail);
+                    }
                     //if (ownerId == "" || OwnerEmail == "")
                     //{
                     //    TaskLogACall lTemp = new TaskLogACall();
@@ -106,25 +117,39 @@ namespace SalesForceOAuth.Controllers
                     sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
                     if (sR.Success == true)
                     {
+                        IsChatPushed = true;
+
                         if (getBackEndFeields.Count > 0)
                         {
                             await client.UpdateAsync(ItemType, ItemId, UpdateRecord);
                         }
 
-                        MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef);
+                        MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 1, "Chat Added Successfully");
                         PostedObjectDetail output = new PostedObjectDetail();
                         output.Id = sR.Id;
                         output.ObjectName = "Chat";
                         output.Message = "Chat added successfully!";
+
                         return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
                     }
                     else
                     {
+                        MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, "SalesForce Error: " + sR.Errors);
                         return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                     }
                 }
                 catch (Exception ex)
                 {
+                    string msg = string.Empty;
+                    if (IsChatPushed)
+                    {
+                        msg = "Request Completed with some errore. Errors :" + ex.Message;
+                    }
+                    else
+                    {
+                        msg = ex.Message;
+                    }
+                    MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, msg);
                     return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.OK, true);
                 }
             }

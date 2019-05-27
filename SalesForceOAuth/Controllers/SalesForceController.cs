@@ -784,7 +784,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void ChatQueueItemAdded(int chatId, string urlReferrer, string objectRef)
+        public static void ChatQueueItemAdded(int chatId, string urlReferrer, string objectRef, int status, string message)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -792,7 +792,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_salesforce_queue Set status =  1 ";
+                    string sql = "Update integration_salesforce_queue Set status = '" + status.ToString() + "', message = '" + message + "'";
                     sql += " WHERE id = " + chatId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
@@ -1280,7 +1280,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void ChatQueueItemAddedDynamics(int chatId, string urlReferrer, string objectRef)
+        public static void ChatQueueItemAddedDynamics(int chatId, string urlReferrer, string objectRef, int status, string message)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -1288,7 +1288,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_dynamics_queue Set status =  1 ";
+                    string sql = "Update integration_dynamics_queue Set status = '" + status.ToString() + "', message = '" + message + "'";
                     sql += " WHERE id = " + chatId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();

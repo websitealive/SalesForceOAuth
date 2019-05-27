@@ -13,6 +13,8 @@ namespace SalesForceOAuth.Models
         public string ObjectRef { get; set; }
 
         public int GroupId { get; set; }
+
+        public string SiteRef { get; set; }
     }
 
     public class FieldsModel : DYOrganizationDetail
@@ -91,11 +93,11 @@ namespace SalesForceOAuth.Models
         public string App { get; set; }
     }
 
-    public class EntityModel
-    {
-        public string EntityPrimaryKey { get; set; }
-        public string EntityPrimaryName { get; set; }
-    }
+    //public class EntityModel
+    //{
+    //    public string EntityPrimaryKey { get; set; }
+    //    public string EntityPrimaryName { get; set; }
+    //}
 
     //public class InputFields
     //{
@@ -113,6 +115,21 @@ namespace SalesForceOAuth.Models
         public int IsAccountRequired { get; set; }
         public int IsContactRequired { get; set; }
         public int IsLeadRequired { get; set; }
+        public int AllowAccountCreation { get; set; }
+        public int AllowContactCreation { get; set; }
+        public int AllowLeadCreation { get; set; }
+    }
+
+    public class DefaultFieldSettings : DYOrganizationDetail
+    {
+        public int ID { get; set; }
+        public int IsAccountPhoneRequired { get; set; }
+        public int IsAccountDescriptionRequired { get; set; }
+        public int IsContactPhoneRequired { get; set; }
+        public int IsContactEmailRequired { get; set; }
+        public int IsLeadPhoneRequired { get; set; }
+        public int IsLeadEmailRequired { get; set; }
+        public int IsLeadCompanyRequired { get; set; }
     }
 
     public enum Crm

@@ -15,6 +15,8 @@ using System.ServiceModel.Description;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
+using SalesForceOAuth.Models;
+using SalesForceOAuth.Web_API_Helper_Code;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -25,7 +27,10 @@ namespace SalesForceOAuth.Controllers
         {
             if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
             {
-                #region code for post add message    
+                #region code for post add message
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                int chatId = 0;
+                bool IsChatPushed = false;
                 try
                 {
                     //Test system
@@ -33,7 +38,7 @@ namespace SalesForceOAuth.Controllers
                     //    password = "Getthat$$$5", authType = "Office365";
                     //Live system
                     string ApplicationURL = "", userName = "", password = "", authType = "";
-                    string urlReferrer = Request.RequestUri.Authority.ToString();
+
                     int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                     Uri organizationUri;
@@ -47,8 +52,12 @@ namespace SalesForceOAuth.Controllers
                     organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                     homeRealmUri = null;
                     string ItemId = "", ItemType = "", OwnerId = "";
-                    int chatId = 0;
+
                     MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, urlReferrer);
+
+                    // Get Back End Fields
+                    var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
+
                     if (chatId != 0)
                     {
                         Guid newChatId;
@@ -119,47 +128,40 @@ namespace SalesForceOAuth.Controllers
                                 post["text"] = postMessage;
 
                             }
-                            else if (ItemType.Contains("opportunity"))
-                            {
-                                registration = new Entity("ayu_opportunityalivechat");
-                                registration["ayu_opportunityid"] = new EntityReference("opportunity", new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference("opportunity", new Guid(ItemId)); ;
-                                post["text"] = postMessage;
-
-                            }
-                            else if (ItemType.Contains("incident"))
-                            {
-                                registration = new Entity("ayu_casealivechat");
-                                registration["ayu_caseid"] = new EntityReference("incident", new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference("incident", new Guid(ItemId)); ;
-                                post["text"] = postMessage;
-
-                            }
                             else
                             {
-                                registration = new Entity();
-                                newChatId = Guid.Empty;
+                                registration = new Entity("ayu_chat");
+                                registration["ayu_" + ItemType + "id"] = new EntityReference(ItemType, new Guid(ItemId));
+                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                if (OwnerId != "")
+                                {
+                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
+                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
 
-                                return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                                post["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                post["text"] = postMessage;
                             }
+                            //else
+                            //{
+                            //    registration = new Entity();
+                            //    newChatId = Guid.Empty;
+                            // return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                            //}
 
                             #endregion
                             newChatId = objser.Create(registration);
+                            IsChatPushed = true;
                             Guid newPostID = objser.Create(post);
+                            if (getBackEndFeields.Count > 0)
+                            {
+                                Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
+                                foreach (var item in getBackEndFeields)
+                                {
+                                    parentEntity[item.FieldName] = item.ValueDetail;
+                                }
+                                objser.Update(parentEntity);
+                            }
                         }
                         if (newChatId != Guid.Empty)
                         {
@@ -167,128 +169,37 @@ namespace SalesForceOAuth.Controllers
                             pObject.Id = newChatId.ToString();
                             pObject.ObjectName = "Chat";
                             pObject.Message = "Chat added successfully!";
-                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef);
+                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 1, "Chat Added Successfully");
                             return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
                         }
                         else
                         {
+                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "Could not add new Chat, check mandatory fields");
                             return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
                         }
                     }
                     else
                     {
+                        MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "No Chat in queue to publish");
                         return MyAppsDb.ConvertJSONOutput("No Chat in queue to publish", HttpStatusCode.InternalServerError, true);
                     }
 
-                    #endregion code for post add message  
-
-                    #region old code 
-                    //    string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
-                    //connectionString += "RequireNewInstance=true;";
-                    //CrmServiceClient crmSvc = new CrmServiceClient(connectionString);
-                    //if (crmSvc != null && crmSvc.IsReady)
-                    //{
-                    //    string ItemId = "", ItemType = ""; 
-                    //    int chatId = 0;
-                    //    MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType);
-                    //    if (chatId != 0)
-                    //    {
-                    //        // create activity
-                    //        Guid activityId = crmSvc.CreateNewActivityEntry("task", "account", new Guid(ItemId), lData.Subject, lData.Message, crmSvc.OAuthUserId);
-
-                    //        if (activityId != Guid.Empty)
-                    //        {
-                    //            PostedObjectDetail pObject = new PostedObjectDetail();
-                    //            pObject.Id = activityId.ToString();
-                    //            pObject.ObjectName = "Chat";
-                    //            pObject.Message = "Chat added successfully!";
-                    //            MyAppsDb.ChatQueueItemAddedDynamics(chatId);
-                    //            return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK,false);
-                    //        }
-                    //        else
-                    //        {
-                    //            return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError,true);
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        return MyAppsDb.ConvertJSONOutput("No Chat in queue to publish", HttpStatusCode.InternalServerError,true);
-                    //    }
-                    //        #endregion old code 
-                    //    }
-                    //    else
-                    //{
-                    //    return MyAppsDb.ConvertJSONOutput("Internal Exception: Dynamics setup is incomplete or login credentials are not right. ", HttpStatusCode.InternalServerError,true);
-                    //}
-                    //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
-                    #region dynamics api call
-                    //string ItemType = "Account";
-                    ////string ItemId = "/accounts(b123e935-92cc-e611-8104-c4346bac5238)"; 
-                    ////string ItemId = "/leads(b56264dc-7332-e611-80e5-5065f38b31c1)"; 
-                    //string ItemId = ""; 
-                    //int chatId = 0;
-                    //MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType);
-                    //ItemId = "/" + ItemType + "(" + ItemId + ")";
-                    //try
-                    //{
-                    //    //HttpResponseMessage msg = await new DynamicsController().GetAccessToken(ConfigurationManager.AppSettings["APISecureKey"], lData.ObjectRef, lData.GroupId.ToString(), "internal");
-                    //    HttpResponseMessage msg = await Web_API_Helper_Code.Dynamics.GetAccessToken(lData.ObjectRef, lData.GroupId.ToString());
-                    //    if (msg.StatusCode == HttpStatusCode.OK)
-                    //    { AccessToken = msg.Content.ReadAsStringAsync().Result; }
-                    //    else
-                    //    { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode); }
-
-                    //    HttpClient client = new HttpClient();
-                    //    client.BaseAddress = new Uri("https://websitealive.crm.dynamics.com");
-                    //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/jason"));
-                    //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + AccessToken);
-                    //    client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-                    //    client.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
-                    //    client.DefaultRequestHeaders.Add("OData-Version", "4.0");
-                    //    StringBuilder requestURI = new StringBuilder();
-                    //    requestURI.Append("/api/data/v8.0/tasks");
-
-                    //    //DYChatPostValue aData = new DYChatPostValue();
-                    //    //aData.subject = lData.Subject;
-                    //    //aData.description = lData.Messsage;
-                    //    //aData.regardingobjectid_account = ItemId; "primarycontactid@odata.bind":"/accounts("+ ItemId + ")"
-                    //    JObject aData = new JObject();
-                    //    aData.Add("subject", lData.Subject);
-                    //    aData.Add("description", lData.Message);
-                    //    if(ItemId.Contains("account"))
-                    //        aData.Add("regardingobjectid_account_task@odata.bind", ItemId);
-                    //    else
-                    //        aData.Add("regardingobjectid_lead_task@odata.bind", ItemId);
-                    //    StringContent content = new StringContent(aData.ToString(), Encoding.UTF8, "application/json");
-                    //    HttpResponseMessage response = client.PostAsync(requestURI.ToString(), content).Result ;
-                    //    if (response.IsSuccessStatusCode)
-                    //    {
-                    //        var output = response.Headers.Location.OriginalString;
-                    //        var id = output.Substring(output.IndexOf("(") + 1, 36);
-                    //        PostedObjectDetail pObject = new PostedObjectDetail();
-                    //        pObject.Id = id;
-                    //        pObject.ObjectName = "Chat";
-                    //        pObject.Message = "Chat added successfully!";
-                    //        MyAppsDb.ChatQueueItemAddedDynamics(chatId); 
-                    //        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK);
-                    //    }
-                    //    else
-                    //    {
-                    //        return MyAppsDb.ConvertJSONOutput("Dynamics Error: " + response.StatusCode, HttpStatusCode.InternalServerError);
-                    //    }
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.InternalServerError);
-                    //}
-                    #endregion dynamics api call
-
+                    #endregion code for post add message
                 }
                 catch (Exception ex)
                 {
+                    string msg = string.Empty;
+                    if (IsChatPushed)
+                    {
+                        msg = "Request Completed with some errors. Errors :" + ex.Message;
+                    }
+                    else
+                    {
+                        msg = ex.Message;
+                    }
+                    MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, msg);
                     return MyAppsDb.ConvertJSONOutput(ex, "DYChat-PostChat", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }
-                #endregion code for post add message
             }
             else
             {

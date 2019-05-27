@@ -236,8 +236,9 @@ namespace SalesForceOAuth.Controllers
                     }
                 }
                 // 1.Issues when Personal Account are not enabled on clint org.
-                //query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
-                query.Append("SELECT Id, AccountNumber, Name, Phone " + columns + " From Account ");
+                query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
+                //Also AccountNumber through exception on some of client enviroment
+                //query.Append("SELECT Id, Name, Phone " + columns + " From Account ");
                 query.Append("where Name like '%" + SValue + "%' ");
                 query.Append("OR Phone like '%" + SValue + "%' ");
                 query.Append("OR AccountNumber like '%" + SValue + "%' ");
@@ -255,7 +256,7 @@ namespace SalesForceOAuth.Controllers
                             if (c.FirstName == null && c.LastName == null)
                             {
                                 l.Id = c.Id;
-                                l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
+                                // l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
                                 l.Name = (c.Name != null ? c.Name : "");
                                 l.Phone = (c.Phone != null ? c.Phone : "");
                                 if (cSearchField.Length > 0)
@@ -283,7 +284,7 @@ namespace SalesForceOAuth.Controllers
                         else
                         {
                             l.Id = c.Id;
-                            l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
+                            // l.AccountNumber = (c.AccountNumber != null ? c.AccountNumber : "");
                             l.Name = (c.Name != null ? c.Name : "");
                             l.Phone = (c.Phone != null ? c.Phone : "");
                             if (cSearchField.Length > 0)
