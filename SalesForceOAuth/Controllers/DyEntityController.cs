@@ -255,94 +255,25 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                Exception Message;
-                if (CreateOneToManyRelationship(lData, out Message))
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, urlReferrer);
+                if (entitySettings.UseAliveChat == 1)
                 {
-                    return MyAppsDb.ConvertJSONOutput("The one-to-many relationship has been created", HttpStatusCode.OK, false);
+                    Exception Message;
+                    if (CreateOneToManyRelationship(lData, out Message))
+                    {
+                        return MyAppsDb.ConvertJSONOutput("The one-to-many relationship has been created", HttpStatusCode.OK, false);
+                    }
+                    else
+                    {
+                        return MyAppsDb.ConvertJSONPOutput("Error : ", Message, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+                    }
                 }
                 else
                 {
-                    return MyAppsDb.ConvertJSONPOutput("Error : ", Message, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+                    return MyAppsDb.ConvertJSONOutput("The one-to-many relationship is not created because Activity Task are used to save chats", HttpStatusCode.OK, false);
                 }
-                //string ApplicationURL = "", userName = "", password = "", authType = "";
-                //string urlReferrer = Request.RequestUri.Authority.ToString();
-                //int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
-                //Uri organizationUri;
-                //Uri homeRealmUri;
-                //ClientCredentials credentials = new ClientCredentials();
-                //ClientCredentials deviceCredentials = new ClientCredentials();
-                //credentials.UserName.UserName = userName;
-                //credentials.UserName.Password = password;
-                //deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
-                //deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
-                //organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
-                //homeRealmUri = null;
-                //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //using (proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
-                //{
-
-                //    //Retrieve the One-to-many relationship using the MetadataId.
-
-                //    //// This statement is required to enable early-bound type support.
-                //    proxyservice.EnableProxyTypes();
-
-
-                //    // bool eligibleCreateOneToManyRelationship = EligibleCreateOneToManyRelationship(lData.EntityUniqueName, "ayu_chat");
-
-                //    bool isRelationShipExist = IsRelationShipExist("ayu_" + lData.EntityUniqueName + "_ayu_chat");
-                //    if (!isRelationShipExist)
-                //    {
-                //        CreateOneToManyRequest createOneToManyRelationshipRequest =
-                //            new CreateOneToManyRequest
-                //            {
-                //                OneToManyRelationship =
-                //            new OneToManyRelationshipMetadata
-                //            {
-                //                ReferencedEntity = lData.EntityUniqueName,
-                //                ReferencingEntity = "ayu_chat",
-                //                SchemaName = "ayu_" + lData.EntityUniqueName + "_ayu_chat",
-                //                AssociatedMenuConfiguration = new AssociatedMenuConfiguration
-                //                {
-                //                    Behavior = AssociatedMenuBehavior.UseLabel,
-                //                    Group = AssociatedMenuGroup.Details,
-                //                    Label = new Label(lData.EntityDispalyName, 1033),
-                //                    Order = 10000
-                //                },
-                //                CascadeConfiguration = new CascadeConfiguration
-                //                {
-                //                    Assign = CascadeType.NoCascade,
-                //                    Delete = CascadeType.RemoveLink,
-                //                    Merge = CascadeType.NoCascade,
-                //                    Reparent = CascadeType.NoCascade,
-                //                    Share = CascadeType.NoCascade,
-                //                    Unshare = CascadeType.NoCascade
-                //                }
-                //            },
-                //                Lookup = new LookupAttributeMetadata
-                //                {
-                //                    SchemaName = "ayu_" + lData.EntityUniqueName + "id",
-                //                    DisplayName = new Label(lData.EntityDispalyName, 1033),
-                //                    RequiredLevel = new AttributeRequiredLevelManagedProperty(AttributeRequiredLevel.None),
-                //                    Description = new Label(lData.EntityUniqueName + "Lookup", 1033)
-                //                }
-                //            };
-
-
-                //        CreateOneToManyResponse createOneToManyRelationshipResponse =
-                //            (CreateOneToManyResponse)proxyservice.Execute(
-                //            createOneToManyRelationshipRequest);
-
-                //        var _oneToManyRelationshipId =
-                //            createOneToManyRelationshipResponse.RelationshipId;
-
-                //        // Publish the customization changes.
-                //        proxyservice.Execute(new PublishAllXmlRequest());
-                //    }
-
-                //    return MyAppsDb.ConvertJSONOutput("The one-to-many relationship has been created", HttpStatusCode.OK, false);
-
-                //}
             }
 
             catch (Exception ex)

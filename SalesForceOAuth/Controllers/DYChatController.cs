@@ -55,6 +55,9 @@ namespace SalesForceOAuth.Controllers
 
                     MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, urlReferrer);
 
+                    // Wher to save chats
+                    EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, urlReferrer);
+
                     // Get Back End Fields
                     var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, ItemType);
 
@@ -65,12 +68,15 @@ namespace SalesForceOAuth.Controllers
                         using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                         {
                             #region set properties
-                            string postMessage;
+                            string postMessage, chatEntity, parentLookupField;
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration;
                             Entity post = new Entity("post");
                             post["source"] = new OptionSetValue(2);
                             post["type"] = new OptionSetValue(4);
+
+                            Entity task = new Entity("task");
+
 
                             if (OwnerId != "")
                             {
@@ -87,95 +93,96 @@ namespace SalesForceOAuth.Controllers
 
                             if (ItemType.Contains("account"))
                             {
-                                registration = new Entity("ayu_alivechat");
-                                registration["ayu_account"] = new EntityReference("account", new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference("account", new Guid(ItemId)); ;
-                                post["text"] = postMessage;
+                                chatEntity = "ayu_alivechat";
+                                parentLookupField = "ayu_account";
                             }
                             else if (ItemType.Contains("lead"))
                             {
-                                registration = new Entity("ayu_leadalivechat");
-                                registration["ayu_leadid"] = new EntityReference("lead", new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference("lead", new Guid(ItemId)); ;
-                                post["text"] = postMessage;
+                                chatEntity = "ayu_leadalivechat";
+                                parentLookupField = "ayu_leadid";
                             }
                             else if (ItemType.Contains("contact"))
                             {
-                                registration = new Entity("ayu_contactalivechat");
-                                registration["ayu_contactid"] = new EntityReference("contact", new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference("contact", new Guid(ItemId)); ;
-                                post["text"] = postMessage;
-
+                                chatEntity = "ayu_contactalivechat";
+                                parentLookupField = "ayu_contactid";
                             }
                             else
                             {
-                                registration = new Entity("ayu_chat");
-                                registration["ayu_" + ItemType + "id"] = new EntityReference(ItemType, new Guid(ItemId));
-                                registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
-                                if (OwnerId != "")
-                                {
-                                    registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
-                                registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-
-                                post["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
-                                post["text"] = postMessage;
+                                chatEntity = "ayu_chat";
+                                parentLookupField = "ayu_" + ItemType + "id";
                             }
-                            //else
-                            //{
-                            //    registration = new Entity();
-                            //    newChatId = Guid.Empty;
-                            // return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
-                            //}
 
                             #endregion
-                            newChatId = objser.Create(registration);
-                            IsChatPushed = true;
-                            Guid newPostID = objser.Create(post);
-                            if (getBackEndFeields.Count > 0)
+
+                            if (entitySettings.UseAliveChat == 1)
                             {
-                                Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
-                                foreach (var item in getBackEndFeields)
+                                ConditionExpression filterOwnRcd = new ConditionExpression();
+                                filterOwnRcd.AttributeName = "uniquename";
+                                filterOwnRcd.Operator = ConditionOperator.Equal;
+                                filterOwnRcd.Values.Add(ConfigurationManager.AppSettings["DynamicsManagedSolName"].ToString());
+
+                                FilterExpression filter1 = new FilterExpression();
+                                filter1.Conditions.Add(filterOwnRcd);
+
+
+                                QueryExpression query = new QueryExpression("solution");
+                                query.ColumnSet.AddColumns("solutionid", "friendlyname", "version", "ismanaged", "uniquename");
+                                query.Criteria.AddFilter(filter1);
+                                EntityCollection result1 = objser.RetrieveMultiple(query);
+                                if (result1.Entities.Count > 0)
                                 {
-                                    parentEntity[item.FieldName] = item.ValueDetail;
+                                    registration = new Entity(chatEntity);
+                                    registration[parentLookupField] = new EntityReference(ItemType, new Guid(ItemId));
+                                    registration["ayu_name"] = "AliveChat ID: " + lData.SessionId;
+                                    if (OwnerId != "")
+                                    {
+                                        registration["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                    }
+                                    registration["ayu_chat"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                    newChatId = objser.Create(registration);
                                 }
-                                objser.Update(parentEntity);
+                                else
+                                {
+                                    newChatId = Guid.Empty;
+                                }
                             }
-                        }
-                        if (newChatId != Guid.Empty)
-                        {
-                            PostedObjectDetail pObject = new PostedObjectDetail();
-                            pObject.Id = newChatId.ToString();
-                            pObject.ObjectName = "Chat";
-                            pObject.Message = "Chat added successfully!";
-                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 1, "Chat Added Successfully");
-                            return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
-                        }
-                        else
-                        {
-                            MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "Could not add new Chat, check mandatory fields");
-                            return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                            else
+                            {
+                                task["subject"] = "AliveChat ID: " + lData.SessionId;
+                                task["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                task["regardingobjectid"] = new EntityReference("contact", new Guid(ItemId));
+                                newChatId = objser.Create(task);
+
+                            }
+
+                            if (newChatId != Guid.Empty)
+                            {
+                                IsChatPushed = true;
+                                post["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                post["text"] = postMessage;
+                                Guid newPostID = objser.Create(post);
+                                if (getBackEndFeields.Count > 0)
+                                {
+                                    Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
+                                    foreach (var item in getBackEndFeields)
+                                    {
+                                        parentEntity[item.FieldName] = item.ValueDetail;
+                                    }
+                                    objser.Update(parentEntity);
+                                }
+
+                                PostedObjectDetail pObject = new PostedObjectDetail();
+                                pObject.Id = newChatId.ToString();
+                                pObject.ObjectName = "Chat";
+                                pObject.Message = "Chat added successfully!";
+                                MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 1, "Chat Added Successfully");
+                                return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+                            }
+                            else
+                            {
+                                MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel !");
+                                return MyAppsDb.ConvertJSONOutput("Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel ", HttpStatusCode.InternalServerError, true);
+                            }
                         }
                     }
                     else
@@ -183,7 +190,6 @@ namespace SalesForceOAuth.Controllers
                         MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "No Chat in queue to publish");
                         return MyAppsDb.ConvertJSONOutput("No Chat in queue to publish", HttpStatusCode.InternalServerError, true);
                     }
-
                     #endregion code for post add message
                 }
                 catch (Exception ex)
@@ -205,8 +211,6 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.InternalServerError, true);
             }
-            //}
-            //return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized);
         }
         [HttpGet]
         public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback, string OwnerId)

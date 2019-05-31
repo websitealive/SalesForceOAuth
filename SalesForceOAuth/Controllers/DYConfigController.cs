@@ -193,7 +193,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONPOutput(callback, "Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.OK, true);
+                        return MyAppsDb.ConvertJSONPOutput(callback, "Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete", HttpStatusCode.OK, true);
                     }
                 }
             }
@@ -246,52 +246,8 @@ namespace SalesForceOAuth.Controllers
 
                 ManagedTokenOrganizationServiceProxy _serviceproxy = new ManagedTokenOrganizationServiceProxy(management, securityTokenResponse);
 
-                //IOrganizationService objser = (IOrganizationService)_serviceproxy;
-                ////ConditionExpression password = new ConditionExpression();
-
-                //ConditionExpression filterOwnRcd = new ConditionExpression();
-                //filterOwnRcd.AttributeName = "uniquename";
-                //filterOwnRcd.Operator = ConditionOperator.Equal;
-                //filterOwnRcd.Values.Add(ConfigurationManager.AppSettings["DynamicsManagedSolName"].ToString());
-
-
-                //FilterExpression filter1 = new FilterExpression();
-                //filter1.Conditions.Add(filterOwnRcd);
-
-
-                //QueryExpression query = new QueryExpression("solution");
-                //query.ColumnSet.AddColumns("solutionid", "friendlyname", "version", "ismanaged", "uniquename");
-                //query.Criteria.AddFilter(filter1);
-                //EntityCollection result1 = objser.RetrieveMultiple(query);
-                //if (result1.Entities.Count > 0)
-                //{
-                //    string outStr = "Managed Solution Found - Configuration Complete";
-                //    int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
-                //    if (output == 1)
-                //        return MyAppsDb.ConvertJSONOutput("Managed Solution Found - Credentials recorded successfully!", HttpStatusCode.OK, false);
-                //    else
-                //        return MyAppsDb.ConvertJSONOutput("Credentials exists and working.", HttpStatusCode.OK, false);
-                //}
-                //else
-                //{
-                //    return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.NotFound, true);
-                //}
-
-
-                ////AuthenticationCredentials authCredentials = management.Authenticate(new AuthenticationCredentials { ClientCredentials = credentials });
-                ////SecurityTokenResponse securityTokenResponse = authCredentials.SecurityTokenResponse;
-
-                //return null;
-
-                // Testing End 
-
-
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
-
-
-
-
                     IOrganizationService objser = (IOrganizationService)proxyservice;
                     //ConditionExpression password = new ConditionExpression();
 
@@ -310,17 +266,17 @@ namespace SalesForceOAuth.Controllers
                     EntityCollection result1 = objser.RetrieveMultiple(query);
                     if (result1.Entities.Count > 0)
                     {
-                        string outStr = "Managed Solution Found - Configuration Complete";
-                        int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
-                        if (output == 1)
-                            return MyAppsDb.ConvertJSONOutput("Managed Solution Found - Credentials recorded successfully!", HttpStatusCode.OK, false);
-                        else
-                            return MyAppsDb.ConvertJSONOutput("Credentials exists and working.", HttpStatusCode.OK, false);
+                        Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 1, urlReferrer);
                     }
                     else
                     {
-                        return MyAppsDb.ConvertJSONOutput("Confirguration Error - Managed solution Not Found, check information", HttpStatusCode.NotFound, true);
+                        Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 0, urlReferrer);
                     }
+                    int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
+                    if (output == 1)
+                        return MyAppsDb.ConvertJSONOutput("Credentials recorded successfully!", HttpStatusCode.OK, false);
+                    else
+                        return MyAppsDb.ConvertJSONOutput("Credentials exists and working.", HttpStatusCode.OK, false);
                 }
 
             }

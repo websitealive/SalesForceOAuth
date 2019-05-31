@@ -1082,6 +1082,7 @@ namespace SalesForceOAuth
                                 returnEntitySettings.AllowAccountCreation = Convert.ToInt32(rdr["allow_accounts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowContactCreation = Convert.ToInt32(rdr["allow_contacts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowLeadCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
+                                returnEntitySettings.UseAliveChat = Convert.ToInt32(rdr["use_alive_chat"].ToString().Trim());
                             }
                         }
                         rdr.Close();
@@ -2566,5 +2567,50 @@ namespace SalesForceOAuth
         }
 
         #endregion
+
+        public static int RecordDynamicsSettings(string objectRef, int groupId, int isUsingAliveChat, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_dynamic_entity WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (!rdr.HasRows)
+                        {
+                            // Insert the record
+                            rdr.Close();
+                            string insertSql = "INSERT INTO integration_dynamic_entity (objectref, groupid, use_alive_chat)";
+                            insertSql += "VALUES ('" + objectRef + "','" + groupId + "','" + isUsingAliveChat + "')";
+                            MySqlCommand cmdInsert = new MySqlCommand(insertSql, conn);
+                            int rows = cmdInsert.ExecuteNonQuery();
+                            conn.Close();
+                            return rows;
+                        }
+                        else
+                        {
+                            // Update the record
+                            var id = Convert.ToInt32(rdr["id"]);
+                            rdr.Close();
+                            string updateSql = "Update integration_dynamic_entity Set use_alive_chat = '" + isUsingAliveChat + "'";
+                            updateSql += " WHERE id = " + id;
+                            MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
+                            int rows = cmd1.ExecuteNonQuery();
+                            conn.Close();
+                            return 0;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
     }
 }

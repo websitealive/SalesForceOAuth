@@ -1336,3 +1336,10 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
    at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host 'dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed.
+5/29/2019 9:15:38 AM ==> No Chat in queue to publish
+5/29/2019 9:20:31 AM ==> No Chat in queue to publish
+5/29/2019 9:21:16 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+5/29/2019 9:37:12 AM ==> No Chat in queue to publish
+5/29/2019 12:11:41 PM ==> No Chat in queue to publish
+5/30/2019 2:14:57 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+5/30/2019 2:15:57 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
