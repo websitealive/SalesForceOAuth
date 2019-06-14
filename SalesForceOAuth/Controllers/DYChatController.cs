@@ -76,7 +76,8 @@ namespace SalesForceOAuth.Controllers
                             post["type"] = new OptionSetValue(4);
 
                             Entity task = new Entity("task");
-
+                            // Notes
+                            Entity note = new Entity("annotation");
 
                             if (OwnerId != "")
                             {
@@ -148,10 +149,15 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                task["subject"] = "AliveChat ID: " + lData.SessionId;
-                                task["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                                task["regardingobjectid"] = new EntityReference("contact", new Guid(ItemId));
-                                newChatId = objser.Create(task);
+                                //task["subject"] = "AliveChat ID: " + lData.SessionId;
+                                //task["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                //task["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                //newChatId = objser.Create(task);
+
+                                note["subject"] = "AliveChat ID: " + lData.SessionId + " (" + DateTime.Today.ToShortDateString() + " @ " + DateTime.Today.ToShortTimeString() + ")";
+                                note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                newChatId = objser.Create(note);
 
                             }
 
@@ -213,7 +219,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string callback, string OwnerId)
+        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, int Alive5ContactId, string ObjType, string ObjId, string callback, string OwnerId)
         {
             #region JWT Token 
             string outputPayload;
@@ -229,7 +235,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, ObjType, ObjId, OwnerId, urlReferrer);
+                MyAppsDb.TagChatDynamics(ObjectRef, GroupId, SessionId, Alive5ContactId, ObjType, ObjId, OwnerId, urlReferrer);
                 PostedObjectDetail output = new PostedObjectDetail();
                 output.ObjectName = "TagChat";
                 output.Message = "Chat Tagged successfully!";

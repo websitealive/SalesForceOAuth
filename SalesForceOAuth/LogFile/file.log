@@ -1343,3 +1343,14 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 5/29/2019 12:11:41 PM ==> No Chat in queue to publish
 5/30/2019 2:14:57 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
 5/30/2019 2:15:57 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+5/31/2019 12:50:49 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: clientCredentials.UserName.UserName or clientCredentials.Windows.ClientCredential.UserName MUST be populated!
+5/31/2019 2:08:34 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: clientCredentials.UserName.UserName or clientCredentials.Windows.ClientCredential.UserName MUST be populated!
+6/11/2019 11:05:06 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+6/11/2019 11:10:14 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: The authentication endpoint Username was not found on the configured Secure Token Service!
+6/11/2019 2:03:30 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/11/2019 2:04:06 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+6/11/2019 2:05:14 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/11/2019 2:05:47 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/11/2019 2:06:16 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+6/11/2019 2:12:34 PM ==> Function: DYChat-GetTagChat : Unhandled exception--Internal exception : , Exception Message: Unknown column 'Alive5ContactId' in 'field list'
+6/12/2019 4:02:07 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).

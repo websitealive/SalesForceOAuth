@@ -156,7 +156,7 @@ namespace SalesForceOAuth.Controllers
             return MyAppsDb.ConvertJSONOutput("Your request isn't authorized!", HttpStatusCode.Unauthorized, true);
         }
         [HttpGet]
-        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, string ObjType, string ObjId, string OwnerEmail, string callback)
+        public HttpResponseMessage GetTagChat(string token, string ObjectRef, int GroupId, int SessionId, int Alive5ContactId, string ObjType, string ObjId, string OwnerEmail, string callback)
         {
             #region JWT Token 
             //string _token = HttpRequestMessageExtensions.GetHeader(re, "Authorization");
@@ -174,7 +174,7 @@ namespace SalesForceOAuth.Controllers
             List<Lead> myLeads = new List<Lead> { };
             try
             {
-                MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, ObjType, ObjId, urlReferrer, OwnerEmail);
+                MyAppsDb.TagChat(ObjectRef, GroupId, SessionId, Alive5ContactId, ObjType, ObjId, urlReferrer, OwnerEmail);
                 PostedObjectDetail output = new PostedObjectDetail();
                 output.ObjectName = "TagChat";
                 output.Message = "Chat Tagged successfully!";

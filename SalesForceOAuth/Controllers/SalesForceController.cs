@@ -724,7 +724,7 @@ namespace SalesForceOAuth.Controllers
             return response;
         }
 
-        public static void TagChat(string objectRef, int groupId, int sessionId, string objType, string objId, string urlReferrer, string OwnerEmail)
+        public static void TagChat(string objectRef, int groupId, int sessionId, int Alive5ContactId, string objType, string objId, string urlReferrer, string OwnerEmail)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -732,12 +732,12 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sqlDel = "DELETE FROM integration_salesforce_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
+                    string sqlDel = "DELETE FROM integration_salesforce_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND  alive5_contact_id = " + Alive5ContactId + " AND status = 0";
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
 
-                    string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp,owner_email)";
-                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now(), '" + OwnerEmail + "')";
+                    string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid, alive5_contact_id, object_type, object_id, timestamp,owner_email)";
+                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", " + Alive5ContactId + ", '" + objType + "', '" + objId + "', now(), '" + OwnerEmail + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
                     conn.Close();
@@ -974,7 +974,7 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void TagChatDynamics(string objectRef, int groupId, int sessionId, string objType, string objId, string ownerId, string urlReferrer)
+        public static void TagChatDynamics(string objectRef, int groupId, int sessionId, int Alive5ContactId, string objType, string objId, string ownerId, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -982,12 +982,12 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sqlDel = "DELETE FROM integration_dynamics_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
+                    string sqlDel = "DELETE FROM integration_dynamics_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND  alive5_contact_id = " + Alive5ContactId + " AND status = 0";
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
                     int rowsDeleted = cmd1.ExecuteNonQuery();
 
-                    string sql = "insert into integration_dynamics_queue(objectRef, groupid, sessionid,object_type, object_id, ownerid, timestamp)";
-                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', '" + ownerId + "', now())";
+                    string sql = "insert into integration_dynamics_queue(objectRef, groupid, sessionid, alive5_contact_id, object_type, object_id, ownerid, timestamp)";
+                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + Alive5ContactId + "', '" + objType + "', '" + objId + "', '" + ownerId + "', now())";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
                     conn.Close();
