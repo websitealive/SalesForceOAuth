@@ -1354,3 +1354,126 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 6/11/2019 2:06:16 PM ==> Function: DyChat-GetTagChat : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
 6/11/2019 2:12:34 PM ==> Function: DYChat-GetTagChat : Unhandled exception--Internal exception : , Exception Message: Unknown column 'Alive5ContactId' in 'field list'
 6/12/2019 4:02:07 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+6/18/2019 3:33:06 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: An error occurred when processing the security tokens in the message:Authorization failed
+6/19/2019 10:45:18 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+6/20/2019 4:24:02 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+6/20/2019 4:24:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+6/21/2019 11:06:49 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+6/21/2019 11:06:52 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : System.InvalidOperationException: There is an error in XML document (1, 1510). ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.ConnectStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.ServiceModel.Channels.MaxMessageSizeStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at System.Xml.EncodingStreamWrapper.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Xml.XmlBufferReader.TryEnsureBytes(Int32 count)
+   at System.Xml.XmlBufferReader.GetBuffer(Int32 count, Int32& offset, Int32& offsetMax)
+   at System.Xml.XmlUTF8TextReader.ReadText(Boolean hasLeadingByteOf0xEF)
+   at System.Xml.XmlUTF8TextReader.Read()
+   at System.Xml.XmlLoader.LoadNode(Boolean skipOverWhitespace)
+   at System.Xml.XmlLoader.ReadCurrentNode(XmlDocument doc, XmlReader reader)
+   at System.Xml.XmlDocument.ReadNode(XmlReader reader)
+   at System.Xml.Serialization.XmlSerializationReader.ReadXmlNode(Boolean wrapped)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read10_XmlSchemaAppInfo(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read11_XmlSchemaAnnotation(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read26_XmlSchemaEnumerationFacet(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read32_XmlSchemaSimpleTypeRestriction(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read34_XmlSchemaSimpleType(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read66_XmlSchema(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read67_Types(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read124_ServiceDescription(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read125_definitions()
+   at System.Web.Services.Description.ServiceDescription.ServiceDescriptionSerializer.Deserialize(XmlSerializationReader reader)
+   at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)
+   --- End of inner exception stack trace ---
+   at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)
+   at System.Web.Services.Description.ServiceDescription.Read(XmlReader reader, Boolean validate)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.CreateMetadataSection(XmlReader reader, String sourceUrl)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com/XRMServices/2011/Organization.svc?wsdl=wsdl0'.
+6/21/2019 11:06:52 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The authentication endpoint Username was not found on the configured Secure Token Service!
+6/21/2019 2:19:40 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : System.TimeoutException: The HTTP request to 'https://crm2.websitealive.com/XRMServices/2011/Organization.svc' has exceeded the allotted timeout of 00:02:00. The time allotted to this operation may have been a portion of a longer timeout. ---> System.Net.WebException: The operation has timed out
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout)
+   --- End of inner exception stack trace ---
+   at System.ServiceModel.Channels.HttpChannelUtilities.ProcessGetResponseWebException(WebException webException, HttpWebRequest request, HttpAbortReason abortReason)
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout)
+   at System.ServiceModel.Channels.RequestChannel.Request(Message message, TimeSpan timeout), Exception Message: The request channel timed out while waiting for a reply after 00:01:59.9990173. Increase the timeout value passed to the call to Request or increase the SendTimeout value on the Binding. The time allotted to this operation may have been a portion of a longer timeout.
+6/21/2019 4:17:52 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+6/24/2019 3:12:22 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+6/24/2019 3:13:16 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+6/24/2019 3:14:13 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+6/24/2019 3:37:53 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+7/2/2019 10:10:31 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : , Exception Message: Invalid attempt to access a field before calling Read()
+7/4/2019 3:47:47 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+7/4/2019 3:49:25 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+7/4/2019 3:50:03 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+7/9/2019 12:41:57 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Invalid attempt to access a field before calling Read()
+7/9/2019 12:52:28 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Could not find specified column in results: fieldtype
+7/9/2019 2:05:48 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Could not find specified column in results: entityname
+7/9/2019 2:06:28 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Could not find specified column in results: entityname
+7/9/2019 4:33:36 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/9/2019 4:33:36 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/9/2019 4:36:24 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/9/2019 4:36:37 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+7/9/2019 4:36:42 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/9/2019 4:37:00 PM ==> Function: SFEntity-GetEntityList : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/15/2019 4:52:15 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+7/15/2019 4:54:56 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+7/15/2019 4:56:50 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+7/15/2019 4:58:14 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.

@@ -42,14 +42,14 @@ namespace SalesForceOAuth.Models
         public int MaxLength { get; set; }
     }
 
-    public class ExportFields
+    public class CustomFields
     {
         public string Entity { get; set; }
 
-        public List<ExportFieldModel> ExportFieldsList { get; set; }
+        public List<CustomFieldModel> CustomFieldsList { get; set; }
     }
 
-    public class ExportFieldModel
+    public class CustomFieldModel
     {
         public int Sr { get; set; }
 
@@ -57,15 +57,37 @@ namespace SalesForceOAuth.Models
 
         public string FieldName { get; set; }
 
-        public string FiledLabel { get; set; }
+        public string FieldLabel { get; set; }
 
-        public string RelatedEntity { get; set; }
+        public string Value { get; set; }
+
+        public string FieldType { get; set; }
 
         public int BusinessRequired { get; set; }
 
         public int MaxLength { get; set; }
 
-        public string FieldType { get; set; }
+        public string RelatedEntity { get; set; }
+
+        public string RelatedEntityFieldName { get; set; }
+
+        public string Table { get; set; }
+
+        //public int Sr { get; set; }
+
+        //public int Id { get; set; }
+
+        //public string FieldName { get; set; }
+
+        //public string FiledLabel { get; set; }
+
+        //public string RelatedEntity { get; set; }
+
+        //public int BusinessRequired { get; set; }
+
+        //public int MaxLength { get; set; }
+
+        //public string FieldType { get; set; }
     }
 
     public class MessageResponce

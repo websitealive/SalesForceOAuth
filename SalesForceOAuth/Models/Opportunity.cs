@@ -16,6 +16,6 @@ namespace SalesForceOAuth.Models
 
         public string Stage { get; set; }
 
-        public List<InputFields> CustomFields { get; set; }
+        public List<CustomFieldModel> CustomFields { get; set; }
     }
 }

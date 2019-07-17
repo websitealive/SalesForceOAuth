@@ -233,18 +233,18 @@ namespace SalesForceOAuth.Controllers
 
                 // testing Start
 
-                IServiceManagement<IOrganizationService> management = ServiceConfigurationFactory.CreateManagement<IOrganizationService>(organizationUri);
+                //IServiceManagement<IOrganizationService> management = ServiceConfigurationFactory.CreateManagement<IOrganizationService>(organizationUri);
 
-                //ClientCredentials credentials = new ClientCredentials();
-                //credentials.UserName.UserName = lData.Username;
-                //credentials.UserName.Password = lData.Password;
+                ////ClientCredentials credentials = new ClientCredentials();
+                ////credentials.UserName.UserName = lData.Username;
+                ////credentials.UserName.Password = lData.Password;
 
-                // OrganizationServiceProxy _serviceproxy = new OrganizationServiceProxy(management, credentials);
+                //// OrganizationServiceProxy _serviceproxy = new OrganizationServiceProxy(management, credentials);
 
-                AuthenticationCredentials authCredentials = management.Authenticate(new AuthenticationCredentials { ClientCredentials = credentials });
-                SecurityTokenResponse securityTokenResponse = authCredentials.SecurityTokenResponse;
+                //AuthenticationCredentials authCredentials = management.Authenticate(new AuthenticationCredentials { ClientCredentials = credentials });
+                //SecurityTokenResponse securityTokenResponse = authCredentials.SecurityTokenResponse;
 
-                ManagedTokenOrganizationServiceProxy _serviceproxy = new ManagedTokenOrganizationServiceProxy(management, securityTokenResponse);
+                //ManagedTokenOrganizationServiceProxy _serviceproxy = new ManagedTokenOrganizationServiceProxy(management, securityTokenResponse);
 
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {

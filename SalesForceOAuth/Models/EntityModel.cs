@@ -25,7 +25,7 @@ namespace SalesForceOAuth.Models
 
         public string CrmType { get; set; }
 
-        public List<InputFields> InputFields { get; set; }
+        public List<CustomFieldModel> CustomFields { get; set; }
 
     }
 }

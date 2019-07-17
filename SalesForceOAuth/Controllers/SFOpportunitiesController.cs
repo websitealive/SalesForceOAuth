@@ -63,7 +63,7 @@ namespace SalesForceOAuth.Controllers
                 #region Dynamic Inout Fields
                 if (lData.CustomFields != null)
                 {
-                    foreach (InputFields inputField in lData.CustomFields)
+                    foreach (CustomFieldModel inputField in lData.CustomFields)
                     {
                         if (inputField.Value != null)
                         {

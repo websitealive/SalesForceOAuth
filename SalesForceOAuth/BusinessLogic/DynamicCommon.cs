@@ -11,9 +11,9 @@ namespace SalesForceOAuth.BusinessLogic
 {
     public static class DynamicCommon
     {
-        public static List<InputFields> GetDynamicSearchFileds(string objectRef, int groupId, string entityName, string urlReferrer)
+        public static List<CustomFieldModel> GetDynamicSearchFileds(string objectRef, int groupId, string entityName, string urlReferrer)
         {
-            List<InputFields> returnFieldList = new List<InputFields>();
+            List<CustomFieldModel> returnFieldList = new List<CustomFieldModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -30,7 +30,7 @@ namespace SalesForceOAuth.BusinessLogic
                             {
                                 if (rdr["entity_name"].ToString().ToLower().Equals(entityName.ToLower()))
                                 {
-                                    InputFields searchFields = new InputFields();
+                                    CustomFieldModel searchFields = new CustomFieldModel();
                                     searchFields.FieldLabel = rdr["search_field_label"].ToString().Trim();
                                     searchFields.FieldName = rdr["search_field_name"].ToString().Trim();
                                     searchFields.FieldType = rdr["search_field_type"].ToString().Trim();
@@ -145,23 +145,23 @@ namespace SalesForceOAuth.BusinessLogic
                     }
                 );
             }
-            if (entityName.ToLower() == "opportunity")
-            {
-                defaultColumn.AddRange(
-                    new EntityColumn[] {
-                        new EntityColumn { Sr = 0, FieldLabel = "Opportunity Name", FieldName = "name" },
-                    }
-                );
-            }
-            if (entityName.ToLower() == "incident")
-            {
-                defaultColumn.AddRange(
-                    new EntityColumn[] {
-                        new EntityColumn { Sr = 0, FieldLabel = "Title", FieldName = "title" },
-                        new EntityColumn { Sr = 0, FieldLabel = "Customer", FieldName = "customerid" }
-                    }
-                );
-            }
+            //if (entityName.ToLower() == "opportunity")
+            //{
+            //    defaultColumn.AddRange(
+            //        new EntityColumn[] {
+            //            new EntityColumn { Sr = 0, FieldLabel = "Opportunity Name", FieldName = "name" },
+            //        }
+            //    );
+            //}
+            //if (entityName.ToLower() == "incident")
+            //{
+            //    defaultColumn.AddRange(
+            //        new EntityColumn[] {
+            //            new EntityColumn { Sr = 0, FieldLabel = "Title", FieldName = "title" },
+            //            new EntityColumn { Sr = 0, FieldLabel = "Customer", FieldName = "customerid" }
+            //        }
+            //    );
+            //}
             //End Add Default Fields
 
             return defaultColumn;

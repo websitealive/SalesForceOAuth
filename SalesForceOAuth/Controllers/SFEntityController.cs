@@ -33,8 +33,20 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                var entitySettings = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, "sf");
-                return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
+                var entities = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, "sf");
+                var entityFields = Repository.GetSFFormExportFields(ObjectRef, GroupId, urlReferrer);
+                foreach (var entity in entities)
+                {
+                    foreach (var fields in entityFields)
+                    {
+                        if (entity.EntityUniqueName.ToLower() == fields.Entity.ToLower())
+                        {
+                            entity.CustomFields = fields.CustomFieldsList;
+                        }
+                    }
+
+                }
+                return MyAppsDb.ConvertJSONPOutput(callback, entities, HttpStatusCode.OK, false);
 
             }
             catch (Exception ex)
@@ -156,9 +168,9 @@ namespace SalesForceOAuth.Controllers
                 dynamic newEntity = new ExpandoObject();
 
                 #region Dynamic Inout Fields
-                if (lData.InputFields != null)
+                if (lData.CustomFields != null)
                 {
-                    foreach (InputFields inputField in lData.InputFields)
+                    foreach (CustomFieldModel inputField in lData.CustomFields)
                     {
                         if (inputField.Value != null)
                         {
@@ -359,6 +371,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         EntityModel l = new EntityModel();
                         l.EntityPrimaryKey = c.Id;
+                        l.EntityUniqueName = Entity;
                         var chk = dynamicEntity.PrimaryFieldUniqueName;
                         l.PrimaryFieldValue = c[chk];
                         if (cSearchField.Length > 0)

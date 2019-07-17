@@ -195,6 +195,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/Owin.dll">
       <publishTime>06/05/2018 15:41:29</publishTime>
     </File>
+    <File Include="bin/RestSharp.dll">
+      <publishTime>07/03/2019 21:33:36</publishTime>
+    </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>06/05/2018 15:41:29</publishTime>
     </File>
@@ -238,10 +241,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/05/2018 15:41:28</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>06/14/2019 15:02:22</publishTime>
+      <publishTime>07/17/2019 15:56:12</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.pdb">
-      <publishTime>06/14/2019 15:02:22</publishTime>
+      <publishTime>07/17/2019 15:56:12</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>06/05/2018 15:41:28</publishTime>
@@ -319,7 +322,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/05/2018 15:41:24</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>06/05/2018 15:41:26</publishTime>
+      <publishTime>07/17/2019 15:52:38</publishTime>
     </File>
     <File Include="Scripts/ai.0.22.19-build00125.js">
       <publishTime>06/05/2018 15:41:24</publishTime>
@@ -382,7 +385,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/05/2018 15:41:24</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>05/31/2019 10:54:50</publishTime>
+      <publishTime>07/17/2019 15:56:15</publishTime>
     </File>
   </ItemGroup>
 </Project>

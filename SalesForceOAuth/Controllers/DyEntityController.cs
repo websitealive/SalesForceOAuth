@@ -45,8 +45,20 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                var entitySettings = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, "dy");
-                return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
+                var entityList = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, "dy");
+                var entityFields = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer);
+                foreach (var entity in entityList)
+                {
+                    foreach (var fields in entityFields)
+                    {
+                        if (entity.EntityUniqueName.ToLower() == fields.Entity.ToLower())
+                        {
+                            entity.CustomFields = fields.CustomFieldsList;
+                        }
+                    }
+
+                }
+                return MyAppsDb.ConvertJSONPOutput(callback, entityList, HttpStatusCode.OK, false);
 
             }
             catch (Exception ex)
@@ -183,9 +195,9 @@ namespace SalesForceOAuth.Controllers
                     //registration[lData.PrimaryFieldUniqueName] = lData.PrimaryFieldValue;
 
                     #region Dynamic Inout Fields
-                    if (lData.InputFields != null)
+                    if (lData.CustomFields != null)
                     {
-                        foreach (InputFields inputField in lData.InputFields)
+                        foreach (CustomFieldModel inputField in lData.CustomFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -300,6 +312,9 @@ namespace SalesForceOAuth.Controllers
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+
+                var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, Entity, urlReferrer);
+
                 Uri organizationUri;
                 Uri homeRealmUri;
                 ClientCredentials credentials = new ClientCredentials();
@@ -324,39 +339,125 @@ namespace SalesForceOAuth.Controllers
 
                     List<EntityModel> listToReturn = new List<EntityModel>();
                     IOrganizationService objser = (IOrganizationService)proxyservice;
-                    //filter name 
-                    ConditionExpression filterOwnRcd = new ConditionExpression();
-                    filterOwnRcd.AttributeName = RetrieveEntityInfo.PrimaryNameAttribute;
-                    filterOwnRcd.Operator = ConditionOperator.Like;
-                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
 
-                    FilterExpression filter1 = new FilterExpression();
-                    filter1.Conditions.Add(filterOwnRcd);
-                    //Add Custom Search Filters
-
-                    filter1.FilterOperator = LogicalOperator.Or;
+                    // Start Buliding Querry
                     QueryExpression query = new QueryExpression(Entity);
+                    List<string> searchedColumn = new List<string>();
+                    List<string> entityId = new List<string>();
+                    FilterExpression filter = new FilterExpression();
+                    //ConditionExpression filterOwnRcd = new ConditionExpression();
 
-                    List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
-                    foreach (var item in defaultSearchedColumn)
+                    searchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
+                    if (getSearchedFileds.Count > 0)
                     {
-                        query.ColumnSet.AddColumn(item);
+                        foreach (var field in getSearchedFileds)
+                        {
+                            if (field.FieldType == "relatedEntity")
+                            {
+                                QueryExpression queryRelatedEntity = new QueryExpression(field.RelatedEntity);
+                                queryRelatedEntity.ColumnSet.AddColumn(field.RelatedEntityFieldName);
+                                FilterExpression relatedEntityFilter = new FilterExpression();
+                                ConditionExpression relatedSearchField = new ConditionExpression()
+                                {
+                                    AttributeName = field.FieldName,
+                                    Operator = ConditionOperator.Like,
+                                    Values = { "%" + SValue.Trim() + "%" }
+
+                                };
+                                relatedEntityFilter.Conditions.Add(relatedSearchField);
+                                queryRelatedEntity.Criteria.AddFilter(relatedEntityFilter);
+                                EntityCollection result = objser.RetrieveMultiple(queryRelatedEntity);
+                                if (result.Entities.Count > 0)
+                                {
+                                    foreach (var item in result.Entities)
+                                    {
+                                        if (item.Attributes.Contains(field.RelatedEntityFieldName))
+                                            entityId.Add(((Microsoft.Xrm.Sdk.EntityReference)item.Attributes[field.RelatedEntityFieldName]).Id.ToString());
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                searchedColumn.Add(field.FieldName);
+                            }
+                        }
                     }
 
-                    query.Criteria.AddFilter(filter1);
+                    foreach (var item in searchedColumn)
+                    {
+                        query.ColumnSet.AddColumn(item);
+                        if (item != RetrieveEntityInfo.PrimaryIdAttribute)
+                        {
+                            ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                            filterOwnRcd1.AttributeName = item;
+                            filterOwnRcd1.Operator = ConditionOperator.Like;
+                            filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
+                            filter.Conditions.Add(filterOwnRcd1);
+                        }
+                    }
 
+                    filter.FilterOperator = LogicalOperator.Or;
+                    query.Criteria.AddFilter(filter);
                     EntityCollection result1 = objser.RetrieveMultiple(query);
+
+                    foreach (var item in entityId)
+                    {
+                        if (result1.Entities.Count > 0)
+                        {
+                            if (result1.Entities.Where(c => c.Attributes[RetrieveEntityInfo.PrimaryIdAttribute].ToString() == item).FirstOrDefault() == null)
+                            {
+                                Entity result2 = objser.Retrieve(Entity, new Guid(item), query.ColumnSet);
+                                result1.Entities.Add(result2);
+                            }
+                        }
+                        else
+                        {
+                            Entity result2 = objser.Retrieve(Entity, new Guid(item), query.ColumnSet);
+                            result1.Entities.Add(result2);
+                        }
+                    }
+
                     if (result1.Entities.Count > 0)
                     {
 
                         foreach (var z in result1.Entities)
                         {
                             EntityModel info = new EntityModel();
+                            info.EntityUniqueName = Entity;
                             if (z.Attributes.Contains(RetrieveEntityInfo.PrimaryIdAttribute))
                                 info.EntityPrimaryKey = z.Attributes[RetrieveEntityInfo.PrimaryIdAttribute].ToString();
                             if (z.Attributes.Contains(RetrieveEntityInfo.PrimaryNameAttribute))
                                 info.PrimaryFieldValue = z.Attributes[RetrieveEntityInfo.PrimaryNameAttribute].ToString();
+                            // Start Custom Search Filed
+                            List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
+                            if (getSearchedFileds.Count > 0)
+                            {
+
+                                foreach (var field in getSearchedFileds)
+                                {
+                                    if (field.FieldType != "relatedEntity")
+                                    {
+                                        if (z.Attributes.Contains(field.FieldName))
+                                        {
+                                            CustomFieldModel Fields = new CustomFieldModel();
+                                            Fields.FieldLabel = field.FieldLabel;
+                                            if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                            {
+                                                Fields.Value = z.Attributes[field.FieldName].ToString();
+                                            }
+                                            else
+                                            {
+                                                Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                            }
+                                            retSearchFields.Add(Fields);
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            info.CustomFields = retSearchFields;
+                            // End Custom Search Filed
 
                             listToReturn.Add(info);
                         }

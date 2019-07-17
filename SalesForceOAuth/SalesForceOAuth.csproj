@@ -123,6 +123,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
+    <Reference Include="RestSharp, Version=106.6.10.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.10\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Salesforce.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9f7864e53fb79388, processorArchitecture=MSIL">
       <HintPath>..\packages\DeveloperForce.Force.1.3.2\lib\Salesforce.Common.dll</HintPath>
       <Private>True</Private>
@@ -276,6 +279,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogic\DynamicCommon.cs" />
+    <Compile Include="Controllers\AuthenticateController.cs" />
     <Compile Include="Controllers\DYAdminConfigController.cs" />
     <Compile Include="Controllers\DYBackEndFieldsController.cs" />
     <Compile Include="Controllers\DYCaseController.cs" />
@@ -299,6 +303,7 @@
     <Compile Include="Controllers\SFOpportunitiesController.cs" />
     <Compile Include="Controllers\SFSearchFieldsController.cs" />
     <Compile Include="Controllers\SFUsersController.cs" />
+    <Compile Include="Controllers\SugarNewEntityController.cs" />
     <Compile Include="ModelClasses\DynamicClasses.cs" />
     <Compile Include="Models\Case.cs" />
     <Compile Include="Models\CustomObject.cs" />
@@ -437,6 +442,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="LogFile\" />
+    <Folder Include="Views\Authenticate\" />
     <Folder Include="Views\DYBackEndFields\" />
     <Folder Include="Views\DYExportFields\" />
     <Folder Include="Views\DYOrganization\" />

@@ -69,7 +69,7 @@ namespace SalesForceOAuth.Controllers
                     #region Dynamic Inout Fields
                     if (lData.InputFields != null)
                     {
-                        foreach (InputFields inputField in lData.InputFields)
+                        foreach (CustomFieldModel inputField in lData.InputFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -103,7 +103,7 @@ namespace SalesForceOAuth.Controllers
                     var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Account);
                     if (customFields != null)
                     {
-                        foreach (InputFields inputField in customFields)
+                        foreach (CustomFieldModel inputField in customFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -426,7 +426,7 @@ namespace SalesForceOAuth.Controllers
                             if (z.Attributes.Contains("name"))
                                 info.name = z.Attributes["name"].ToString();
                             // Start Custom Search Filed
-                            List<InputFields> retSearchFields = new List<InputFields>();
+                            List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
                             if (getSearchedFileds.Count > 0)
                             {
 
@@ -436,7 +436,7 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         if (z.Attributes.Contains(field.FieldName))
                                         {
-                                            InputFields Fields = new InputFields();
+                                            CustomFieldModel Fields = new CustomFieldModel();
                                             Fields.FieldLabel = field.FieldLabel;
                                             if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
                                             {
@@ -480,7 +480,7 @@ namespace SalesForceOAuth.Controllers
         public string Description { get; set; }
         public string Phone { get; set; }
         public List<CustomObject> CustomFields { get; set; }
-        public List<InputFields> InputFields { get; set; }
+        public List<CustomFieldModel> InputFields { get; set; }
     }
     public class DYContactPostData : MyValidation
     {
@@ -492,7 +492,7 @@ namespace SalesForceOAuth.Controllers
         public string Email { get; set; }
         public string Phone { get; set; }
         public List<CustomObject> CustomFields { get; set; }
-        public List<InputFields> InputFields { get; set; }
+        public List<CustomFieldModel> InputFields { get; set; }
 
     }
 
@@ -524,7 +524,7 @@ namespace SalesForceOAuth.Controllers
         public string address1_telephone1 { get; set; }
         public string emailaddress1 { get; set; }
         public string crmtaskassigneduniqueid { get; set; }
-        public List<InputFields> searchFields { get; set; }
+        public List<CustomFieldModel> searchFields { get; set; }
     }
     public class DYContact
     {
@@ -533,7 +533,7 @@ namespace SalesForceOAuth.Controllers
         public string lastname { get; set; }
         public string email { get; set; }
         public string phone { get; set; }
-        public List<InputFields> searchFields { get; set; }
+        public List<CustomFieldModel> searchFields { get; set; }
         public string Custom1 { get; set; }
         public string Custom2 { get; set; }
         public string Custom3 { get; set; }

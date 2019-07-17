@@ -120,6 +120,41 @@ namespace SalesForceOAuth.Controllers
 
     public class MyAppsDb
     {
+        public static void TagChatSugar(string objectRef, int groupId, int sessionId, string objType, string objId, string ownerId, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_sugar_queue WHERE ObjectRef = '" + objectRef + "' AND GroupId =" + groupId.ToString() + " AND  SessionId = " + sessionId + " AND status = 0";
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd1.ExecuteNonQuery();
+
+                    //string sql = "insert into integration_salesforce_queue(objectRef, groupid, sessionid,object_type, object_id, timestamp,owner_email)";
+                    //sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "', now(), '" + OwnerEmail + "')";
+
+                    //string sql = "insert into integration_dynamics_settings(objectRef, groupId, DYRefreshToken, DYRTCreationDT, DYAccessToken, DYATCreationDT, resource)";
+                    //sql += " values ('" + objectRef + "'," + groupId + ", '" + refreshToken.Trim() + "', now(), '" + accessToken.Trim() + "', now(),'" + resource + "')";
+
+
+                    string sql = "insert into integration_sugar_queue(objectRef, groupid, sessionid,object_type, object_id)";
+                    sql += " values ('" + objectRef + "'," + groupId + ", " + sessionId + ", '" + objType + "', '" + objId + "')";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+
+
+        }
+
         #region SalesForce Methods
 
         public static bool IsSFCredentialsExist(string objectRef, int groupId, string urlReferrer)
@@ -1246,7 +1281,12 @@ namespace SalesForceOAuth.Controllers
                     conn.Open();
                     string sqlDel = "DELETE FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sqlDel, conn);
+
+                    string sqlDel2 = "DELETE FROM integration_dynamic_entity WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    MySqlCommand cmd2 = new MySqlCommand(sqlDel2, conn);
+
                     int rowsDeleted = cmd.ExecuteNonQuery();
+                    cmd2.ExecuteNonQuery();
                     conn.Close();
 
                 }

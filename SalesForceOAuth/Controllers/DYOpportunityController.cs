@@ -64,7 +64,7 @@ namespace SalesForceOAuth.Controllers
                     #region Dynamic Inout Fields
                     if (lData.CustomFields != null)
                     {
-                        foreach (InputFields inputField in lData.CustomFields)
+                        foreach (CustomFieldModel inputField in lData.CustomFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -98,7 +98,7 @@ namespace SalesForceOAuth.Controllers
                     var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Opportunity);
                     if (customFields != null)
                     {
-                        foreach (InputFields inputField in customFields)
+                        foreach (CustomFieldModel inputField in customFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -281,7 +281,7 @@ namespace SalesForceOAuth.Controllers
                             if (z.Attributes.Contains("name"))
                                 info.Name = z.Attributes["name"].ToString();
                             // Start Custom Search Filed
-                            List<InputFields> retSearchFields = new List<InputFields>();
+                            List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
                             if (getSearchedFileds.Count > 0)
                             {
 
@@ -291,7 +291,7 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         if (z.Attributes.Contains(field.FieldName))
                                         {
-                                            InputFields Fields = new InputFields();
+                                            CustomFieldModel Fields = new CustomFieldModel();
                                             Fields.FieldLabel = field.FieldLabel;
                                             if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
                                             {

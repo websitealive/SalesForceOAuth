@@ -62,7 +62,7 @@ namespace SalesForceOAuth.Controllers
                 #region Dynamic Inout Fields
                 if (lData.InputFields != null)
                 {
-                    foreach (InputFields inputField in lData.InputFields)
+                    foreach (CustomFieldModel inputField in lData.InputFields)
                     {
                         if (inputField.Value != null)
                         {
@@ -263,7 +263,7 @@ namespace SalesForceOAuth.Controllers
         public string Phone { get; set; }
         public string OwnerEmail { get; set; }
         public List<CustomObject> CustomFields { get; set; }
-        public List<InputFields> InputFields { get; set; }
+        public List<CustomFieldModel> InputFields { get; set; }
     }
 
     public class MyContact

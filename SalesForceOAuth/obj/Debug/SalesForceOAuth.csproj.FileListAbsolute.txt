@@ -161,6 +161,7 @@ D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Wo
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Tooling.Connector.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Newtonsoft.Json.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Owin.dll
+D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\RestSharp.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Salesforce.Common.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Salesforce.Force.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Net.Http.Formatting.dll
@@ -191,6 +192,7 @@ D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.De
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Sdk.Workflow.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Xrm.Tooling.Connector.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\Newtonsoft.Json.xml
+D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\RestSharp.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Cors.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Net.Http.Formatting.xml
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Helpers.xml

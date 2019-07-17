@@ -26,7 +26,6 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public async System.Threading.Tasks.Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
         {
-            #region code for post add message
             //check payload if a right jwt token is submitted
             string outputPayload;
             try
@@ -57,23 +56,23 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
 
-                string ChatEntityName = string.Empty;
-                string RelationField = string.Empty;
-                if (lData.EntitytType.ToLower() == "account")
-                {
-                    RelationField = "ayu_accountid";
-                    ChatEntityName = "ayu_alive5sms";
-                }
-                else if (lData.EntitytType.ToLower() == "contact")
-                {
-                    RelationField = "ayu_contactid";
-                    ChatEntityName = "ayu_contactalive5sms";
-                }
-                else
-                {
-                    RelationField = "ayu_leadid";
-                    ChatEntityName = "ayu_leadalive5sms";
-                }
+                //string ChatEntityName = string.Empty;
+                //string RelationField = string.Empty;
+                //if (lData.EntitytType.ToLower() == "account")
+                //{
+                //    RelationField = "ayu_accountid";
+                //    ChatEntityName = "ayu_alive5sms";
+                //}
+                //else if (lData.EntitytType.ToLower() == "contact")
+                //{
+                //    RelationField = "ayu_contactid";
+                //    ChatEntityName = "ayu_contactalive5sms";
+                //}
+                //else
+                //{
+                //    RelationField = "ayu_leadid";
+                //    ChatEntityName = "ayu_leadalive5sms";
+                //}
                 Guid newChatId = Guid.Empty;
                 PostedObjectDetail pObject = new PostedObjectDetail();
                 string HeadingSms = " App: " + lData.App + " |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |  Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
@@ -85,15 +84,12 @@ namespace SalesForceOAuth.Controllers
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
-                        #region set properties
                         IOrganizationService objser = (IOrganizationService)proxyservice;
-                        Entity registration = new Entity(ChatEntityName);
-                        registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                        registration["ayu_name"] = lData.OwnerEmail ?? (lData.OwnerPhone ?? lData.OwnerName);
-                        registration["ayu_app"] = lData.App;
-                        registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                        #endregion set properties
-                        newChatId = objser.Create(registration);
+                        Entity note = new Entity("annotation");
+                        note["subject"] = lData.Subject;
+                        note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                        note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+                        newChatId = objser.Create(note);
                     }
                     if (newChatId != Guid.Empty)
                     {
@@ -114,34 +110,29 @@ namespace SalesForceOAuth.Controllers
                 else
                 {
                     // Update the Previous chat
-                    ColumnSet cols = new ColumnSet(new String[] { "ayu_alive5sms" });
+                    ColumnSet cols = new ColumnSet(new String[] { "notetext" });
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
                         try
                         {
-                            Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
+                            //Entity retrievedChats3 = proxyservice.Retrieve()
+
+                            Entity retrievedChats = proxyservice.Retrieve("annotation", new Guid(ChatId), cols);
                             var newChats = lData.Message;
-                            retrievedChats.Attributes["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                            retrievedChats.Attributes["notetext"] = retrievedChats.Attributes["notetext"] + "\r\n" + newChats.Replace("&#39;", "'");
                             proxyservice.Update(retrievedChats);
                         }
                         catch (Exception)
                         {
-                            #region set properties
                             IOrganizationService objser = (IOrganizationService)proxyservice;
-                            Entity registration = new Entity(ChatEntityName);
-                            registration[RelationField] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                            registration["ayu_name"] = lData.OwnerEmail ?? (lData.OwnerPhone ?? lData.OwnerName);
-                            registration["ayu_app"] = lData.App;
-                            registration["ayu_alive5sms"] = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                            #endregion set properties
-                            newChatId = objser.Create(registration);
+                            Entity note = new Entity("annotation");
+                            note["subject"] = lData.Subject;
+                            note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+                            newChatId = objser.Create(note);
                         }
 
-                        // Entity retrievedChats = proxyservice.Retrieve(ChatEntityName, new Guid(ChatId), cols);
-                        // var newChats = lData.Message;
-                        // retrievedChats.Attributes["ayu_alive5sms"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
-                        // proxyservice.Update(retrievedChats);
                     }
                     if (newChatId != Guid.Empty)
                     {
@@ -167,7 +158,6 @@ namespace SalesForceOAuth.Controllers
                     }
                 }
 
-                #endregion code for post add message  
 
             }
             catch (Exception ex)

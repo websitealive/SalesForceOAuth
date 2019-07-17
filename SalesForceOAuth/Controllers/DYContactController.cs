@@ -79,7 +79,7 @@ namespace SalesForceOAuth.Controllers
                     #region Dynamic Inout Fields
                     if (lData.InputFields != null)
                     {
-                        foreach (InputFields inputField in lData.InputFields)
+                        foreach (CustomFieldModel inputField in lData.InputFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -115,7 +115,7 @@ namespace SalesForceOAuth.Controllers
                     var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Contact);
                     if (customFields != null)
                     {
-                        foreach (InputFields inputField in customFields)
+                        foreach (CustomFieldModel inputField in customFields)
                         {
                             if (inputField.Value != null)
                             {
@@ -446,14 +446,14 @@ namespace SalesForceOAuth.Controllers
                             }
 
                             // Start Custom Search Filed
-                            List<InputFields> retSearchFields = new List<InputFields>();
+                            List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
                             if (getSearchedFileds.Count > 0)
                             {
                                 foreach (var field in getSearchedFileds)
                                 {
                                     if (z.Attributes.Contains(field.FieldName))
                                     {
-                                        InputFields Fields = new InputFields();
+                                        CustomFieldModel Fields = new CustomFieldModel();
                                         Fields.FieldLabel = field.FieldLabel;
                                         if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
                                         {

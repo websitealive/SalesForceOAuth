@@ -75,7 +75,7 @@ namespace SalesForceOAuth.Controllers
                             post["source"] = new OptionSetValue(2);
                             post["type"] = new OptionSetValue(4);
 
-                            Entity task = new Entity("task");
+                            // Entity task = new Entity("task");
                             // Notes
                             Entity note = new Entity("annotation");
 
@@ -154,7 +154,7 @@ namespace SalesForceOAuth.Controllers
                                 //task["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 //newChatId = objser.Create(task);
 
-                                note["subject"] = "AliveChat ID: " + lData.SessionId + " (" + DateTime.Today.ToShortDateString() + " @ " + DateTime.Today.ToShortTimeString() + ")";
+                                note["subject"] = lData.Subject;
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 newChatId = objser.Create(note);
@@ -164,9 +164,6 @@ namespace SalesForceOAuth.Controllers
                             if (newChatId != Guid.Empty)
                             {
                                 IsChatPushed = true;
-                                post["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
-                                post["text"] = postMessage;
-                                Guid newPostID = objser.Create(post);
                                 if (getBackEndFeields.Count > 0)
                                 {
                                     Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
@@ -176,6 +173,10 @@ namespace SalesForceOAuth.Controllers
                                     }
                                     objser.Update(parentEntity);
                                 }
+
+                                post["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                post["text"] = postMessage;
+                                Guid newPostID = objser.Create(post);
 
                                 PostedObjectDetail pObject = new PostedObjectDetail();
                                 pObject.Id = newChatId.ToString();

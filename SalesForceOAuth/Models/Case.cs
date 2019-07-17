@@ -15,6 +15,6 @@ namespace SalesForceOAuth.Models
 
         public string CustomerName { get; set; }
 
-        public List<InputFields> CustomFields { get; set; }
+        public List<CustomFieldModel> CustomFields { get; set; }
     }
 }

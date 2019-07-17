@@ -11,96 +11,96 @@ namespace SalesForceOAuth
 {
     public class Repository
     {
-        public static List<ExportFieldModel> GetDefaultFields(string entityName, Crm crmType)
-        {
-            List<ExportFieldModel> defaultColumn = new List<ExportFieldModel>();
+        //public static List<CustomFieldModel> GetDefaultFields(string entityName, Crm crmType)
+        //{
+        //    List<CustomFieldModel> defaultColumn = new List<CustomFieldModel>();
 
-            //Add Default Fields
-            if (entityName.ToLower() == "lead")
-            {
-                if (crmType == Crm.Dynamic)
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "Subject", FieldName = "subject" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
-                        new ExportFieldModel { Sr = 3, FiledLabel = "Company", FieldName = "companyname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
-                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
-                        new ExportFieldModel { Sr = 5, FiledLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 }
-                    });
-                }
-                else
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default"  , BusinessRequired = 1 , MaxLength = 25 },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Company", FieldName = "Company", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 3, FiledLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                    });
-                }
+        //    //Add Default Fields
+        //    if (entityName.ToLower() == "lead")
+        //    {
+        //        if (crmType == Crm.Dynamic)
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "Subject", FieldName = "subject" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+        //                new CustomFieldModel { Sr = 3, FieldLabel = "Company", FieldName = "companyname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+        //                new CustomFieldModel { Sr = 4, FieldLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 },
+        //                new CustomFieldModel { Sr = 5, FieldLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25 }
+        //            });
+        //        }
+        //        else
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default"  , BusinessRequired = 1 , MaxLength = 25 },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Company", FieldName = "Company", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 3, FieldLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 4, FieldLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //            });
+        //        }
 
-            }
-            if (entityName.ToLower() == "contact")
-            {
-                if (crmType == Crm.Dynamic)
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 3, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
-                    });
-                }
-                else
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 3, FiledLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 4, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 5, FiledLabel = "AccountId", FieldName = "AccountId", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
-                    });
-                }
-            }
-            if (entityName.ToLower() == "account")
-            {
-                if (crmType == Crm.Dynamic)
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "Account Name", FieldName = "name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "Account Number", FieldName = "accountnumber", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 3, FiledLabel = "Description", FieldName = "description", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
-                    });
-                }
-                else
-                {
-                    defaultColumn.AddRange(
-                    new ExportFieldModel[] {
-                        new ExportFieldModel { Sr = 0, FiledLabel = "AccountNumber", FieldName = "AccountNumber" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 1, FiledLabel = "Account Name", FieldName = "Name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                        new ExportFieldModel { Sr = 2, FiledLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
-                    });
-                }
+        //    }
+        //    if (entityName.ToLower() == "contact")
+        //    {
+        //        if (crmType == Crm.Dynamic)
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "First Name", FieldName = "firstname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Email", FieldName = "emailaddress1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 3, FieldLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+        //            });
+        //        }
+        //        else
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "FirstName", FieldName = "FirstName" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "Last Name", FieldName = "LastName", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Last Name", FieldName = "lastname", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 3, FieldLabel = "Email", FieldName = "Email", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 4, FieldLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 5, FieldLabel = "AccountId", FieldName = "AccountId", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+        //            });
+        //        }
+        //    }
+        //    if (entityName.ToLower() == "account")
+        //    {
+        //        if (crmType == Crm.Dynamic)
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "Account Name", FieldName = "name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "Account Number", FieldName = "accountnumber", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Phone", FieldName = "telephone1", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 3, FieldLabel = "Description", FieldName = "description", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  }
+        //            });
+        //        }
+        //        else
+        //        {
+        //            defaultColumn.AddRange(
+        //            new CustomFieldModel[] {
+        //                new CustomFieldModel { Sr = 0, FieldLabel = "AccountNumber", FieldName = "AccountNumber" , FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 1, FieldLabel = "Account Name", FieldName = "Name", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //                new CustomFieldModel { Sr = 2, FieldLabel = "Phone", FieldName = "Phone", FieldType = "Default" , BusinessRequired = 1 , MaxLength = 25  },
+        //            });
+        //        }
 
-            }
-            //End Add Default Fields
+        //    }
+        //    //End Add Default Fields
 
-            return defaultColumn;
-        }
+        //    return defaultColumn;
+        //}
 
         #region Dynamic Custom Fields
 
-        public static List<ExportFields> GetDYFormExportFields(string objectRef, int groupId, string urlReferrer)
+        public static List<CustomFields> GetDYFormExportFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<ExportFields> returnFileds = new List<ExportFields>();
+            List<CustomFields> returnFileds = new List<CustomFields>();
             //var counter = GetDefaultFields(entityName, Crm.Dynamic).Count;
             //returnFileds.AddRange(GetDefaultFields(entityName, Crm.Dynamic));
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
@@ -116,69 +116,45 @@ namespace SalesForceOAuth
                     {
                         if (rdr.HasRows)
                         {
-                            ExportFields contactExportFields = new ExportFields();
-                            contactExportFields.Entity = "Contact";
-                            ExportFields leadExportFields = new ExportFields();
-                            leadExportFields.Entity = "Lead";
-                            ExportFields accountExportFields = new ExportFields();
-                            accountExportFields.Entity = "Account";
-
-                            List<ExportFieldModel> contactFieldsList = new List<ExportFieldModel>();
-                            List<ExportFieldModel> leadFieldsList = new List<ExportFieldModel>();
-                            List<ExportFieldModel> accountFieldsList = new List<ExportFieldModel>();
-
                             while (rdr.Read())
                             {
-                                if (rdr["entityname"].ToString().Trim().ToLower() == "contact")
+                                CustomFieldModel exportFieldsList = new CustomFieldModel();
+                                exportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                exportFieldsList.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                exportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                exportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+
+                                List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
+                                fieldsList.Add(exportFieldsList);
+
+                                if (returnFileds.Count == 0)
                                 {
-                                    ExportFieldModel contactExportFieldsList = new ExportFieldModel();
-                                    // contactExportFieldsList.FieldType = "Custom";
-                                    contactExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
-                                    contactExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    contactExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    contactExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    contactExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-
-                                    contactExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
-                                    contactExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
-                                    contactFieldsList.Add(contactExportFieldsList);
+                                    returnFileds.Add(new CustomFields()
+                                    {
+                                        Entity = rdr["entityname"].ToString().Trim().ToLower(),
+                                        CustomFieldsList = fieldsList
+                                    });
                                 }
-                                if (rdr["entityname"].ToString().Trim().ToLower() == "lead")
+                                else
                                 {
-                                    ExportFieldModel leadExportFieldsList = new ExportFieldModel();
-                                    // leadExportFieldsList.FieldType = "Custom";
-                                    leadExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
-                                    leadExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    leadExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    leadExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    leadExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-
-                                    leadExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
-                                    leadExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
-                                    leadFieldsList.Add(leadExportFieldsList);
+                                    CustomFields customField = returnFileds.FirstOrDefault(e => e.Entity == rdr["entityname"].ToString().Trim().ToLower());
+                                    if (customField == null)
+                                    {
+                                        returnFileds.Add(new CustomFields()
+                                        {
+                                            Entity = rdr["entityname"].ToString().Trim().ToLower(),
+                                            CustomFieldsList = fieldsList
+                                        });
+                                    }
+                                    else
+                                    {
+                                        customField.CustomFieldsList.Add(exportFieldsList);
+                                    }
                                 }
-                                if (rdr["entityname"].ToString().Trim().ToLower() == "account")
-                                {
-                                    ExportFieldModel accountExportFieldsList = new ExportFieldModel();
-                                    // accountExportFieldsList.FieldType = "Custom";
-                                    accountExportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
-                                    accountExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    accountExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    accountExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    accountExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-
-                                    accountExportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
-                                    accountExportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
-                                    accountFieldsList.Add(accountExportFieldsList);
-                                }
-
                             }
-                            contactExportFields.ExportFieldsList = contactFieldsList;
-                            returnFileds.Add(contactExportFields);
-                            leadExportFields.ExportFieldsList = leadFieldsList;
-                            returnFileds.Add(leadExportFields);
-                            accountExportFields.ExportFieldsList = accountFieldsList;
-                            returnFileds.Add(accountExportFields);
                         }
                         rdr.Close();
                     }
@@ -291,9 +267,9 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static List<InputFields> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, EntityName entity)
+        public static List<CustomFieldModel> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, EntityName entity)
         {
-            List<InputFields> returnFileds = new List<InputFields>();
+            List<CustomFieldModel> returnFileds = new List<CustomFieldModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -311,7 +287,7 @@ namespace SalesForceOAuth
                             {
                                 if (rdr["entityname"].ToString().Trim().ToLower() == entity.ToString().ToLower())
                                 {
-                                    InputFields customInputFields = new InputFields();
+                                    CustomFieldModel customInputFields = new CustomFieldModel();
                                     customInputFields.FieldName = rdr["fieldname"].ToString().Trim();
                                     customInputFields.Value = rdr["valuedetail"].ToString().Trim();
                                     returnFileds.Add(customInputFields);
@@ -1220,12 +1196,9 @@ namespace SalesForceOAuth
 
         #region SaleForce Custom Fields
 
-        public static List<ExportFields> GetSFFormExportFields(string objectRef, int groupId, string urlReferrer)
+        public static List<CustomFields> GetSFFormExportFields(string objectRef, int groupId, string urlReferrer)
         {
-            List<ExportFields> returnFileds = new List<ExportFields>();
-            var counter = 1;
-            // var counter = GetDefaultFields(entityName, Crm.SalesForce).Count;
-            // returnFileds.AddRange(GetDefaultFields(entityName, Crm.SalesForce));
+            List<CustomFields> returnFileds = new List<CustomFields>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -1238,57 +1211,95 @@ namespace SalesForceOAuth
                     {
                         if (rdr.HasRows)
                         {
-                            ExportFields contactExportFields = new ExportFields();
-                            contactExportFields.Entity = "Contact";
-                            ExportFields leadExportFields = new ExportFields();
-                            leadExportFields.Entity = "Lead";
-                            ExportFields accountExportFields = new ExportFields();
-                            accountExportFields.Entity = "Account";
-
-                            List<ExportFieldModel> contactFieldsList = new List<ExportFieldModel>();
-                            List<ExportFieldModel> leadFieldsList = new List<ExportFieldModel>();
-                            List<ExportFieldModel> accountFieldsList = new List<ExportFieldModel>();
-
-
                             while (rdr.Read())
                             {
-                                if (rdr["entity_name"].ToString().Trim().ToLower() == "contact")
+                                CustomFieldModel exportFieldsList = new CustomFieldModel();
+                                exportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                exportFieldsList.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+
+                                List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
+                                fieldsList.Add(exportFieldsList);
+
+                                if (returnFileds.Count == 0)
                                 {
-                                    ExportFieldModel contactExportFieldsList = new ExportFieldModel();
-                                    contactExportFieldsList.FieldType = "Custom";
-                                    contactExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    contactExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    contactExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    contactExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                                    contactFieldsList.Add(contactExportFieldsList);
+                                    returnFileds.Add(new CustomFields()
+                                    {
+                                        Entity = rdr["entity_name"].ToString().Trim().ToLower(),
+                                        CustomFieldsList = fieldsList
+                                    });
                                 }
-                                if (rdr["entity_name"].ToString().Trim().ToLower() == "lead")
+                                else
                                 {
-                                    ExportFieldModel leadExportFieldsList = new ExportFieldModel();
-                                    leadExportFieldsList.FieldType = "Custom";
-                                    leadExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    leadExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    leadExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    leadExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                                    leadFieldsList.Add(leadExportFieldsList);
-                                }
-                                if (rdr["entity_name"].ToString().Trim().ToLower() == "account")
-                                {
-                                    ExportFieldModel accountExportFieldsList = new ExportFieldModel();
-                                    accountExportFieldsList.FieldType = "Custom";
-                                    accountExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                                    accountExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                                    accountExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                                    accountExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                                    accountFieldsList.Add(accountExportFieldsList);
+                                    CustomFields chk = returnFileds.FirstOrDefault(e => e.Entity == rdr["entity_name"].ToString().Trim().ToLower());
+                                    if (chk == null)
+                                    {
+                                        returnFileds.Add(new CustomFields()
+                                        {
+                                            Entity = rdr["entity_name"].ToString().Trim().ToLower(),
+                                            CustomFieldsList = fieldsList
+                                        });
+                                    }
+                                    else
+                                    {
+                                        chk.CustomFieldsList.Add(exportFieldsList);
+                                    }
                                 }
                             }
-                            contactExportFields.ExportFieldsList = contactFieldsList;
-                            returnFileds.Add(contactExportFields);
-                            leadExportFields.ExportFieldsList = leadFieldsList;
-                            returnFileds.Add(leadExportFields);
-                            accountExportFields.ExportFieldsList = accountFieldsList;
-                            returnFileds.Add(accountExportFields);
+
+                            //ExportFields contactExportFields = new ExportFields();
+                            //contactExportFields.Entity = "Contact";
+                            //ExportFields leadExportFields = new ExportFields();
+                            //leadExportFields.Entity = "Lead";
+                            //ExportFields accountExportFields = new ExportFields();
+                            //accountExportFields.Entity = "Account";
+
+                            //List<ExportFieldModel> contactFieldsList = new List<ExportFieldModel>();
+                            //List<ExportFieldModel> leadFieldsList = new List<ExportFieldModel>();
+                            //List<ExportFieldModel> accountFieldsList = new List<ExportFieldModel>();
+
+
+                            //while (rdr.Read())
+                            //{
+                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "contact")
+                            //    {
+                            //        ExportFieldModel contactExportFieldsList = new ExportFieldModel();
+                            //        contactExportFieldsList.FieldType = "Custom";
+                            //        contactExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                            //        contactExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                            //        contactExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                            //        contactExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                            //        contactFieldsList.Add(contactExportFieldsList);
+                            //    }
+                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "lead")
+                            //    {
+                            //        ExportFieldModel leadExportFieldsList = new ExportFieldModel();
+                            //        leadExportFieldsList.FieldType = "Custom";
+                            //        leadExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                            //        leadExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                            //        leadExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                            //        leadExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                            //        leadFieldsList.Add(leadExportFieldsList);
+                            //    }
+                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "account")
+                            //    {
+                            //        ExportFieldModel accountExportFieldsList = new ExportFieldModel();
+                            //        accountExportFieldsList.FieldType = "Custom";
+                            //        accountExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
+                            //        accountExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                            //        accountExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                            //        accountExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                            //        accountFieldsList.Add(accountExportFieldsList);
+                            //    }
+                            //}
+                            //contactExportFields.ExportFieldsList = contactFieldsList;
+                            //returnFileds.Add(contactExportFields);
+                            //leadExportFields.ExportFieldsList = leadFieldsList;
+                            //returnFileds.Add(leadExportFields);
+                            //accountExportFields.ExportFieldsList = accountFieldsList;
+                            //returnFileds.Add(accountExportFields);
                         }
                         rdr.Close();
                     }
@@ -2466,6 +2477,7 @@ namespace SalesForceOAuth
                                 entity.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
                                 entity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 entity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
+                                entity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
                                 returnEntityList.Add(entity);
                             }
                         }
@@ -2542,7 +2554,7 @@ namespace SalesForceOAuth
                             while (rdr.Read())
                             {
                                 //returnEntitySettings.EntityUniqueName = rdr["entity_name"].ToString().Trim();
-                                //returnEntitySettings.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
+                                returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 // returnEntitySettings.PrimaryFieldValue = rdr["entity_primary_field_display_name"].ToString().Trim();
 
