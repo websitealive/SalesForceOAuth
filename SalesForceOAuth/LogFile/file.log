@@ -1477,3 +1477,4 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 7/15/2019 4:54:56 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 7/15/2019 4:56:50 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 7/15/2019 4:58:14 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+7/18/2019 10:54:40 AM ==> Function: CRM-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.

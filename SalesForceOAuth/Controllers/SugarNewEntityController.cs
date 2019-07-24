@@ -1,6 +1,7 @@
+using CRM.Dto;
+using CRM.WebServices;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -53,34 +54,22 @@ namespace SalesForceOAuth.Controllers
         [HttpPost]
         public HttpResponseMessage PostSugarChat(MessageData data)
         {
-            //int Entity_id = getIDOfEntity(GroupId, ObjectRef, SessionId, Message);
-            object Entity_id = getIDOfEntity(data);
-
-            var client = new RestClient("https://zensyi0756.trial.sugarcrm.com/rest/v10/");
-            //var request = new RestRequest("Leads/b99bfc08-a812-11e9-b152-024e8f81e1a2", Method.PUT);
-            var request = new RestRequest("Leads/" + Entity_id, Method.PUT);
-
-            request.AddHeader("Cache-Control", "no-cache");
-
-
-            string auth_token = auth_Token();
-            request.AddHeader("OAuth-Token", auth_token);
-
-            var updatedFields = new Dictionary<string, string>();
-            var message1 = data.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-            //updatedFields.Add("chatdescription_c", data.Message);
-            updatedFields.Add("chatdescription_c", message1);
-            request.AddJsonBody(updatedFields);
-            var response = client.Execute(request);
-
-            return null;
+            CRMUser user = Repository.GetCrmCreditionalsDetail(data.ObjectRef, data.GroupId, Request.RequestUri.Authority.ToString(), CrmType.Sugar);
+            string Entity_id = getIDOfEntity(data);
+            CrmEntity entity = new CrmEntity()
+            {
+                EntityId = Entity_id,
+                EntityName = "Leads",
+                Message = data.Message.Replace("|", "\r\n").Replace("&#39;", "'")
+            };
+            string message = Sugar.UpdateEntity(user, entity);
+            return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
         }
 
-        public object getIDOfEntity(MessageData data)
-        //public int getIDOfEntity(int GroupId, string ObjectRef, int SessionId, string Message)
+        public string getIDOfEntity(MessageData data)
         {
             string urlReferrer = Request.RequestUri.Authority.ToString();
-            object Entity_id = null;
+            string Entity_id = null;
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, data.ObjectRef/*ObjectRef*/);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -96,7 +85,7 @@ namespace SalesForceOAuth.Controllers
                         {
                             while (rdr.Read())
                             {
-                                Entity_id = (rdr["object_id"]);
+                                Entity_id = (rdr["object_id"].ToString().Trim());
                                 //itemType = rdr["object_type"].ToString().Trim();
                                 //itemId = rdr["object_id"].ToString().Trim();
                                 //ownerEmail = rdr["owner_email"].ToString().Trim();

@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using CRM.Dto;
+using MySql.Data.MySqlClient;
 using SalesForceOAuth.Controllers;
 using SalesForceOAuth.Models;
 using System;
@@ -2576,6 +2577,167 @@ namespace SalesForceOAuth
                 }
             }
             return returnEntity;
+        }
+
+        #endregion
+
+        #region Crm
+        public static void AddCrmCreditionals(CRMUser crmUser)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(crmUser.UrlReferrer, crmUser.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "insert into integration_crm_authentication(objectref, groupid, username, password, api_url, access_token, refresh_token, crm_type)";
+                    sql += "VALUES ('" + crmUser.ObjectRef + "','" + crmUser.GroupId + "','" + crmUser.UserName + "','" + crmUser.Password + "','" + crmUser.ApiUrl + "','" + crmUser.OuthDetail.access_token + "','" + crmUser.OuthDetail.refresh_token + "','" + crmUser.CrmType + "')";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static bool IsCrmAuthenticated(string objectRef, int groupId, string urlReferrer, CrmType crm)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_crm_authentication WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (!rdr.HasRows)
+                        {
+
+                            rdr.Close();
+                            conn.Close();
+                            return false;
+                        }
+                        else
+                        {
+                            // crmUser = null;
+                            rdr.Close();
+                            conn.Close();
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static CRMUser GetCrmCreditionalsDetail(string objectRef, int groupId, string urlReferrer, CrmType crm)
+        {
+            CRMUser returnCrmUser = new CRMUser();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_crm_authentication WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnCrmUser.ApiUrl = rdr["api_url"].ToString().Trim();
+                                returnCrmUser.UserName = rdr["username"].ToString().Trim();
+                                returnCrmUser.Password = rdr["password"].ToString().Trim();
+
+                            }
+                        }
+                        rdr.Close();
+                        conn.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnCrmUser;
+        }
+
+        public static void RemoveCrmAuthentication(string objectRef, int groupId, string urlReferrer, CrmType crm)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_crm_authentication WHERE objectref = '" + objectRef + "' AND groupid = " + groupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sqlDel, conn);
+
+                    int rowsDeleted = cmd.ExecuteNonQuery();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static IntegrationConstants GetIntegrationConstants(string objectRef, string urlReferrer, CrmType crmType, AppType appType)
+        {
+            IntegrationConstants integrationConstants = new IntegrationConstants();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integrations_crm_constants WHERE crm_type = '" + crmType + "' AND app_type = '" + appType + "' ";
+                    //string sql = "SELECT * FROM apps.integrations_crm_constants where crm_type = 'HubSpot' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                integrationConstants.ClientId = rdr["client_id"].ToString().Trim();
+                                integrationConstants.SecretKey = rdr["client_secret"].ToString().Trim();
+                                integrationConstants.CrmType = (CrmType)Enum.Parse(typeof(CrmType), rdr["crm_type"].ToString().Trim());
+                                integrationConstants.AppType = (AppType)Enum.Parse(typeof(AppType), rdr["app_type"].ToString().Trim());
+                                integrationConstants.RedirectedUrl = rdr["redirect_url"].ToString().Trim();
+                                integrationConstants.AuthorizationUrl = rdr["authorization_url"].ToString().Trim();
+                                integrationConstants.ApiUrl = rdr["api_url"].ToString().Trim();
+
+                            }
+                        }
+                        rdr.Close();
+                        conn.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return integrationConstants;
         }
 
         #endregion
