@@ -1478,3 +1478,17 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 7/15/2019 4:56:50 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 7/15/2019 4:58:14 PM ==> Function: SFChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
 7/18/2019 10:54:40 AM ==> Function: CRM-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+7/30/2019 2:44:10 PM ==> Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel 
+7/30/2019 2:46:03 PM ==> Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel 
+7/30/2019 2:48:04 PM ==> Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel 
+7/30/2019 3:03:49 PM ==> No Chat in queue to publish
+7/30/2019 3:28:38 PM ==> No Chat in queue to publish
+7/30/2019 3:48:57 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'account' entity doesn't contain attribute with Name = 'Fax'.
+7/30/2019 3:51:02 PM ==> No Chat in queue to publish
+7/30/2019 3:54:04 PM ==> No Chat in queue to publish
+7/30/2019 4:31:24 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: accounts
+7/30/2019 4:33:34 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: accounts
+7/30/2019 4:47:12 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: 'account' entity doesn't contain attribute with Name = 'Fax'.
+7/31/2019 2:13:27 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
+7/31/2019 2:15:06 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+7/31/2019 2:21:37 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.

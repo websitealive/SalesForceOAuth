@@ -141,6 +141,8 @@ namespace SalesForceOAuth.Models
         public int AllowContactCreation { get; set; }
         public int AllowLeadCreation { get; set; }
         public int UseAliveChat { get; set; }
+        public string SaveChatsTo { get; set; }
+        public string CustomActivityName { get; set; }
     }
 
     public class DefaultFieldSettings : DYOrganizationDetail

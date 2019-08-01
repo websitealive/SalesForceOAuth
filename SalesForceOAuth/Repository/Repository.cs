@@ -1060,6 +1060,8 @@ namespace SalesForceOAuth
                                 returnEntitySettings.AllowContactCreation = Convert.ToInt32(rdr["allow_contacts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowLeadCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
                                 returnEntitySettings.UseAliveChat = Convert.ToInt32(rdr["use_alive_chat"].ToString().Trim());
+                                returnEntitySettings.SaveChatsTo = rdr["chat_save_to"].ToString().Trim();
+                                returnEntitySettings.CustomActivityName = rdr["custom_activity_name"].ToString().Trim();
                             }
                         }
                         rdr.Close();

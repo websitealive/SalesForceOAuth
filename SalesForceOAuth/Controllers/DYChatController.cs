@@ -75,10 +75,7 @@ namespace SalesForceOAuth.Controllers
                             post["source"] = new OptionSetValue(2);
                             post["type"] = new OptionSetValue(4);
 
-                            // Entity task = new Entity("task");
-                            // Notes
-                            Entity note = new Entity("annotation");
-
+                            OwnerId = "0724a062-ddcd-e711-81af-0e4fcc581ae9";
                             if (OwnerId != "")
                             {
                                 ColumnSet entityColumn = new ColumnSet();
@@ -91,32 +88,31 @@ namespace SalesForceOAuth.Controllers
                             {
                                 postMessage = "AliveChat ID: " + lData.SessionId + " is Created.";
                             }
-
-                            if (ItemType.Contains("account"))
-                            {
-                                chatEntity = "ayu_alivechat";
-                                parentLookupField = "ayu_account";
-                            }
-                            else if (ItemType.Contains("lead"))
-                            {
-                                chatEntity = "ayu_leadalivechat";
-                                parentLookupField = "ayu_leadid";
-                            }
-                            else if (ItemType.Contains("contact"))
-                            {
-                                chatEntity = "ayu_contactalivechat";
-                                parentLookupField = "ayu_contactid";
-                            }
-                            else
-                            {
-                                chatEntity = "ayu_chat";
-                                parentLookupField = "ayu_" + ItemType + "id";
-                            }
-
                             #endregion
 
-                            if (entitySettings.UseAliveChat == 1)
+                            if (entitySettings.SaveChatsTo == "alivechat_entity")
                             {
+                                if (ItemType.Contains("account"))
+                                {
+                                    chatEntity = "ayu_alivechat";
+                                    parentLookupField = "ayu_account";
+                                }
+                                else if (ItemType.Contains("lead"))
+                                {
+                                    chatEntity = "ayu_leadalivechat";
+                                    parentLookupField = "ayu_leadid";
+                                }
+                                else if (ItemType.Contains("contact"))
+                                {
+                                    chatEntity = "ayu_contactalivechat";
+                                    parentLookupField = "ayu_contactid";
+                                }
+                                else
+                                {
+                                    chatEntity = "ayu_chat";
+                                    parentLookupField = "ayu_" + ItemType + "id";
+                                }
+
                                 ConditionExpression filterOwnRcd = new ConditionExpression();
                                 filterOwnRcd.AttributeName = "uniquename";
                                 filterOwnRcd.Operator = ConditionOperator.Equal;
@@ -147,13 +143,17 @@ namespace SalesForceOAuth.Controllers
                                     newChatId = Guid.Empty;
                                 }
                             }
+                            else if (entitySettings.SaveChatsTo == "custom_activity_type")
+                            {
+                                Entity task2 = new Entity(entitySettings.CustomActivityName);
+                                task2["subject"] = "AliveChat ID: " + lData.SessionId;
+                                task2["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                task2["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                newChatId = objser.Create(task2);
+                            }
                             else
                             {
-                                //task["subject"] = "AliveChat ID: " + lData.SessionId;
-                                //task["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                                //task["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
-                                //newChatId = objser.Create(task);
-
+                                Entity note = new Entity("annotation");
                                 note["subject"] = lData.Subject;
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
@@ -194,7 +194,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
-                        MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "No Chat in queue to publish");
+                        // MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "No Chat in queue to publish");
                         return MyAppsDb.ConvertJSONOutput("No Chat in queue to publish", HttpStatusCode.InternalServerError, true);
                     }
                     #endregion code for post add message
@@ -204,7 +204,7 @@ namespace SalesForceOAuth.Controllers
                     string msg = string.Empty;
                     if (IsChatPushed)
                     {
-                        msg = "Request Completed with some errors. Errors :" + ex.Message;
+                        msg = "Request Completed with some errors. Errors :" + ex.Message.Replace("'", " ");
                     }
                     else
                     {

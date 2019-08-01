@@ -88,16 +88,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/17/2019 16:16:59</publishTime>
     </File>
     <File Include="bin/CRM.Dto.dll">
-      <publishTime>07/24/2019 14:35:23</publishTime>
+      <publishTime>07/30/2019 15:56:57</publishTime>
     </File>
     <File Include="bin/CRM.Dto.pdb">
-      <publishTime>07/24/2019 14:35:23</publishTime>
+      <publishTime>07/30/2019 15:56:57</publishTime>
     </File>
     <File Include="bin/CRM.WebServices.dll">
-      <publishTime>07/24/2019 14:35:23</publishTime>
+      <publishTime>07/30/2019 15:56:58</publishTime>
     </File>
     <File Include="bin/CRM.WebServices.pdb">
-      <publishTime>07/24/2019 14:35:23</publishTime>
+      <publishTime>07/30/2019 15:56:58</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>07/17/2019 16:17:02</publishTime>
@@ -253,10 +253,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/17/2019 16:17:01</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
-      <publishTime>07/24/2019 15:33:41</publishTime>
+      <publishTime>07/31/2019 16:02:40</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.pdb">
-      <publishTime>07/24/2019 15:33:41</publishTime>
+      <publishTime>07/31/2019 16:02:40</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>07/17/2019 16:17:02</publishTime>
