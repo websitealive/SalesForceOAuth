@@ -113,6 +113,7 @@ namespace SalesForceOAuth.Models
         public string OwnerEmail { get; set; }
         public string OwnerPhone { get; set; }
         public string App { get; set; }
+        public string ThreadId { get; set; }
     }
 
     //public class EntityModel

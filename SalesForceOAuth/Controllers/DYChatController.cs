@@ -75,7 +75,6 @@ namespace SalesForceOAuth.Controllers
                             post["source"] = new OptionSetValue(2);
                             post["type"] = new OptionSetValue(4);
 
-                            OwnerId = "0724a062-ddcd-e711-81af-0e4fcc581ae9";
                             if (OwnerId != "")
                             {
                                 ColumnSet entityColumn = new ColumnSet();

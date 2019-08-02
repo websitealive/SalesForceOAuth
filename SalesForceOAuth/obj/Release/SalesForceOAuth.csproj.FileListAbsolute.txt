@@ -336,7 +336,6 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Google.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Twitter.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
-D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csprojResolveAssemblyReference.cache
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csproj.CoreCompileInputs.cache
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.pdb
@@ -344,3 +343,5 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Dto.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.WebServices.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Dto.pdb
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.WebServices.pdb
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csprojAssemblyReference.cache
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csproj.CopyComplete

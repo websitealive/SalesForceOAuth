@@ -340,7 +340,8 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Twitter.xm
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\RestSharp.xml
-D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojResolveAssemblyReference.cache
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojAssemblyReference.cache
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreCompileInputs.cache
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CopyComplete
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb

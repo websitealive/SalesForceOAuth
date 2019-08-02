@@ -120,7 +120,7 @@ namespace SalesForceOAuth.Controllers
 
                             Entity retrievedChats = proxyservice.Retrieve("annotation", new Guid(ChatId), cols);
                             var newChats = lData.Message;
-                            retrievedChats.Attributes["notetext"] = retrievedChats.Attributes["notetext"] + "\r\n" + newChats.Replace("&#39;", "'");
+                            retrievedChats.Attributes["notetext"] = retrievedChats.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
                             proxyservice.Update(retrievedChats);
                         }
                         catch (Exception)
