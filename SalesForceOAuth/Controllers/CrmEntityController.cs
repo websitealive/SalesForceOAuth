@@ -1,4 +1,5 @@
 ﻿using CRM.Dto;
+using CRM.WebServices;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Messages;
@@ -67,6 +68,31 @@ namespace SalesForceOAuth.Controllers
             catch (Exception ex)
             {
                 return MyAppsDb.ConvertJSONOutput(ex.Message, HttpStatusCode.NotFound, false);
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage PostNewEntityRecord(CrmEntity crmEntity)
+        {
+            try
+            {
+                JWT.JsonWebToken.Decode(crmEntity.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            //  Get current user log in detail
+            CRMUser user = Repository.GetCrmCreditionalsDetail(crmEntity.ObjectRef, crmEntity.GroupId, Request.RequestUri.Authority.ToString(), crmEntity.CrmType);
+            bool IsRecordAdded;
+            var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded);
+            if(IsRecordAdded)
+            {
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            else
+            {
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.Conflict, false);
             }
         }
 

@@ -19,5 +19,7 @@ namespace CRM.Dto
         public string OwnerEmail { get; set; }
 
         public CrmType CrmType { get; set; }
+
+        public AppType AppType { get; set; }
     }
 }

@@ -356,12 +356,12 @@ namespace SalesForceOAuth.Controllers
                     foreach (string csA in customSearchFieldArray)
                     {
                         columns.Append("," + csA);
-                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
                 //Id, FirstName, LastName, Company, Email, Phone
                 query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
-                query.Append(" where Name like '%" + SValue + "%' ");
+                query.Append(" where Name like '%" + SValue.Trim() + "%' ");
                 query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);

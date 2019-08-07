@@ -64,6 +64,7 @@ namespace SalesForceOAuth.Controllers
             {
                 user.UrlReferrer = urlReferrer;
                 user.OuthDetail = outhDetails;
+                user.ApiUrl = user.IntegrationConstants.ApiUrl;
                 Repository.AddCrmCreditionals(user);
                 return MyAppsDb.ConvertJSONOutput("Successfully Saved Access Tokens", HttpStatusCode.OK, false);
             }

@@ -191,15 +191,15 @@ namespace SalesForceOAuth.Controllers
                     foreach (string csA in customSearchFieldArray)
                     {
                         columns.Append("," + csA);
-                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
                 query.Append("SELECT Id, FirstName, LastName, Email, Phone " + columns + ", AccountId, Account.Name From Contact ");
-                query.Append("where Name like '%" + SValue + "%' ");
-                query.Append("OR FirstName like '%" + SValue + "%' ");
-                query.Append("OR LastName like '%" + SValue + "%' ");
-                query.Append("OR Email like '%" + SValue + "%' ");
-                query.Append("OR Phone like '%" + SValue + "%' ");
+                query.Append("where Name like '%" + SValue.Trim() + "%' ");
+                query.Append("OR FirstName like '%" + SValue.Trim() + "%' ");
+                query.Append("OR LastName like '%" + SValue.Trim() + "%' ");
+                query.Append("OR Email like '%" + SValue.Trim() + "%' ");
+                query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
                 query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);

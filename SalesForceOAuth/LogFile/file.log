@@ -1492,3 +1492,17 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 7/31/2019 2:13:27 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token must consist from 3 delimited by dot parts
 7/31/2019 2:15:06 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
 7/31/2019 2:21:37 PM ==> Function: CRM-IsAuthenticated : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+8/6/2019 4:32:59 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The formatter threw an exception while trying to deserialize the message: There was an error while trying to deserialize parameter http://schemas.microsoft.com/xrm/2011/Contracts/Services:query. The InnerException message was 'Invalid enum value 'ContainValues' cannot be deserialized into type 'Microsoft.Xrm.Sdk.Query.ConditionOperator'. Ensure that the necessary enum values are present and are marked with EnumMemberAttribute attribute if the type has DataContractAttribute attribute.'.  Please see InnerException for more details.
+8/6/2019 5:59:17 PM ==> Internal Error: MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
+8/6/2019 5:59:17 PM ==> "Internal Error: MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---\u003e System.IO.EndOfStreamException: Attempted to read past the end of the stream.\r\n   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)\r\n   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()\r\n   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()\r\n   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()\r\n   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()"
+8/7/2019 10:03:31 AM ==> Internal Error: MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()

@@ -2662,7 +2662,10 @@ namespace SalesForceOAuth
                                 returnCrmUser.ApiUrl = rdr["api_url"].ToString().Trim();
                                 returnCrmUser.UserName = rdr["username"].ToString().Trim();
                                 returnCrmUser.Password = rdr["password"].ToString().Trim();
-
+                                OuthDetail outhDetail = new OuthDetail();
+                                outhDetail.refresh_token = rdr["refresh_token"].ToString().Trim();
+                                outhDetail.access_token =  rdr["access_token"].ToString().Trim();
+                                returnCrmUser.OuthDetail = outhDetail;
                             }
                         }
                         rdr.Close();

@@ -232,16 +232,16 @@ namespace SalesForceOAuth.Controllers
                     foreach (string csA in customSearchFieldArray)
                     {
                         columns.Append("," + csA);
-                        filters.Append("OR " + csA + " like '%" + SValue + "%' ");
+                        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
                 // 1.Issues when Personal Account are not enabled on clint org.
                 query.Append("SELECT Id, AccountNumber, Name, Phone, LastName " + columns + " From Account ");
                 //Also AccountNumber through exception on some of client enviroment
                 //query.Append("SELECT Id, Name, Phone " + columns + " From Account ");
-                query.Append("where Name like '%" + SValue + "%' ");
-                query.Append("OR Phone like '%" + SValue + "%' ");
-                query.Append("OR AccountNumber like '%" + SValue + "%' ");
+                query.Append("where Name like '%" + SValue.Trim() + "%' ");
+                query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                query.Append("OR AccountNumber like '%" + SValue.Trim() + "%' ");
                 query.Append(filters.ToString());
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
