@@ -152,8 +152,9 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
+                                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                                 Entity note = new Entity("annotation");
-                                note["subject"] = lData.Subject;
+                                note["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 newChatId = objser.Create(note);
