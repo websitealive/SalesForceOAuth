@@ -17,6 +17,7 @@ using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
 using SalesForceOAuth.Models;
 using SalesForceOAuth.Web_API_Helper_Code;
+using CRM.Notification;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -28,6 +29,7 @@ namespace SalesForceOAuth.Controllers
             if (lData.token.Equals(ConfigurationManager.AppSettings["APISecureMessageKey"]))
             {
                 #region code for post add message
+                string ItemId = "", ItemType = "", OwnerId = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int chatId = 0;
                 bool IsChatPushed = false;
@@ -51,8 +53,7 @@ namespace SalesForceOAuth.Controllers
                     deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
                     organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                     homeRealmUri = null;
-                    string ItemId = "", ItemType = "", OwnerId = "";
-
+                    
                     MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, urlReferrer);
 
                     // Wher to save chats
@@ -187,7 +188,9 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, "Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel !");
+                                string errorMessage = "Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel !";
+                                Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, errorMessage);
+                                MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, errorMessage);
                                 return MyAppsDb.ConvertJSONOutput("Could not add new Chat, Please Import Alive Chat Solution in to your orginization or turn off Use Alive Chat feature under Integration Settings in Admin Panel ", HttpStatusCode.InternalServerError, true);
                             }
                         }
@@ -210,6 +213,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         msg = ex.Message;
                     }
+                    Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, msg);
                     MyAppsDb.ChatQueueItemAddedDynamics(chatId, urlReferrer, lData.ObjectRef, 2, msg);
                     return MyAppsDb.ConvertJSONOutput(ex, "DYChat-PostChat", "Unhandled exception", HttpStatusCode.InternalServerError);
                 }

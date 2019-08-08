@@ -345,3 +345,5 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreC
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CopyComplete
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Notification.dll
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Notification.pdb

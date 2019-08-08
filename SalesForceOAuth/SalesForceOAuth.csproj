@@ -458,6 +458,10 @@
       <Project>{80e5f491-f5a1-4008-9122-ce6fbf78b19a}</Project>
       <Name>CRM.Dto</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CRM.Notification\CRM.Notification.csproj">
+      <Project>{5b06ddf0-97d5-48e5-af0c-ac428b1af8d5}</Project>
+      <Name>CRM.Notification</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CRM.WebServices\CRM.WebServices.csproj">
       <Project>{1756dbbe-0730-4b89-8d3b-42ef83aa6e5d}</Project>
       <Name>CRM.WebServices</Name>
