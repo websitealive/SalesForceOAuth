@@ -98,6 +98,10 @@ namespace SalesForceOAuth.Controllers
                                 {
                                     registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
                                 }
+                                if (inputField.FieldType == "datetime")
+                                {
+                                    registration[inputField.FieldName] = Convert.ToDateTime(inputField.Value);
+                                }
                             }
 
                         }
@@ -321,7 +325,7 @@ namespace SalesForceOAuth.Controllers
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
                 var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Lead", urlReferrer);
-
+                List<EntityColumn> getDetailFields = BusinessLogic.DynamicCommon.GetDynamicDetailFileds(ObjectRef, GroupId, "lead", urlReferrer);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -430,6 +434,25 @@ namespace SalesForceOAuth.Controllers
                                 filterOwnRcd4.Operator = ConditionOperator.Like;
                                 filterOwnRcd4.Values.Add("%" + SValue + "%");
                                 filter1.Conditions.Add(filterOwnRcd4);
+                            }
+                        }
+                    }
+                    // Add Detail Fileds TO search
+                    if (getDetailFields.Count > 0)
+                    {
+                        foreach (var field in getDetailFields)
+                        {
+                            if (field.FieldType == "textbox" || field.FieldType == "boolean")
+                            {
+                                var flag = filter1.Conditions.Where(x => x.AttributeName == field.FieldName).Select(s => s.AttributeName).FirstOrDefault();
+                                if (flag == null)
+                                {
+                                    ConditionExpression filterOwnRcd5 = new ConditionExpression();
+                                    filterOwnRcd5.AttributeName = field.FieldName;
+                                    filterOwnRcd5.Operator = ConditionOperator.Like;
+                                    filterOwnRcd5.Values.Add("%" + SValue.Trim() + "%");
+                                    filter1.Conditions.Add(filterOwnRcd5);
+                                }
                             }
                         }
                     }

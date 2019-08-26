@@ -86,6 +86,7 @@ namespace SalesForceOAuth.BusinessLogic
                                 detailFields.Sr = counter;
                                 detailFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 detailFields.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                detailFields.FieldType = rdr["detail_field_type"].ToString().Trim();
                                 returnFileds.Add(detailFields);
                                 counter = counter + 1;
                             }

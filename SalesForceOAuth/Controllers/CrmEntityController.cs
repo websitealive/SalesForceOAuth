@@ -96,6 +96,23 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
+        [HttpGet]
+        public HttpResponseMessage GetEntityRecord(string Token, int GroupId, string ObjectRef, string SVAlue, CrmType CrmType, string Entity)
+        {
+            try
+            {
+                JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            //  Get current user log in detail
+            CRMUser user = Repository.GetCrmCreditionalsDetail(ObjectRef, GroupId, Request.RequestUri.Authority.ToString(), CrmType);
+            CrmEntity retRecord = HubSpot.GetRecordByEmail(user, SVAlue);
+            return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
+        }
+
         [HttpPost]
         public HttpResponseMessage SugarNewEntityCreate(CrmEntity crmEntity)
         {

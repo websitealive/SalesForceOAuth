@@ -1506,3 +1506,27 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
    at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
    at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
    at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket()
+8/16/2019 12:33:05 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/16/2019 12:34:13 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/16/2019 12:36:04 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/16/2019 12:36:27 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/16/2019 12:37:16 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+8/16/2019 12:49:04 PM ==> Function: DYConfig-GetConfigurationStatus : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+8/16/2019 2:19:34 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+8/16/2019 3:00:28 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+8/16/2019 3:16:27 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+8/16/2019 4:52:18 PM ==> Managed solution Not Found, Actitiy Task are use Instead - Configuration Complete
+8/20/2019 11:07:19 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+8/20/2019 4:26:38 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open(), Exception Message: Unable to connect to any of the specified MySQL hosts.
+8/21/2019 12:14:27 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: 'Contact' entity doesn't contain attribute with Name = 'fld1'.
+8/21/2019 3:45:04 PM ==> Function: DyLead-PostCredentials : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+8/21/2019 3:45:47 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: The remote server returned an error: (404) Not Found.
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com/test//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.

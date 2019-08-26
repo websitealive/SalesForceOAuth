@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Salesforce.Common.Models;
 using Salesforce.Force;
+using SalesForceOAuth.ModelClasses;
 using SalesForceOAuth.Models;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,10 @@ namespace SalesForceOAuth.Controllers
                                 if (inputField.FieldType == "lookup")
                                 {
                                     registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
+                                }
+                                if (inputField.FieldType == "datetime")
+                                {
+                                    registration[inputField.FieldName] = Convert.ToDateTime(inputField.Value);
                                 }
                             }
 
@@ -287,6 +292,7 @@ namespace SalesForceOAuth.Controllers
                 int output = MyAppsDb.GetDynamicsCredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref ApplicationURL, ref userName, ref password, ref authType, ref sFieldOptional, urlReferrer);
 
                 var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Contact", urlReferrer);
+                List<EntityColumn> getDetailFields = BusinessLogic.DynamicCommon.GetDynamicDetailFileds(ObjectRef, GroupId, "contact", urlReferrer);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -342,7 +348,7 @@ namespace SalesForceOAuth.Controllers
                     QueryExpression query = new QueryExpression("contact");
 
                     List<string> defaultSearchedColumn = new List<string>();
-                    defaultSearchedColumn.AddRange(new string[] { "contactid", "firstname", "lastname", "emailaddress1", "telephone1" });
+                    defaultSearchedColumn.AddRange(new string[] { "contactid", "firstname", "lastname", "emailaddress1", "telephone1", "statuscode" });
                     // Add Default Searched Column
                     foreach (var item in defaultSearchedColumn)
                     {
@@ -363,25 +369,27 @@ namespace SalesForceOAuth.Controllers
                     FilterExpression filter1 = new FilterExpression();
 
                     //filter name 
-                    ConditionExpression filterOwnRcd = new ConditionExpression();
-                    filterOwnRcd.AttributeName = "fullname";
-                    filterOwnRcd.Operator = ConditionOperator.Like;
-                    filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
-                    //Filter Email
                     ConditionExpression filterOwnRcd1 = new ConditionExpression();
-                    filterOwnRcd1.AttributeName = "emailaddress1";
+                    filterOwnRcd1.AttributeName = "fullname";
                     filterOwnRcd1.Operator = ConditionOperator.Like;
                     filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
-
-                    //Filter Phone
+                    //Filter Email
                     ConditionExpression filterOwnRcd2 = new ConditionExpression();
-                    filterOwnRcd2.AttributeName = "telephone1";
+                    filterOwnRcd2.AttributeName = "emailaddress1";
                     filterOwnRcd2.Operator = ConditionOperator.Like;
                     filterOwnRcd2.Values.Add("%" + SValue.Trim() + "%");
 
-                    filter1.Conditions.Add(filterOwnRcd);
+                    //Filter Phone
+                    ConditionExpression filterOwnRcd3 = new ConditionExpression();
+                    filterOwnRcd3.AttributeName = "telephone1";
+                    filterOwnRcd3.Operator = ConditionOperator.Like;
+                    filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
+
+                    //filter1.Conditions.Add(filterOwnRcd);
                     filter1.Conditions.Add(filterOwnRcd1);
                     filter1.Conditions.Add(filterOwnRcd2);
+                    filter1.Conditions.Add(filterOwnRcd3);
+
                     // get list of custom fields 
                     if (getSearchedFileds.Count > 0)
                     {
@@ -389,11 +397,30 @@ namespace SalesForceOAuth.Controllers
                         {
                             if (csA.FieldType == "textbox" || csA.FieldType == "boolean")
                             {
-                                ConditionExpression filterOwnRcd3 = new ConditionExpression();
-                                filterOwnRcd3.AttributeName = csA.FieldName;
-                                filterOwnRcd3.Operator = ConditionOperator.Like;
-                                filterOwnRcd3.Values.Add("%" + SValue.Trim() + "%");
-                                filter1.Conditions.Add(filterOwnRcd3);
+                                ConditionExpression filterOwnRcd4 = new ConditionExpression();
+                                filterOwnRcd4.AttributeName = csA.FieldName;
+                                filterOwnRcd4.Operator = ConditionOperator.Like;
+                                filterOwnRcd4.Values.Add("%" + SValue.Trim() + "%");
+                                filter1.Conditions.Add(filterOwnRcd4);
+                            }
+                        }
+                    }
+                    // Add Detail Fileds TO search
+                    if (getDetailFields.Count > 0)
+                    {
+                        foreach (var field in getDetailFields)
+                        {
+                            if (field.FieldType == "textbox" || field.FieldType == "boolean")
+                            {
+                                var flag = filter1.Conditions.Where(x => x.AttributeName == field.FieldName).Select(s => s.AttributeName).FirstOrDefault();
+                                if (flag == null)
+                                {
+                                    ConditionExpression filterOwnRcd5 = new ConditionExpression();
+                                    filterOwnRcd5.AttributeName = field.FieldName;
+                                    filterOwnRcd5.Operator = ConditionOperator.Like;
+                                    filterOwnRcd5.Values.Add("%" + SValue.Trim() + "%");
+                                    filter1.Conditions.Add(filterOwnRcd5);
+                                }
                             }
                         }
                     }
@@ -423,57 +450,60 @@ namespace SalesForceOAuth.Controllers
 
                         foreach (var z in result1.Entities)
                         {
-                            DYContact info = new DYContact();
-                            if (z.Attributes.Contains("contactid"))
+                            if(((Microsoft.Xrm.Sdk.OptionSetValue)z.Attributes["statuscode"]).Value == 1)
                             {
-                                info.contactid = z.Attributes["contactid"].ToString();
-                            }
-                            if (z.Attributes.Contains("firstname"))
-                            {
-                                info.firstname = z.Attributes["firstname"].ToString();
-                            }
-                            if (z.Attributes.Contains("lastname"))
-                            {
-                                info.lastname = z.Attributes["lastname"].ToString();
-                            }
-                            if (z.Attributes.Contains("emailaddress1"))
-                            {
-                                info.email = z.Attributes["emailaddress1"].ToString();
-                            }
-                            if (z.Attributes.Contains("telephone1"))
-                            {
-                                info.phone = z.Attributes["telephone1"].ToString();
-                            }
-
-                            // Start Custom Search Filed
-                            List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
-                            if (getSearchedFileds.Count > 0)
-                            {
-                                foreach (var field in getSearchedFileds)
+                                DYContact info = new DYContact();
+                                if (z.Attributes.Contains("contactid"))
                                 {
-                                    if (z.Attributes.Contains(field.FieldName))
-                                    {
-                                        CustomFieldModel Fields = new CustomFieldModel();
-                                        Fields.FieldLabel = field.FieldLabel;
-                                        if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
-                                        {
-                                            Fields.Value = z.Attributes[field.FieldName].ToString();
-                                        }
-                                        else
-                                        {
-                                            Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
-                                        }
-
-                                        retSearchFields.Add(Fields);
-                                    }
+                                    info.contactid = z.Attributes["contactid"].ToString();
+                                }
+                                if (z.Attributes.Contains("firstname"))
+                                {
+                                    info.firstname = z.Attributes["firstname"].ToString();
+                                }
+                                if (z.Attributes.Contains("lastname"))
+                                {
+                                    info.lastname = z.Attributes["lastname"].ToString();
+                                }
+                                if (z.Attributes.Contains("emailaddress1"))
+                                {
+                                    info.email = z.Attributes["emailaddress1"].ToString();
+                                }
+                                if (z.Attributes.Contains("telephone1"))
+                                {
+                                    info.phone = z.Attributes["telephone1"].ToString();
                                 }
 
+                                // Start Custom Search Field
+                                List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
+                                if (getSearchedFileds.Count > 0)
+                                {
+                                    foreach (var field in getSearchedFileds)
+                                    {
+                                        if (z.Attributes.Contains(field.FieldName))
+                                        {
+                                            CustomFieldModel Fields = new CustomFieldModel();
+                                            Fields.FieldLabel = field.FieldLabel;
+                                            if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                            {
+                                                Fields.Value = z.Attributes[field.FieldName].ToString();
+                                            }
+                                            else
+                                            {
+                                                Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                            }
+
+                                            retSearchFields.Add(Fields);
+                                        }
+                                    }
+
+                                }
+
+                                info.searchFields = retSearchFields;
+                                // End Custom Search Filed
+
+                                listToReturn.Add(info);
                             }
-
-                            info.searchFields = retSearchFields;
-                            // End Custom Search Filed
-
-                            listToReturn.Add(info);
                         }
                     }
                     return MyAppsDb.ConvertJSONPOutput(callback, listToReturn, HttpStatusCode.OK, false);

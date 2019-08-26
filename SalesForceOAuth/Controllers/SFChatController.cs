@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using CRM.Notification;
+using Newtonsoft.Json.Linq;
 using Salesforce.Common;
 using Salesforce.Common.Models;
 using Salesforce.Force;
@@ -35,14 +36,16 @@ namespace SalesForceOAuth.Controllers
                 {
                     return MyAppsDb.ConvertJSONOutput("--Internal Exception: " + eee.Message, HttpStatusCode.OK, true);
                 }
+                string InstanceUrl = "", ApiVersion = "", ItemId = "", ItemType = "";
                 try
                 {
-                    string InstanceUrl = "", ApiVersion = "", ItemId = "", ItemType = "";
+                    
                     MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                     string OwnerEmail = "";
                     MyAppsDb.GetTaggedChatId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerEmail, urlReferrer);
                     if (chatId == 0)
                     {
+                        Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "No chat in queue!");
                         MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, "No chat in queue!");
                         return MyAppsDb.ConvertJSONOutput("No chat in queue!", HttpStatusCode.OK, false);
                     }
@@ -134,6 +137,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else
                     {
+                        Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "SalesForce Error: " + sR.Errors);
                         MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, "SalesForce Error: " + sR.Errors);
                         return MyAppsDb.ConvertJSONOutput("SalesForce Error: " + sR.Errors, HttpStatusCode.OK, true);
                     }
@@ -149,6 +153,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         msg = ex.Message;
                     }
+                    Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, msg);
                     MyAppsDb.ChatQueueItemAdded(chatId, urlReferrer, lData.ObjectRef, 2, msg);
                     return MyAppsDb.ConvertJSONOutput("Internal Exception: " + ex.Message, HttpStatusCode.OK, true);
                 }

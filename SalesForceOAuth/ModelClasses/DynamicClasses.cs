@@ -16,6 +16,7 @@ namespace SalesForceOAuth.ModelClasses
         public int Sr { get; set; }
         public string FieldName { get; set; }
         public string FieldLabel { get; set; }
+        public string FieldType { get; set; }
         public string Value { get; set; }
     }
 }

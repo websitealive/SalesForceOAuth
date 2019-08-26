@@ -9,8 +9,18 @@ using System.Threading.Tasks;
 
 namespace CRM.WebServices
 {
+    public class RootObject
+    {
+        public int vid { get; set; }
+
+        public Properties properties { get; set; }
+    }
+
     public class Properties
     {
+        public Property email { get; set; }
+        public Property firstname { get; set; }
+        public Property lastname { get; set; }
         public List<Property> properties { get; set; }
     }
     public class Property
@@ -75,6 +85,29 @@ namespace CRM.WebServices
                 IsRecordAdded = false;
                 ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
                 return "Some Thing went wrong. Please Contact Administrator !";
+            }
+        }
+
+        public static CrmEntity GetRecordByEmail(CRMUser user, string email)
+        {
+            CrmEntity retEntityRecord = new CrmEntity();
+            var client = new RestClient(user.ApiUrl);
+            var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            var response = client.Execute(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                retEntityRecord.Email = contact.properties.email.value;
+                retEntityRecord.FirstName = contact.properties.firstname.value;
+                retEntityRecord.LastName = contact.properties.lastname.value;
+                return retEntityRecord;
+            }
+            else
+            {
+                return retEntityRecord;
             }
         }
 

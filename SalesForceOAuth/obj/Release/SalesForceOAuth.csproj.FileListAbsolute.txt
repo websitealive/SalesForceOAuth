@@ -345,3 +345,5 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Dto.pdb
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.WebServices.pdb
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csprojAssemblyReference.cache
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Release\SalesForceOAuth.csproj.CopyComplete
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Notification.dll
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Notification.pdb
