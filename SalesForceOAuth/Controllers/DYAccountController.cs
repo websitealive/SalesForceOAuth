@@ -99,10 +99,6 @@ namespace SalesForceOAuth.Controllers
                                 {
                                     registration[inputField.FieldName] = Convert.ToDateTime(inputField.Value);
                                 }
-                                if (inputField.FieldType == "currency")
-                                {
-                                    registration[inputField.FieldName] = new Money(Convert.ToDecimal(inputField.Value));
-                                }
                             }
 
                         }
