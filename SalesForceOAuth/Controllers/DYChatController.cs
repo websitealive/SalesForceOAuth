@@ -147,7 +147,7 @@ namespace SalesForceOAuth.Controllers
                             {
                                 //The code of block in the if condition is only for Sounders Client
                                 Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "Testing : For Push Message to Tasks");
-                                if ((lData.ObjectRef == "C1" && lData.GroupId == 8370) | (lData.ObjectRef == "dev0" && lData.GroupId == 7))
+                                if ((lData.ObjectRef == "c1" && lData.GroupId == 8370) | (lData.ObjectRef == "dev0" && lData.GroupId == 7))
                                 {
                                     Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "Testing : Start Pushing Chats to Tasks");
                                     Entity task = new Entity("task");
