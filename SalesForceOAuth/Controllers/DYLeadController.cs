@@ -59,6 +59,7 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     IOrganizationService objser = (IOrganizationService)proxyservice;
@@ -342,6 +343,7 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     List<DYLead> listToReturn = new List<DYLead>();

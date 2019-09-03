@@ -88,6 +88,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/28/2019 16:26:39</publishTime>
     </File>
     <File Include="bin/CRM.Dto.dll">
+<<<<<<< HEAD
       <publishTime>08/30/2019 09:33:51</publishTime>
     </File>
     <File Include="bin/CRM.Dto.pdb">
@@ -104,6 +105,24 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/CRM.WebServices.pdb">
       <publishTime>08/30/2019 09:33:52</publishTime>
+=======
+      <publishTime>08/29/2019 12:40:56</publishTime>
+    </File>
+    <File Include="bin/CRM.Dto.pdb">
+      <publishTime>08/29/2019 12:40:56</publishTime>
+    </File>
+    <File Include="bin/CRM.Notification.dll">
+      <publishTime>08/29/2019 12:40:57</publishTime>
+    </File>
+    <File Include="bin/CRM.Notification.pdb">
+      <publishTime>08/29/2019 12:40:57</publishTime>
+    </File>
+    <File Include="bin/CRM.WebServices.dll">
+      <publishTime>09/02/2019 15:06:54</publishTime>
+    </File>
+    <File Include="bin/CRM.WebServices.pdb">
+      <publishTime>09/02/2019 15:06:54</publishTime>
+>>>>>>> 826c65d8eb147db469545a3009c5bfe86e0f011c
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>08/28/2019 16:26:44</publishTime>
@@ -259,10 +278,17 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/28/2019 16:26:44</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.dll">
+<<<<<<< HEAD
       <publishTime>08/30/2019 09:37:04</publishTime>
     </File>
     <File Include="bin/SalesForceOAuth.pdb">
       <publishTime>08/30/2019 09:37:04</publishTime>
+=======
+      <publishTime>09/02/2019 16:47:43</publishTime>
+    </File>
+    <File Include="bin/SalesForceOAuth.pdb">
+      <publishTime>09/02/2019 16:47:43</publishTime>
+>>>>>>> 826c65d8eb147db469545a3009c5bfe86e0f011c
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>08/28/2019 16:26:45</publishTime>
@@ -403,7 +429,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/28/2019 16:26:39</publishTime>
     </File>
     <File Include="Web.config">
+<<<<<<< HEAD
       <publishTime>08/30/2019 09:36:11</publishTime>
+=======
+      <publishTime>08/28/2019 14:08:21</publishTime>
+>>>>>>> 826c65d8eb147db469545a3009c5bfe86e0f011c
     </File>
   </ItemGroup>
 </Project>

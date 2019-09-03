@@ -2763,8 +2763,8 @@ namespace SalesForceOAuth
                         {
                             // Insert the record
                             rdr.Close();
-                            string insertSql = "INSERT INTO integration_dynamic_entity (objectref, groupid, use_alive_chat)";
-                            insertSql += "VALUES ('" + objectRef + "','" + groupId + "','" + isUsingAliveChat + "')";
+                            string insertSql = "INSERT INTO integration_dynamic_entity (objectref, groupid, use_alive_chat, chat_save_to)";
+                            insertSql += "VALUES ('" + objectRef + "','" + groupId + "','" + isUsingAliveChat + "', 'notes')";
                             MySqlCommand cmdInsert = new MySqlCommand(insertSql, conn);
                             int rows = cmdInsert.ExecuteNonQuery();
                             conn.Close();
@@ -2773,13 +2773,20 @@ namespace SalesForceOAuth
                         else
                         {
                             // Update the record
-                            var id = Convert.ToInt32(rdr["id"]);
+                            var id = "";
+                            while (rdr.Read())
+                            {
+                                id = rdr["id"].ToString();
+                            }
                             rdr.Close();
-                            string updateSql = "Update integration_dynamic_entity Set use_alive_chat = '" + isUsingAliveChat + "'";
-                            updateSql += " WHERE id = " + id;
-                            MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
-                            int rows = cmd1.ExecuteNonQuery();
-                            conn.Close();
+                            if (id != "")
+                            {
+                                string updateSql = "Update integration_dynamic_entity Set use_alive_chat = '" + isUsingAliveChat + "', chat_save_to = 'notes'";
+                                updateSql += " WHERE id = " + id;
+                                MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
+                                int rows = cmd1.ExecuteNonQuery();
+                                conn.Close();
+                            }
                             return 0;
                         }
                     }

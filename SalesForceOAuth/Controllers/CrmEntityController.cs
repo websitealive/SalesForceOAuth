@@ -20,6 +20,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.ServiceModel.Description;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace SalesForceOAuth.Controllers
@@ -112,6 +113,35 @@ namespace SalesForceOAuth.Controllers
             CrmEntity retRecord = HubSpot.GetRecordByEmail(user, SVAlue);
             return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
         }
+
+        //[HttpPost]
+        //public async Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
+        //{
+        //    try
+        //    {
+        //        JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+        //    }
+        //    string ItemId = "", ItemType = "", OwnerId = "";
+        //    int chatId = 0;
+        //    MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, Request.RequestUri.Authority.ToString());
+
+        //    // EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString());
+
+        //    // var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), ItemType);
+        //    CRMUser user = Repository.GetCrmCreditionalsDetail(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), lData.CrmType);
+        //    //HubSpot.PostChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"),)
+        //    //Entity task2 = new Entity(entitySettings.CustomActivityName);
+        //    //task2["subject"] = "AliveChat ID: " + lData.SessionId;
+        //    //task2["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+        //    //task2["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
+        //    //newChatId = objser.Create(task2);
+
+        //    //return "";
+        //}
 
         [HttpPost]
         public HttpResponseMessage SugarNewEntityCreate(CrmEntity crmEntity)
