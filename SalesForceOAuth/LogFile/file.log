@@ -1530,3 +1530,50 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
    at System.Net.HttpWebRequest.GetResponse()
    at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
    at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com/test//XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/27/2019 2:20:16 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 204.29.103.199:80
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'http://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/28/2019 9:12:24 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.NotSupportedException: The ServicePointManager does not support proxies with the https scheme.
+   at System.Net.ServicePointManager.FindServicePointHelper(Uri address, Boolean isProxyServicePoint)
+   at System.Net.ServicePointManager.FindServicePoint(Uri address, IWebProxy proxy, ProxyChain& chain, HttpAbortDelegate& abortDelegate, Int32& abortState)
+   at System.Net.HttpWebRequest.FindServicePoint(Boolean forceFind)
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/28/2019 9:16:58 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 204.29.103.199:443
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/28/2019 9:22:52 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.NotSupportedException: The ServicePointManager does not support proxies with the https scheme.
+   at System.Net.ServicePointManager.FindServicePointHelper(Uri address, Boolean isProxyServicePoint)
+   at System.Net.ServicePointManager.FindServicePoint(Uri address, IWebProxy proxy, ProxyChain& chain, HttpAbortDelegate& abortDelegate, Int32& abortState)
+   at System.Net.HttpWebRequest.FindServicePoint(Boolean forceFind)
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/28/2019 9:24:38 AM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 204.29.103.199:80
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/28/2019 2:45:45 PM ==> Function: DyLead-PostLead : Unhandled exception--Internal exception : System.Net.WebException: Unable to connect to the remote server ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 204.29.103.199:80
+   at System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket& socket, IPAddress& address, ConnectSocketState state, IAsyncResult asyncResult, Exception& exception)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataLocationRetriever.DownloadMetadata(TimeoutHelper timeoutHelper)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'http://204.29.103.199/Recruittest/XRMServices/2011/Organization.svc?wsdl&sdkversion=9'.
+8/30/2019 4:02:11 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: SecLib::RetrievePrivilegeForUser failed - no roles are assigned to user. Returned hr = -2147209463, User: 78d3e1d1-06b0-e811-81b9-0e4fcc581ae4
+8/30/2019 4:03:59 PM ==> No Chat in queue to publish
+8/30/2019 4:06:37 PM ==> No Chat in queue to publish
+9/2/2019 4:11:01 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%opp%' to attribute 'opportunity.parentcontactid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+9/2/2019 4:24:28 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%opp%' to attribute 'opportunity.parentaccountid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).

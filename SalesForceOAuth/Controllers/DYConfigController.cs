@@ -230,7 +230,11 @@ namespace SalesForceOAuth.Controllers
                 homeRealmUri = null;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+                //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, error) =>
+                //{
+                //    return cert.GetCertHashString() == "xxxxxxxxxxxxxxxx";
+                //};
                 // testing Start
 
                 //IServiceManagement<IOrganizationService> management = ServiceConfigurationFactory.CreateManagement<IOrganizationService>(organizationUri);
@@ -259,19 +263,19 @@ namespace SalesForceOAuth.Controllers
                     FilterExpression filter1 = new FilterExpression();
                     filter1.Conditions.Add(filterOwnRcd);
 
-
                     QueryExpression query = new QueryExpression("solution");
                     query.ColumnSet.AddColumns("solutionid", "friendlyname", "version", "ismanaged", "uniquename");
                     query.Criteria.AddFilter(filter1);
                     EntityCollection result1 = objser.RetrieveMultiple(query);
-                    if (result1.Entities.Count > 0)
-                    {
-                        Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 1, urlReferrer);
-                    }
-                    else
-                    {
-                        Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 0, urlReferrer);
-                    }
+                    //if (result1.Entities.Count > 0)
+                    //{
+                    //    Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 1, urlReferrer);
+                    //}
+                    //else
+                    //{
+                    //    Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 0, urlReferrer);
+                    //}
+                    Repository.RecordDynamicsSettings(lData.ObjectRef, lData.GroupId, 0, urlReferrer);
                     int output = MyAppsDb.RecordDynamicsCredentials(lData.ObjectRef, lData.GroupId, lData.OrganizationURL, lData.Username, lData.Password, lData.AuthType, urlReferrer);
                     if (output == 1)
                         return MyAppsDb.ConvertJSONOutput("Credentials recorded successfully!", HttpStatusCode.OK, false);

@@ -189,6 +189,7 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     IOrganizationService objser = (IOrganizationService)proxyservice;
@@ -331,6 +332,7 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                 {
                     RetrieveEntityRequest retrieveEntityRequest = new RetrieveEntityRequest
@@ -347,12 +349,15 @@ namespace SalesForceOAuth.Controllers
 
                     // Start Buliding Querry
                     QueryExpression query = new QueryExpression(Entity);
-                    List<string> searchedColumn = new List<string>();
+                    Dictionary<string, string> sss = new Dictionary<string, string>();
+                    //List<string> searchedColumn = new List<string>();
                     List<string> entityId = new List<string>();
                     FilterExpression filter = new FilterExpression();
                     //ConditionExpression filterOwnRcd = new ConditionExpression();
 
-                    searchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
+                    //searchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
+                    getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryIdAttribute", FieldName = RetrieveEntityInfo.PrimaryIdAttribute });
+                    getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryNameAttribute", FieldName = RetrieveEntityInfo.PrimaryNameAttribute });
                     if (getSearchedFileds.Count > 0)
                     {
                         foreach (var field in getSearchedFileds)
@@ -383,23 +388,32 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                searchedColumn.Add(field.FieldName);
+                                //searchedColumn.Add(field.FieldName);
+                                query.ColumnSet.AddColumn(field.FieldName);
+                                if (field.FieldType == "textbox" || field.FieldType == "boolean" || field.FieldType == "PrimaryNameAttribute")
+                                {
+                                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                                    filterOwnRcd1.AttributeName = field.FieldName;
+                                    filterOwnRcd1.Operator = ConditionOperator.Like;
+                                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
+                                    filter.Conditions.Add(filterOwnRcd1);
+                                }
                             }
                         }
                     }
 
-                    foreach (var item in searchedColumn)
-                    {
-                        query.ColumnSet.AddColumn(item);
-                        if (item != RetrieveEntityInfo.PrimaryIdAttribute)
-                        {
-                            ConditionExpression filterOwnRcd1 = new ConditionExpression();
-                            filterOwnRcd1.AttributeName = item;
-                            filterOwnRcd1.Operator = ConditionOperator.Like;
-                            filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
-                            filter.Conditions.Add(filterOwnRcd1);
-                        }
-                    }
+                    //foreach (var item in searchedColumn)
+                    //{
+                    //    query.ColumnSet.AddColumn(item);
+                    //    if (item != RetrieveEntityInfo.PrimaryIdAttribute)
+                    //    {
+                    //        ConditionExpression filterOwnRcd1 = new ConditionExpression();
+                    //        filterOwnRcd1.AttributeName = item;
+                    //        filterOwnRcd1.Operator = ConditionOperator.Like;
+                    //        filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
+                    //        filter.Conditions.Add(filterOwnRcd1);
+                    //    }
+                    //}
                     // Add Detail Fileds TO search
                     if (getDetailFields.Count > 0)
                     {
@@ -458,7 +472,7 @@ namespace SalesForceOAuth.Controllers
 
                                 foreach (var field in getSearchedFileds)
                                 {
-                                    if (field.FieldType != "relatedEntity")
+                                    if ((field.FieldType != "relatedEntity") && (field.FieldType == "textbox" || field.FieldType == "boolean" || field.FieldType == "lookup"))
                                     {
                                         if (z.Attributes.Contains(field.FieldName))
                                         {

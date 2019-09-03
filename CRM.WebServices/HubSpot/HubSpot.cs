@@ -14,6 +14,10 @@ namespace CRM.WebServices
         public int vid { get; set; }
 
         public Properties properties { get; set; }
+
+        public Engagement engagement { get; set; }
+        public Associations associations { get; set; }
+        public Metadata metadata { get; set; }
     }
 
     public class Properties
@@ -28,6 +32,33 @@ namespace CRM.WebServices
         public string property { get; set; }
         public string value { get; set; }
     }
+
+    // Note starts
+    public class Engagement
+    {
+        public bool active { get; set; }
+        public int ownerId { get; set; }
+        public string type { get; set; }
+        public long timestamp { get; set; }
+    }
+
+    public class Associations
+    {
+        public List<int> contactIds { get; set; }
+    }
+
+    public class Metadata
+    {
+        public string body { get; set; }
+    }
+
+    public class RootObjectNote
+    {
+        public Engagement engagement { get; set; }
+        public Associations associations { get; set; }
+        public Metadata metadata { get; set; }
+    }
+    // Note End
     public class HubSpot
     {
         public static OuthDetail GetAuthorizationTokens(CRMUser user)
@@ -84,6 +115,34 @@ namespace CRM.WebServices
             {
                 IsRecordAdded = false;
                 ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
+                return "Some Thing went wrong. Please Contact Administrator !";
+            }
+        }
+
+        public static string PostChats(CRMUser user, string message, out bool IsChatAdded)
+        {
+            RootObjectNote n = new RootObjectNote() {
+                associations = new Associations() { contactIds = new List<int>() { 851 } },
+                metadata = new Metadata() { body = message },
+                engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+            };
+            string d = JsonConvert.SerializeObject(n);
+            var client = new RestClient(user.ApiUrl);
+            var request = new RestRequest("/engagements/v1/engagements" , Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+
+            request.AddJsonBody(d);
+            var response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IsChatAdded = true;
+                return "Record Added Successfully";
+            }
+            else
+            {
+                IsChatAdded = false;
+                // ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
                 return "Some Thing went wrong. Please Contact Administrator !";
             }
         }
