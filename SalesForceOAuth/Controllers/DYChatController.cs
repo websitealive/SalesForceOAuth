@@ -147,26 +147,20 @@ namespace SalesForceOAuth.Controllers
                             else if (entitySettings.SaveChatsTo == "custom_activity_type")
                             {
                                 //The code of block in the if condition is only for Sounders Client
-                                //Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "Testing : For Push Message to Tasks");
                                 //if ((lData.ObjectRef == "c1" && lData.GroupId == 8370) | (lData.ObjectRef == "dev0" && lData.GroupId == 7))
                                 //if (lData.ObjectRef == "c1" && lData.GroupId == 8370)
-                                if ((lData.ObjectRef == "c1" && lData.GroupId == 8370) | (lData.ObjectRef == "dev0" && lData.GroupId == 7))
+                                if (lData.ObjectRef == "c1" && lData.GroupId == 8370)
                                 {
-                                    //Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "Testing : Start Pushing Chats to Tasks");
                                     Entity task = new Entity("task");
                                     task["subject"] = "AliveChat ID: " + lData.SessionId;
                                     task["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                                    // task["kore_tasktype"] = "Web Chat";
+                                    task["kore_tasktype"] = "Web Chat";
                                     task["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                     if (OwnerId != "")
                                     {
-                                        task["modifiedby"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                        task["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
                                     }
                                     var tsakId = objser.Create(task);
-                                    //if (tsakId != Guid.Empty)
-                                    //{
-                                    //    Slack.SendMessage(lData.ObjectRef, lData.GroupId, lData.SessionId, ItemId, ItemType, "Testing : Successfully Pushing Chats to Tasks. TaskId : " + tsakId);
-                                    //}
                                 }
                                 Entity task2 = new Entity(entitySettings.CustomActivityName);
                                 task2["subject"] = "AliveChat ID: " + lData.SessionId;
@@ -174,7 +168,7 @@ namespace SalesForceOAuth.Controllers
                                 task2["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 if (OwnerId != "")
                                 {
-                                    task2["modifiedby"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                    task2["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
                                 }
                                 newChatId = objser.Create(task2);
                             }
@@ -185,13 +179,8 @@ namespace SalesForceOAuth.Controllers
                                 Entity note = new Entity("annotation");
                                 note["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                                if (OwnerId != "")
-                                {
-                                    note["modifiedby"] = new EntityReference("systemuser", new Guid(OwnerId));
-                                }
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 newChatId = objser.Create(note);
-
                             }
 
                             if (newChatId != Guid.Empty)
@@ -202,7 +191,22 @@ namespace SalesForceOAuth.Controllers
                                     Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
                                     foreach (var item in getBackEndFeields)
                                     {
-                                        parentEntity[item.FieldName] = item.ValueDetail;
+                                        if(item.FieldType == "lookup")
+                                        {
+                                            parentEntity[item.FieldName] = new EntityReference(item.LookupEntityName, new Guid(item.LookupEntityRecordId));
+                                        }
+                                        else if (item.FieldType == "datetime")
+                                        {
+                                            parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                        }
+                                        else if (item.FieldType == "currency")
+                                        {
+                                            parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
+                                        }
+                                        else
+                                        {
+                                            parentEntity[item.FieldName] = item.ValueDetail;
+                                        }
                                     }
                                     objser.Update(parentEntity);
                                 }

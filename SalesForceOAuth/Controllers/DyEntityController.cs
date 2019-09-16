@@ -237,6 +237,37 @@ namespace SalesForceOAuth.Controllers
                         }
                     }
 
+                    // New Functionality for Custom Fileds
+                    var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntityUniqueName);
+                    if (customFields != null)
+                    {
+                        foreach (FieldsModel inputField in customFields)
+                        {
+                            if (inputField.ValueDetail != null)
+                            {
+                                if (inputField.FieldType == "lookup")
+                                {
+                                    //lookup 
+                                    registration[inputField.FieldName] = new EntityReference(inputField.LookupEntityName, new Guid(inputField.LookupEntityRecordId));
+                                }
+                                else if (inputField.FieldType == "datetime")
+                                {
+                                    //Date Time
+                                    registration[inputField.FieldName] = Convert.ToDateTime(inputField.ValueDetail);
+                                }
+                                else if (inputField.FieldType == "currency")
+                                {
+                                    registration[inputField.FieldName] = new Money(Convert.ToDecimal(inputField.ValueDetail));
+                                }
+                                else
+                                {
+                                    registration[inputField.FieldName] = inputField.ValueDetail;
+                                }
+                            }
+
+                        }
+                    }
+
                     Guid accountId = objser.Create(registration);
                     if (accountId != Guid.Empty)
                     {
@@ -357,9 +388,7 @@ namespace SalesForceOAuth.Controllers
                     //List<string> searchedColumn = new List<string>();
                     List<string> entityId = new List<string>();
                     FilterExpression filter = new FilterExpression();
-                    //ConditionExpression filterOwnRcd = new ConditionExpression();
 
-                    //searchedColumn.AddRange(new string[] { RetrieveEntityInfo.PrimaryIdAttribute, RetrieveEntityInfo.PrimaryNameAttribute });
                     getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryIdAttribute", FieldName = RetrieveEntityInfo.PrimaryIdAttribute });
                     getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryNameAttribute", FieldName = RetrieveEntityInfo.PrimaryNameAttribute });
                     if (getSearchedFileds.Count > 0)
@@ -394,45 +423,77 @@ namespace SalesForceOAuth.Controllers
                             {
                                 //searchedColumn.Add(field.FieldName);
                                 query.ColumnSet.AddColumn(field.FieldName);
-                                if (field.FieldType == "textbox" || field.FieldType == "boolean" || field.FieldType == "PrimaryNameAttribute")
+                                if (!(field.FieldType == "lookup" || field.FieldType == "PrimaryIdAttribute"))
                                 {
-                                    ConditionExpression filterOwnRcd1 = new ConditionExpression();
-                                    filterOwnRcd1.AttributeName = field.FieldName;
-                                    filterOwnRcd1.Operator = ConditionOperator.Like;
-                                    filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
-                                    filter.Conditions.Add(filterOwnRcd1);
+                                    ConditionExpression condition = new ConditionExpression();
+                                    condition.AttributeName = field.FieldName;
+                                    condition.Operator = ConditionOperator.Like;
+                                    if (field.FieldType == "currency")
+                                    {
+                                        int result;
+                                        bool parsedSuccessfully = int.TryParse(SValue, out result);
+                                        if(int.TryParse(SValue, out result))
+                                        {
+                                            condition.Values.Add(result);
+                                            filter.Conditions.Add(condition);
+                                        }
+                                    }
+                                    else if (field.FieldType == "datetime")
+                                    {
+                                        DateTime result;
+                                        if (DateTime.TryParse(SValue, out result))
+                                        {
+                                            condition.Values.Add(result);
+                                            filter.Conditions.Add(condition);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        condition.Values.Add("%" + SValue.Trim() + "%");
+                                        filter.Conditions.Add(condition);
+                                    }
                                 }
                             }
                         }
                     }
 
-                    //foreach (var item in searchedColumn)
-                    //{
-                    //    query.ColumnSet.AddColumn(item);
-                    //    if (item != RetrieveEntityInfo.PrimaryIdAttribute)
-                    //    {
-                    //        ConditionExpression filterOwnRcd1 = new ConditionExpression();
-                    //        filterOwnRcd1.AttributeName = item;
-                    //        filterOwnRcd1.Operator = ConditionOperator.Like;
-                    //        filterOwnRcd1.Values.Add("%" + SValue.Trim() + "%");
-                    //        filter.Conditions.Add(filterOwnRcd1);
-                    //    }
-                    //}
                     // Add Detail Fileds TO search
                     if (getDetailFields.Count > 0)
                     {
                         foreach (var field in getDetailFields)
                         {
-                            if (field.FieldType == "textbox" || field.FieldType == "boolean")
+                            if (field.FieldType != "lookup")
                             {
                                 var flag = filter.Conditions.Where(x => x.AttributeName == field.FieldName).Select(s => s.AttributeName).FirstOrDefault();
                                 if (flag == null)
                                 {
-                                    ConditionExpression filterOwnRcd5 = new ConditionExpression();
-                                    filterOwnRcd5.AttributeName = field.FieldName;
-                                    filterOwnRcd5.Operator = ConditionOperator.Like;
-                                    filterOwnRcd5.Values.Add("%" + SValue.Trim() + "%");
-                                    filter.Conditions.Add(filterOwnRcd5);
+                                    ConditionExpression condition1 = new ConditionExpression();
+                                    condition1.AttributeName = field.FieldName;
+                                    condition1.Operator = ConditionOperator.Like;
+                                    if (field.FieldType == "currency")
+                                    {
+                                        int result;
+                                        bool parsedSuccessfully = int.TryParse(SValue, out result);
+                                        if (int.TryParse(SValue, out result))
+                                        {
+                                            condition1.Values.Add(result);
+                                            filter.Conditions.Add(condition1);
+                                        }
+                                    }
+                                    else if (field.FieldType == "datetime")
+                                    {
+                                        DateTime result;
+                                        if (DateTime.TryParse(SValue, out result))
+                                        {
+                                            condition1.Values.Add(result);
+                                            filter.Conditions.Add(condition1);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        condition1.Values.Add("%" + SValue.Trim() + "%");
+                                        filter.Conditions.Add(condition1);
+                                    }
                                 }
                             }
                         }
@@ -473,22 +534,32 @@ namespace SalesForceOAuth.Controllers
                             List<CustomFieldModel> retSearchFields = new List<CustomFieldModel>();
                             if (getSearchedFileds.Count > 0)
                             {
-
                                 foreach (var field in getSearchedFileds)
                                 {
-                                    if ((field.FieldType != "relatedEntity") && (field.FieldType == "textbox" || field.FieldType == "boolean" || field.FieldType == "lookup"))
+                                    if ((field.FieldType != "relatedEntity") && (field.FieldType == "textbox" || field.FieldType == "boolean" || field.FieldType == "lookup" || field.FieldType == "currency" || field.FieldType == "datetime"))
+                                    // if ((field.FieldType != "relatedEntity"))
                                     {
                                         if (z.Attributes.Contains(field.FieldName))
                                         {
                                             CustomFieldModel Fields = new CustomFieldModel();
                                             Fields.FieldLabel = field.FieldLabel;
-                                            if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                            if (z.Attributes[field.FieldName].ToString() == "Microsoft.Xrm.Sdk.EntityReference")
                                             {
-                                                Fields.Value = z.Attributes[field.FieldName].ToString();
+                                                Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                                
+                                            }
+                                            else if(z.Attributes[field.FieldName].ToString() == "Microsoft.Xrm.Sdk.Money")
+                                            {
+                                                Fields.Value = ((Microsoft.Xrm.Sdk.Money)z.Attributes[field.FieldName]).Value.ToString();
+                                            }
+                                            else if (field.FieldType == "datetime")
+                                            {
+                                                DateTime date = ((System.DateTime)z.Attributes[field.FieldName]);
+                                                Fields.Value = date.Month + "/" + date.Day + "/" + date.Year;
                                             }
                                             else
                                             {
-                                                Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                                Fields.Value = z.Attributes[field.FieldName].ToString();
                                             }
                                             retSearchFields.Add(Fields);
                                         }

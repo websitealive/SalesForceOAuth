@@ -1577,3 +1577,46 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 8/30/2019 4:06:37 PM ==> No Chat in queue to publish
 9/2/2019 4:11:01 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%opp%' to attribute 'opportunity.parentcontactid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
 9/2/2019 4:24:28 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%opp%' to attribute 'opportunity.parentaccountid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+9/6/2019 10:06:53 AM ==> No Chat in queue to publish
+9/6/2019 10:12:18 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+9/6/2019 10:21:53 AM ==> No Chat in queue to publish
+9/6/2019 10:27:57 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: System.InvalidCastException: Microsoft Dynamics CRM has experienced an error. Reference number for administrators or support: #6BFC2E91
+9/6/2019 10:35:39 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: System.InvalidCastException: Microsoft Dynamics CRM has experienced an error. Reference number for administrators or support: #BF2E6F33
+9/6/2019 10:38:02 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: System.InvalidCastException: Microsoft Dynamics CRM has experienced an error. Reference number for administrators or support: #816763DE
+9/6/2019 11:13:45 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: System.InvalidCastException: Microsoft Dynamics CRM has experienced an error. Reference number for administrators or support: #EA139748
+9/6/2019 11:14:55 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+9/6/2019 11:26:53 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Incorrect attribute value type System.String
+9/6/2019 12:48:55 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%109%' to attribute 'opportunity.opportunityid'. Expected type of attribute value: System.Guid. Exception raised: Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+9/6/2019 2:28:11 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: 'Opportunity' entity doesn't contain attribute with Name = 'ayu_currencytestlead'.
+9/6/2019 4:07:20 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%109%' to attribute 'opportunity.ayu_currecytestopportunity'. Expected type of attribute value: System.Decimal. Exception raised: Input string was not in a correct format.
+9/10/2019 10:41:55 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+9/10/2019 10:43:20 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+9/10/2019 10:50:49 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+9/10/2019 11:36:58 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : System.InvalidOperationException: There is an error in XML document (1, 1285). ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.ConnectStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.ServiceModel.Channels.MaxMessageSizeStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at System.Xml.EncodingStreamWrapper.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Xml.XmlBufferReader.TryEnsureBytes(Int32 count)
+   at System.Xml.XmlUTF8TextReader.BufferElement()
+   at System.Xml.XmlUTF8TextReader.ReadStartElement()
+   at System.Xml.XmlUTF8TextReader.Read()
+   at System.Xml.XmlBaseReader.Skip()
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read52_XmlSchemaElement(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read66_XmlSchema(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read67_Types(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read124_ServiceDescription(Boolean isNullable, Boolean checkType)
+   at System.Web.Services.Description.ServiceDescriptionSerializationReader.Read125_definitions()
+   at System.Web.Services.Description.ServiceDescription.ServiceDescriptionSerializer.Deserialize(XmlSerializationReader reader)
+   at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)
+   --- End of inner exception stack trace ---
+   at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)
+   at System.Web.Services.Description.ServiceDescription.Read(XmlReader reader, Boolean validate)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.CreateMetadataSection(XmlReader reader, String sourceUrl)
+   at System.ServiceModel.Description.MetadataExchangeClient.MetadataRetriever.Retrieve(TimeoutHelper timeoutHelper), Exception Message: Metadata contains a reference that cannot be resolved: 'https://crm2.websitealive.com/XRMServices/2011/Organization.svc?wsdl=wsdl0'.
+9/11/2019 8:49:51 AM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Unable to cast object of type 'System.String' to type 'Microsoft.Xrm.Sdk.EntityReference'.
+9/11/2019 9:39:47 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: An exception System.FormatException was thrown while trying to convert input value '%Raja%' to attribute 'account.industrycode'. Expected type of attribute value: System.Int32. Exception raised: Input string was not in a correct format.
+9/13/2019 3:21:48 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: Received an unexpected EOF or 0 bytes from the transport stream.

@@ -102,14 +102,27 @@ namespace SalesForceOAuth.Controllers
                     }
                     #endregion
                     // New Functionality for Custom Fileds
-                    var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Case);
+                    var customFields = Repository.GetConstantInputFields(lData.ObjectRef, lData.GroupId, urlReferrer, EntityName.Case.ToString());
                     if (customFields != null)
                     {
-                        foreach (CustomFieldModel inputField in customFields)
+                        foreach (FieldsModel inputField in customFields)
                         {
-                            if (inputField.Value != null)
+                            if (inputField.ValueDetail != null)
                             {
-                                registration[inputField.FieldName] = inputField.Value;
+                                if (inputField.FieldType == "lookup")
+                                {
+                                    //lookup 
+                                    registration[inputField.FieldName] = new EntityReference(inputField.LookupEntityName, new Guid(inputField.LookupEntityRecordId));
+                                }
+                                else if (inputField.FieldType == "datetime")
+                                {
+                                    //Date Time
+                                    registration[inputField.FieldName] = Convert.ToDateTime(inputField.LookupEntityName);
+                                }
+                                else
+                                {
+                                    registration[inputField.FieldName] = inputField.ValueDetail;
+                                }
                             }
 
                         }

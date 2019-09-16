@@ -119,10 +119,10 @@ namespace CRM.WebServices
             }
         }
 
-        public static string PostChats(CRMUser user, string message, out bool IsChatAdded)
+        public static string PostChats(CRMUser user, string message, out bool IsChatAdded, out string ChatId)
         {
             RootObjectNote n = new RootObjectNote() {
-                associations = new Associations() { contactIds = new List<int>() { 851 } },
+                associations = new Associations() { contactIds = new List<int>() { 901 } },
                 metadata = new Metadata() { body = message },
                 engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
             };
@@ -137,12 +137,57 @@ namespace CRM.WebServices
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsChatAdded = true;
+                ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
+                ChatId = responseContent.engagement.id;
                 return "Record Added Successfully";
             }
             else
             {
                 IsChatAdded = false;
+                ChatId = null;
                 // ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
+                return "Some Thing went wrong. Please Contact Administrator !";
+            }
+        }
+
+        public static string UpdateChats(CRMUser user, string message, string chatId, out bool IsChatAdded)
+        {
+            RootObjectNote n = new RootObjectNote()
+            {
+                associations = new Associations() { contactIds = new List<int>() { 901 } },
+                metadata = new Metadata() { body = message },
+                engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+            };
+            string d = JsonConvert.SerializeObject(n);
+            var client = new RestClient(user.ApiUrl);
+            RestRequest request = new RestRequest();
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            // Get previous record
+            request = new RestRequest("/engagements/v1/engagements/" + chatId, Method.GET);
+            var getChat = client.Execute(request);
+            if (getChat.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(getChat.Content);
+                var chat = responseContent.metadata.body;
+                chat = chat + message;
+                request = new RestRequest("/engagements/v1/engagements/" + chatId, Method.PATCH);
+                request.AddJsonBody(d);
+                var updateChat = client.Execute(request);
+                if (updateChat.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IsChatAdded = true;
+                    return "Record Updated Successfully";
+                }
+                else
+                {
+                    IsChatAdded = false;
+                    return "Some Thing went wrong. Please Contact Administrator !";
+                }
+            }
+            else
+            {
+                IsChatAdded = false;
                 return "Some Thing went wrong. Please Contact Administrator !";
             }
         }
