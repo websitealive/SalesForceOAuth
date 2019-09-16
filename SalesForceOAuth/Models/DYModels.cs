@@ -33,6 +33,10 @@ namespace SalesForceOAuth.Models
 
         public string ValueDetail { get; set; }
 
+        public string LookupEntityName { get; set; }
+
+        public string LookupEntityRecordId { get; set; }
+
         public string RelatedEntity { get; set; }
 
         public string RelatedField { get; set; }

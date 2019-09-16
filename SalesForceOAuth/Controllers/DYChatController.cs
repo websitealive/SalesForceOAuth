@@ -191,7 +191,22 @@ namespace SalesForceOAuth.Controllers
                                     Entity parentEntity = objser.Retrieve(ItemType, new Guid(ItemId), new ColumnSet(true));
                                     foreach (var item in getBackEndFeields)
                                     {
-                                        parentEntity[item.FieldName] = item.ValueDetail;
+                                        if(item.FieldType == "lookup")
+                                        {
+                                            parentEntity[item.FieldName] = new EntityReference(item.LookupEntityName, new Guid(item.LookupEntityRecordId));
+                                        }
+                                        else if (item.FieldType == "datetime")
+                                        {
+                                            parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                        }
+                                        else if (item.FieldType == "currency")
+                                        {
+                                            parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
+                                        }
+                                        else
+                                        {
+                                            parentEntity[item.FieldName] = item.ValueDetail;
+                                        }
                                     }
                                     objser.Update(parentEntity);
                                 }

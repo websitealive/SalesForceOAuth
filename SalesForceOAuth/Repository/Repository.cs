@@ -268,9 +268,9 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-        public static List<CustomFieldModel> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, EntityName entity)
+        public static List<FieldsModel> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, string entity)
         {
-            List<CustomFieldModel> returnFileds = new List<CustomFieldModel>();
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -288,10 +288,20 @@ namespace SalesForceOAuth
                             {
                                 if (rdr["entityname"].ToString().Trim().ToLower() == entity.ToString().ToLower())
                                 {
-                                    CustomFieldModel customInputFields = new CustomFieldModel();
+                                    FieldsModel customInputFields = new FieldsModel();
+
+                                    customInputFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                     customInputFields.FieldName = rdr["fieldname"].ToString().Trim();
-                                    customInputFields.Value = rdr["valuedetail"].ToString().Trim();
+                                    customInputFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
+                                    customInputFields.FieldType = rdr["fieldtype"].ToString().Trim();
+                                    customInputFields.LookupEntityName = rdr["relatedentity"].ToString().Trim();
+                                    customInputFields.LookupEntityRecordId = rdr["valuedetail"].ToString().Trim();
+
                                     returnFileds.Add(customInputFields);
+                                    //CustomFieldModel customInputFields = new CustomFieldModel();
+                                    //customInputFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                    //customInputFields.Value = rdr["valuedetail"].ToString().Trim();
+                                    //returnFileds.Add(customInputFields);
                                 }
                             }
                         }
@@ -749,7 +759,9 @@ namespace SalesForceOAuth
                                 backendFields.FieldName = rdr["backend_field_name"].ToString().Trim();
                                 backendFields.ValueDetail = rdr["backend_field_value"].ToString().Trim();
                                 backendFields.EntityType = rdr["entity"].ToString().Trim();
-
+                                backendFields.FieldType = rdr["backend_fieldtype"].ToString().Trim();
+                                backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
+                                backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
                                 returnFields.Add(backendFields);
                             }
                         }

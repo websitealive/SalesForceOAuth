@@ -114,34 +114,44 @@ namespace SalesForceOAuth.Controllers
             return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
         }
 
-        //[HttpPost]
-        //public async Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
-        //{
-        //    try
-        //    {
-        //        JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
-        //    }
-        //    string ItemId = "", ItemType = "", OwnerId = "";
-        //    int chatId = 0;
-        //    MyAppsDb.GetTaggedChatDynamicsId(lData.ObjectRef, lData.GroupId, lData.SessionId, ref chatId, ref ItemId, ref ItemType, ref OwnerId, Request.RequestUri.Authority.ToString());
+        [HttpPost]
+        public async Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
+        {
+            try
+            {
+                JWT.JsonWebToken.Decode(lData.token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            int chatId = 0;
+            // EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString());
 
-        //    // EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString());
-
-        //    // var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), ItemType);
-        //    CRMUser user = Repository.GetCrmCreditionalsDetail(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), lData.CrmType);
-        //    //HubSpot.PostChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"),)
-        //    //Entity task2 = new Entity(entitySettings.CustomActivityName);
-        //    //task2["subject"] = "AliveChat ID: " + lData.SessionId;
-        //    //task2["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-        //    //task2["regardingobjectid"] = new EntityReference(ItemType, new Guid(ItemId));
-        //    //newChatId = objser.Create(task2);
-
-        //    //return "";
-        //}
+            // var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), ItemType);
+            string ChatId, RowId;
+            bool IsChatAdded;
+            //long NoteId = 0;
+            CRMUser user = Repository.GetCrmCreditionalsDetail(lData.ObjectRef, lData.GroupId, Request.RequestUri.Authority.ToString(), CrmType.HubSpot);
+            bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, Request.RequestUri.Authority.ToString(), out ChatId, out RowId);
+            if (flag)
+            {
+                HubSpot.UpdateChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), ChatId, out IsChatAdded);
+            }
+            else
+            {
+                HubSpot.PostChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), out IsChatAdded, out ChatId);
+            }
+            if (IsChatAdded)
+            {
+                Repository.AddChatInfo(lData.ObjectRef, Request.RequestUri.Authority.ToString(), CrmType.HubSpot.ToString(), lData.EntitytId, lData.EntitytType, lData.App, ChatId);
+                return MyAppsDb.ConvertJSONOutput("Chat Added Successfully", HttpStatusCode.OK, false);
+            }
+            else
+            {
+                return MyAppsDb.ConvertJSONOutput("Unable to add Chat", HttpStatusCode.Conflict, false);
+            }
+        }
 
         [HttpPost]
         public HttpResponseMessage SugarNewEntityCreate(CrmEntity crmEntity)

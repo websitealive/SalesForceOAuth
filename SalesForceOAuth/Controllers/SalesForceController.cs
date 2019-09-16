@@ -1045,7 +1045,7 @@ namespace SalesForceOAuth.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM integration_dynamics_queue WHERE status=1 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
+                    string sql = "SELECT * FROM integration_dynamics_queue WHERE status=0 AND objectref = '" + objectRef + "' AND groupid = " + groupId.ToString() + " AND sessionid = " + sessionId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {

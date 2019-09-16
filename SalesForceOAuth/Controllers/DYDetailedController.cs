@@ -92,14 +92,32 @@ namespace SalesForceOAuth.Controllers
                                             .Select(y => y.Value).FirstOrDefault();
                                 if (fieldValue != null)
                                 {
-                                    if (fieldValue.ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                    if (fieldValue.ToString() == "Microsoft.Xrm.Sdk.EntityReference")
                                     {
-                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = fieldValue.ToString());
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.EntityReference)fieldValue).Name.ToString());
+
+                                    }
+                                    else if (fieldValue.ToString() == "Microsoft.Xrm.Sdk.Money")
+                                    {
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.Money)fieldValue).Value.ToString());
+                                    }
+                                    else if (fieldValue.ToString() == "datetime")
+                                    {
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((System.DateTime)fieldValue).Month.ToString() + "/" + ((System.DateTime)fieldValue).Day.ToString() + "/" + ((System.DateTime)fieldValue).Year.ToString());
                                     }
                                     else
                                     {
-                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.EntityReference)fieldValue).Name.ToString());
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = fieldValue.ToString());
                                     }
+
+                                    //if (fieldValue.ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                    //{
+                                    //    retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = fieldValue.ToString());
+                                    //}
+                                    //else
+                                    //{
+                                    //    retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.EntityReference)fieldValue).Name.ToString());
+                                    //}
 
                                 }
                             }
