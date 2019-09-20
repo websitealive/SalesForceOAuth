@@ -87,7 +87,7 @@ namespace SalesForceOAuth.Controllers
             CRMUser user = Repository.GetCrmCreditionalsDetail(crmEntity.ObjectRef, crmEntity.GroupId, Request.RequestUri.Authority.ToString(), crmEntity.CrmType);
             bool IsRecordAdded;
             var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded);
-            if(IsRecordAdded)
+            if (IsRecordAdded)
             {
                 return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
             }
@@ -110,8 +110,14 @@ namespace SalesForceOAuth.Controllers
             }
             //  Get current user log in detail
             CRMUser user = Repository.GetCrmCreditionalsDetail(ObjectRef, GroupId, Request.RequestUri.Authority.ToString(), CrmType);
-            CrmEntity retRecord = HubSpot.GetRecordByEmail(user, SVAlue);
-            return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
+            List<CrmEntity> retRecord = HubSpot.GetRecordByEmail(user, SVAlue);
+            if (retRecord != null)
+            {
+                var len = MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.OK, false);
+                return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.OK, false);
+            }
+            else
+                return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
         }
 
         [HttpPost]

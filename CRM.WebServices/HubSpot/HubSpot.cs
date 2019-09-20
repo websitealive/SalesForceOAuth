@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 
 namespace CRM.WebServices
 {
@@ -106,7 +107,7 @@ namespace CRM.WebServices
 
             request.AddJsonBody(d);
             var response = client.Execute(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsRecordAdded = true;
                 return "Record Added Successfully";
@@ -121,14 +122,15 @@ namespace CRM.WebServices
 
         public static string PostChats(CRMUser user, string message, out bool IsChatAdded, out string ChatId)
         {
-            RootObjectNote n = new RootObjectNote() {
+            RootObjectNote n = new RootObjectNote()
+            {
                 associations = new Associations() { contactIds = new List<int>() { 901 } },
                 metadata = new Metadata() { body = message },
                 engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
             };
             string d = JsonConvert.SerializeObject(n);
             var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest("/engagements/v1/engagements" , Method.POST);
+            var request = new RestRequest("/engagements/v1/engagements", Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
 
@@ -192,21 +194,38 @@ namespace CRM.WebServices
             }
         }
 
-        public static CrmEntity GetRecordByEmail(CRMUser user, string email)
+        public static List<CrmEntity> GetRecordByEmail(CRMUser user, string email)
         {
-            CrmEntity retEntityRecord = new CrmEntity();
+            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
             var client = new RestClient(user.ApiUrl);
+
             var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
+            var request2 = new RestRequest("/contacts/v1/search/query?q=" + email);
+
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-            var response = client.Execute(request);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            request2.AddHeader("Content-Type", "application/json");
+            request2.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+
+            var response = client.Execute(request);
+            var response2 = client.Execute(request2);
+
+            if (response2.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                retEntityRecord.Email = contact.properties.email.value;
-                retEntityRecord.FirstName = contact.properties.firstname.value;
-                retEntityRecord.LastName = contact.properties.lastname.value;
+                RootObject contact2 = JsonConvert.DeserializeObject<RootObject>(response2.Content);
+                var contactttt2 = JsonConvert.SerializeObject(response2.Content);
+                var contact3 = JsonConvert.DeserializeObject(response2.Content);
+
+                    foreach (var t in contactttt2)
+                {
+                    int x = 3;
+                }
+                
+                //retEntityRecord.Email = contact.properties.email.value;
+                //retEntityRecord.FirstName = contact.properties.firstname.value;
+                //retEntityRecord.LastName = contact.properties.lastname.value;
                 return retEntityRecord;
             }
             else
