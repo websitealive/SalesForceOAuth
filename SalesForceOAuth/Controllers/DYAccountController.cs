@@ -572,40 +572,6 @@ namespace SalesForceOAuth.Controllers
                                     filter.Conditions.Add(condition1);
                                 }
                             }
-                            //if (detailField.FieldType != "lookup")
-                            //{
-                            //    var flag = filter.Conditions.Where(x => x.AttributeName == detailField.FieldName).Select(s => s.AttributeName).FirstOrDefault();
-                            //    if (flag == null)
-                            //    {
-                            //        ConditionExpression condition1 = new ConditionExpression();
-                            //        condition1.AttributeName = detailField.FieldName;
-                            //        condition1.Operator = ConditionOperator.Like;
-                            //        if (detailField.FieldType == "currency")
-                            //        {
-                            //            int result;
-                            //            bool parsedSuccessfully = int.TryParse(SValue, out result);
-                            //            if (int.TryParse(SValue, out result))
-                            //            {
-                            //                condition1.Values.Add(result);
-                            //                filter.Conditions.Add(condition1);
-                            //            }
-                            //        }
-                            //        else if (detailField.FieldType == "datetime")
-                            //        {
-                            //            DateTime result;
-                            //            if (DateTime.TryParse(SValue, out result))
-                            //            {
-                            //                condition1.Values.Add(result);
-                            //                filter.Conditions.Add(condition1);
-                            //            }
-                            //        }
-                            //        else
-                            //        {
-                            //            condition1.Values.Add("%" + SValue.Trim() + "%");
-                            //            filter.Conditions.Add(condition1);
-                            //        }
-                            //    }
-                            //}
                         }
                     }
                     filter.FilterOperator = LogicalOperator.Or;

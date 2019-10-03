@@ -811,6 +811,7 @@ namespace SalesForceOAuth
                                 backendFields.FieldType = rdr["backend_fieldtype"].ToString().Trim();
                                 backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
                                 backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
+                                backendFields.IsUsingCurrentDate = Convert.ToInt32(rdr["backend_use_current_date"]);
                                 returnFields.Add(backendFields);
                             }
                         }
@@ -2653,10 +2654,32 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "insert into integration_crm_authentication(objectref, groupid, username, password, api_url, access_token, refresh_token, crm_type)";
-                    sql += "VALUES ('" + crmUser.ObjectRef + "','" + crmUser.GroupId + "','" + crmUser.UserName + "','" + crmUser.Password + "','" + crmUser.ApiUrl + "','" + crmUser.OuthDetail.access_token + "','" + crmUser.OuthDetail.refresh_token + "','" + crmUser.CrmType + "')";
+                    string sql = "insert into integration_crm_authentication(objectref, groupid, username, password, api_url, access_token, refresh_token, crm_type, expires_in, expires_on)";
+                    sql += "VALUES ('" + crmUser.ObjectRef + "','" + crmUser.GroupId + "','" + crmUser.UserName + "','" + crmUser.Password + "','" + crmUser.ApiUrl + "','" + crmUser.OuthDetail.access_token + "','" + crmUser.OuthDetail.refresh_token + "','" + crmUser.CrmType + "','" + crmUser.OuthDetail.expires_in + "','" + crmUser.OuthDetail.expires_on + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static void UpdateCrmCreditionals(CRMUser crmUser)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(crmUser.UrlReferrer, crmUser.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string updateSql = "Update integration_crm_authentication Set access_token = '" + crmUser.OuthDetail.access_token + "', refresh_token = '" + crmUser.OuthDetail.refresh_token + "', expires_in = '" + crmUser.OuthDetail.expires_in + "', expires_on = '" + crmUser.OuthDetail.expires_on + "'"; 
+                    updateSql += " WHERE crm_type = '" + crmUser.CrmType + "' AND objectref = '" + crmUser.ObjectRef + "' AND groupid = " + crmUser.GroupId;
+                    MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
                 }
                 catch (Exception ex)
@@ -2726,6 +2749,7 @@ namespace SalesForceOAuth
                                 OuthDetail outhDetail = new OuthDetail();
                                 outhDetail.refresh_token = rdr["refresh_token"].ToString().Trim();
                                 outhDetail.access_token =  rdr["access_token"].ToString().Trim();
+                                outhDetail.expires_on = rdr["expires_on"].ToString().Trim();
                                 returnCrmUser.OuthDetail = outhDetail;
                             }
                         }

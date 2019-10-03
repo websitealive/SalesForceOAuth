@@ -404,7 +404,10 @@ namespace SalesForceOAuth.Controllers
                     getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryNameAttribute", FieldName = RetrieveEntityInfo.PrimaryNameAttribute });
                     if (IslookupSearch)
                     {
-                        getSearchedFileds.Add(new CustomFieldModel() { FieldType = "OptionalLookupField", FieldName = lookupFieldName });
+                        if(lookupFieldName != "")
+                        {
+                            getSearchedFileds.Add(new CustomFieldModel() { FieldType = "OptionalLookupField", FieldName = lookupFieldName });
+                        }
                     }
                     if (getSearchedFileds.Count > 0)
                     {
@@ -416,10 +419,81 @@ namespace SalesForceOAuth.Controllers
                                 query.ColumnSet.AddColumn(field.FieldName);
                                 if(field.FieldType != "PrimaryIdAttribute")
                                 {
-                                    condition.AttributeName = field.FieldName;
-                                    condition.Operator = ConditionOperator.Like;
-                                    condition.Values.Add("%" + SValue.Trim() + "%");
-                                    filter.Conditions.Add(condition);
+                                    var lookupEntityMetadata = (from e in RetrieveEntityInfo.Attributes where e.LogicalName == field.FieldName select e).FirstOrDefault();
+
+                                    if(lookupEntityMetadata.AttributeType.ToString() == "DateTime")
+                                    {
+                                        DateTime result;
+                                        if (DateTime.TryParse(SValue, out result))
+                                        {
+                                            condition.AttributeName = field.FieldName;
+                                            condition.Operator = ConditionOperator.Like;
+                                            condition.Values.Add(result);
+                                            filter.Conditions.Add(condition);
+                                        }
+                                    }
+                                    else if (lookupEntityMetadata.AttributeType.ToString() == "Money")
+                                    {
+                                        int result;
+                                        bool parsedSuccessfully = int.TryParse(SValue, out result);
+                                        if (int.TryParse(SValue, out result))
+                                        {
+                                            condition.AttributeName = field.FieldName;
+                                            condition.Operator = ConditionOperator.Like;
+                                            condition.Values.Add(Convert.ToDecimal(result));
+                                        }
+                                    }
+                                    else if (lookupEntityMetadata.AttributeType.ToString() == "Lookup")
+                                    {
+                                        string loolupentityName = ((Microsoft.Xrm.Sdk.Metadata.LookupAttributeMetadata)lookupEntityMetadata).Targets[0].ToString();
+                                        RetrieveEntityRequest retrieveParentEntityRequest = new RetrieveEntityRequest
+                                        {
+                                            EntityFilters = EntityFilters.Attributes,
+                                            LogicalName = loolupentityName
+                                        };
+                                        RetrieveEntityResponse retrieveParentEntityResponse = (RetrieveEntityResponse)proxyservice.Execute(retrieveParentEntityRequest);
+                                        EntityMetadata RetrieveParentEntityInfo = retrieveParentEntityResponse.EntityMetadata;
+
+                                        QueryExpression queryLookupEntity = new QueryExpression(loolupentityName);
+                                        queryLookupEntity.ColumnSet.AddColumn(RetrieveParentEntityInfo.PrimaryNameAttribute);
+                                        FilterExpression lookupEntityFilter = new FilterExpression();
+                                        ConditionExpression lookupSearchField = new ConditionExpression()
+                                        {
+                                            AttributeName = RetrieveParentEntityInfo.PrimaryNameAttribute,
+                                            Operator = ConditionOperator.Like,
+                                            Values = { "%" + SValue.Trim() + "%" }
+                                        };
+                                        lookupEntityFilter.Conditions.Add(lookupSearchField);
+                                        queryLookupEntity.Criteria.AddFilter(lookupEntityFilter);
+                                        EntityCollection lookupResult = objser.RetrieveMultiple(queryLookupEntity);
+                                        List<Guid> lookupIds = new List<Guid>();
+                                        foreach (var item in lookupResult.Entities)
+                                        {
+                                            if (item.Attributes.Contains(RetrieveParentEntityInfo.PrimaryIdAttribute))
+                                                lookupIds.Add(new Guid(item.Attributes[RetrieveParentEntityInfo.PrimaryIdAttribute].ToString()));
+                                        }
+
+                                        if (lookupIds.Count > 0)
+                                        {
+                                            List<ConditionExpression> lookupCondition = new List<ConditionExpression>();
+                                            foreach (var item in lookupIds)
+                                            {
+                                                ConditionExpression c = new ConditionExpression();
+                                                c.AttributeName = field.FieldName;
+                                                c.Operator = ConditionOperator.Equal;
+                                                c.Values.Add(item);
+                                                lookupCondition.Add(c);
+                                            }
+                                            filter.Conditions.AddRange(lookupCondition);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        condition.AttributeName = field.FieldName;
+                                        condition.Operator = ConditionOperator.Like;
+                                        condition.Values.Add("%" + SValue.Trim() + "%");
+                                        filter.Conditions.Add(condition);
+                                    }
                                 }
                             }
                             else
@@ -502,7 +576,6 @@ namespace SalesForceOAuth.Controllers
                                         }
                                         else if (field.FieldType == "currency")
                                         {
-
                                             condition.Operator = ConditionOperator.Like;
                                             int result;
                                             bool parsedSuccessfully = int.TryParse(SValue, out result);
@@ -661,7 +734,24 @@ namespace SalesForceOAuth.Controllers
                             {
                                 info.OptionalFieldDisplayName = lookupFieldLabel;
                                 if (z.Attributes.Contains(lookupFieldName)){
-                                    info.OptionalFieldValue = z.Attributes[lookupFieldName].ToString();
+                                    if (z.Attributes[lookupFieldName].ToString() == "Microsoft.Xrm.Sdk.EntityReference")
+                                    {
+                                        info.OptionalFieldValue = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[lookupFieldName]).Name.ToString();
+                                    }
+                                    else if (z.Attributes[lookupFieldName].ToString() == "Microsoft.Xrm.Sdk.Money")
+                                    {
+                                        info.OptionalFieldValue = ((Microsoft.Xrm.Sdk.Money)z.Attributes[lookupFieldName]).Value.ToString();
+                                    }
+                                    else if (z.Attributes[lookupFieldName].GetType().Name == "DateTime")
+                                    {
+                                        DateTime date = ((System.DateTime)z.Attributes[lookupFieldName]);
+                                        info.OptionalFieldValue = date.Month + "/" + date.Day + "/" + date.Year;
+                                    }
+                                    else
+                                    {
+                                        info.OptionalFieldValue = z.Attributes[lookupFieldName].ToString();
+                                    }
+
                                 }
                                 else{
                                     info.OptionalFieldValue = string.Empty;

@@ -60,6 +60,7 @@ namespace SalesForceOAuth.Controllers
             user.IntegrationConstants = Repository.GetIntegrationConstants(ObjectRef, urlReferrer, crmType, AppType);
             // hub spot crm api
             OuthDetail outhDetails = HubSpot.GetAuthorizationTokens(user);
+            
             if (outhDetails.Is_Authenticated)
             {
                 user.UrlReferrer = urlReferrer;

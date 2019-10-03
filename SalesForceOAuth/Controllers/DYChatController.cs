@@ -200,7 +200,14 @@ namespace SalesForceOAuth.Controllers
                                         }
                                         else if (item.FieldType == "datetime")
                                         {
-                                            parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                            if(item.IsUsingCurrentDate == 1)
+                                            {
+                                                parentEntity[item.FieldName] = DateTime.Now;
+                                            }
+                                            else
+                                            {
+                                                parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                            }
                                         }
                                         else if (item.FieldType == "currency")
                                         {

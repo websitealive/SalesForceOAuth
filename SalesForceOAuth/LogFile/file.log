@@ -1636,3 +1636,13 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 9/24/2019 9:47:12 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The ConditonOperator.Equal requires 1 value/s, not 0. Parameter Name: ayu_Test
 9/24/2019 9:48:38 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The ConditonOperator.Equal requires 1 value/s, not 0. Parameter Name: ayu_Test
 9/24/2019 3:17:39 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 'Opportunity' entity doesn't contain attribute with Name = 'ayu_name'.
+9/26/2019 8:55:09 AM ==> Function: DYAccounts-GetSearchedAccounts : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+9/26/2019 8:57:35 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The date-time format for %500% is invalid, or value is outside the supported range.
+9/26/2019 9:00:05 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/26/2019 9:00:56 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The date-time format for %Raja% is invalid, or value is outside the supported range.
+9/26/2019 10:00:11 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/26/2019 10:00:58 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/26/2019 10:04:37 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+9/26/2019 11:21:47 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+10/3/2019 3:43:46 PM ==> No Chat in queue to publish
+10/3/2019 3:44:40 PM ==> No Chat in queue to publish

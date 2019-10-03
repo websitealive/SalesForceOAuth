@@ -50,6 +50,8 @@ namespace SalesForceOAuth.Models
         public int BusinessRequired { get; set; }
 
         public int MaxLength { get; set; }
+
+        public int IsUsingCurrentDate { get; set; }
     }
 
     public class CustomFields
