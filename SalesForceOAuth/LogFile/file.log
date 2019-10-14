@@ -1646,3 +1646,9 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 9/26/2019 11:21:47 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
 10/3/2019 3:43:46 PM ==> No Chat in queue to publish
 10/3/2019 3:44:40 PM ==> No Chat in queue to publish
+10/4/2019 2:41:03 PM ==> Function: DYEntity-PostEntity : Unhandled exception--Internal exception : , Exception Message: Could not find an entity with specified entity name: asxa
+10/8/2019 2:34:08 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The date-time format for %16146954803% is invalid, or value is outside the supported range.
+10/9/2019 9:43:52 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+10/9/2019 9:51:01 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 10/8/2019 or request may be missing a required field at [line:1, column:51]
+10/9/2019 9:51:39 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Close Date: invalid date: Sun Feb 09 00:00:00 GMT 16
+10/10/2019 2:37:00 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 10/22/2019 or request may be missing a required field at [line:1, column:19]

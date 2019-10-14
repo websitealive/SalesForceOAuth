@@ -71,10 +71,11 @@ namespace SalesForceOAuth.Controllers
                     {
                         ownerId = c.Id;
                     }
-
+                    DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                     SuccessResponse sR;
                     dynamic lTemp = new ExpandoObject();
-                    lTemp.Subject = lData.Subject;
+                    //lTemp.Subject = lData.Subject;
+                    lTemp.Subject = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
                     lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                     lTemp.Status = "Completed";
                     if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;

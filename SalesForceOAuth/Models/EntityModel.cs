@@ -25,6 +25,8 @@ namespace SalesForceOAuth.Models
 
         public string OptionalFieldValue { get; set; }
 
+        public int AllowRecordSearch { get; set; }
+
         public int AllowRecordCreation { get; set; }
 
         public string CrmType { get; set; }

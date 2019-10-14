@@ -643,6 +643,7 @@ namespace SalesForceOAuth
                                 detailFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                 detailFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 detailFields.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                detailFields.FieldType = rdr["detail_field_type"].ToString().Trim();
                                 detailFields.EntityType = rdr["entity_name"].ToString().Trim();
 
                                 returnFileds.Add(detailFields);
@@ -687,6 +688,7 @@ namespace SalesForceOAuth
                                 returnFileds.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 returnFileds.FieldName = rdr["detail_field_name"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
+                                returnFileds.FieldType = rdr["detail_field_type"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -715,13 +717,12 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_dynamic_detailedview_fields (objectref, groupid, entity_name, detail_field_name, detail_field_label)";
-                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
+                    string sql = "INSERT INTO integration_dynamic_detailedview_fields (objectref, groupid, entity_name, detail_field_type, detail_field_name, detail_field_label)";
+                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
                     return "Detail Fields Added Successfully";
-
                 }
                 catch (Exception ex)
                 {
@@ -1162,6 +1163,9 @@ namespace SalesForceOAuth
                             while (rdr.Read())
                             {
                                 returnEntitySettings.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                returnEntitySettings.SaveChatsTo = rdr["chat_save_to"].ToString().Trim();
+                                returnEntitySettings.CustomActivityName = rdr["custom_activity_name"].ToString().Trim();
+
                                 returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
                                 returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
                                 returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
@@ -1197,8 +1201,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_dynamic_entity (objectref, groupid, leads_required, contacts_required, accounts_required, allow_leads_creation, allow_contacts_creation, allow_accounts_creation)";
-                    sql += "VALUES ('" + EntitySettingsName.ObjectRef + "','" + EntitySettingsName.GroupId + "','" + EntitySettingsName.IsLeadRequired + "','" + EntitySettingsName.IsContactRequired + "','" + EntitySettingsName.IsAccountRequired + "','" + EntitySettingsName.AllowLeadCreation + "','" + EntitySettingsName.AllowContactCreation + "','" + EntitySettingsName.AllowAccountCreation + "')";
+                    string sql = "INSERT INTO integration_dynamic_entity (objectref, groupid, chat_save_to, custom_activity_name, leads_required, contacts_required, accounts_required, allow_leads_creation, allow_contacts_creation, allow_accounts_creation)";
+                    sql += "VALUES ('" + EntitySettingsName.ObjectRef + "','" + EntitySettingsName.GroupId + "','" + EntitySettingsName.SaveChatsTo + "','" + EntitySettingsName.CustomActivityName + "','" + EntitySettingsName.IsLeadRequired + "','" + EntitySettingsName.IsContactRequired + "','" + EntitySettingsName.IsAccountRequired + "','" + EntitySettingsName.AllowLeadCreation + "','" + EntitySettingsName.AllowContactCreation + "','" + EntitySettingsName.AllowAccountCreation + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -1220,7 +1224,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_dynamic_entity Set leads_required = '" + EntitySettingsName.IsLeadRequired + "', contacts_required = '" + EntitySettingsName.IsContactRequired + "', accounts_required = '" + EntitySettingsName.IsAccountRequired + "', allow_leads_creation = '" + EntitySettingsName.AllowLeadCreation + "', allow_contacts_creation = '" + EntitySettingsName.AllowContactCreation + "', allow_accounts_creation = '" + EntitySettingsName.AllowAccountCreation + "'";
+                    string sql = "Update integration_dynamic_entity Set chat_save_to = '" + EntitySettingsName.SaveChatsTo + "', custom_activity_name = '" + EntitySettingsName.CustomActivityName + "', leads_required = '" + EntitySettingsName.IsLeadRequired + "', contacts_required = '" + EntitySettingsName.IsContactRequired + "', accounts_required = '" + EntitySettingsName.IsAccountRequired + "', allow_leads_creation = '" + EntitySettingsName.AllowLeadCreation + "', allow_contacts_creation = '" + EntitySettingsName.AllowContactCreation + "', allow_accounts_creation = '" + EntitySettingsName.AllowAccountCreation + "'";
                     sql += " WHERE id = " + EntitySettingsName.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2459,8 +2463,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation)";
-                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "')";
+                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search)";
+                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -2482,7 +2486,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "'";
+                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "'";
                     sql += " WHERE id = " + EntityDetail.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2543,6 +2547,7 @@ namespace SalesForceOAuth
                                 entity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 entity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 entity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
+                                entity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
                                 returnEntityList.Add(entity);
                             }
                         }
@@ -2581,6 +2586,8 @@ namespace SalesForceOAuth
                                 returnEntity.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
+                                returnEntity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
+                                returnEntity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
                             }
                         }
                         rdr.Close();
