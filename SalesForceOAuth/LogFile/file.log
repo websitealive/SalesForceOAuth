@@ -1652,3 +1652,45 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 10/9/2019 9:51:01 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 10/8/2019 or request may be missing a required field at [line:1, column:51]
 10/9/2019 9:51:39 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Close Date: invalid date: Sun Feb 09 00:00:00 GMT 16
 10/10/2019 2:37:00 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of date from VALUE_STRING value 10/22/2019 or request may be missing a required field at [line:1, column:19]
+10/15/2019 12:22:01 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Object cannot be cast from DBNull to other types.
+10/15/2019 12:23:54 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Object cannot be cast from DBNull to other types.
+10/15/2019 12:30:20 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Input string was not in a correct format.
+10/15/2019 12:32:05 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Input string was not in a correct format.
+10/15/2019 12:35:24 PM ==> No Chat in queue to publish
+10/15/2019 12:38:21 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Input string was not in a correct format.
+10/15/2019 12:38:58 PM ==> No Chat in queue to publish
+10/15/2019 12:40:28 PM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Input string was not in a correct format.
+10/15/2019 12:50:24 PM ==> No Chat in queue to publish
+10/21/2019 12:50:59 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/21/2019 3:39:13 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/21/2019 3:39:43 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/21/2019 3:40:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/21/2019 3:42:26 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/21/2019 3:49:47 PM ==> Function: DF BackEnd Fields : Unable to add Export Fields--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+10/22/2019 2:52:54 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/22/2019 2:52:56 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/22/2019 2:52:59 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/22/2019 3:01:46 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+10/23/2019 8:38:52 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : , Exception Message: Contact With Id = 5caaa26f-bff4-e911-81c7-0e4fcc581ae4 Does Not Exist
+10/23/2019 8:45:09 AM ==> Function: DyLeads-GetSearchedLeads : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+10/23/2019 8:45:22 AM ==> Function: DyLeads-GetSearchedLeads : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+10/23/2019 9:23:08 AM ==> Function: DYChat-PostChat : Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open(), Exception Message: Unable to connect to any of the specified MySQL hosts.
+10/23/2019 4:25:30 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
+10/23/2019 4:27:54 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified

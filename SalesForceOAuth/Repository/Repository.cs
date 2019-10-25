@@ -202,6 +202,10 @@ namespace SalesForceOAuth
                                 returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
                                 returnFileds.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                 returnFileds.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                returnFileds.IsUsingRelatedEntityOptionalFields = (rdr["use_relatedentity_optioal_fields"].ToString().Trim() == "1") ? "true" : "false";
+                                returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+                                // returnFileds.IsUsingCurrentDate = (rdr["use_current_date"].ToString().Trim() == "1") ? "true" : "false";
                             }
                         }
                         rdr.Close();
@@ -399,8 +403,8 @@ namespace SalesForceOAuth
 
                     if (flag)
                     {
-                        string sql = "INSERT INTO integration_dynamics_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "' )";
+                        string sql = "INSERT INTO integration_dynamics_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentityid, relatedentity, use_relatedentity_optioal_fields, relatedentity_optional_filedlabel, relatedentity_optional_fieldname, use_current_date)";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.LookupEntityRecordId + "','" + ExportFields.RelatedEntity + "','" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ExportFields.IsUsingCurrentDate + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();
@@ -429,7 +433,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_dynamics_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "'";
+                    string sql = "Update integration_dynamics_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "', use_relatedentity_optioal_fields = '" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "', relatedentity_optional_filedlabel = '" + ExportFields.OptionalFieldsLabel + "', relatedentity_optional_fieldname = '" + ExportFields.OptionalFieldsName + "', use_current_date = '" + ExportFields.IsUsingCurrentDate + "'";
                     sql += " WHERE id = " + ExportFields.ID;
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
@@ -532,6 +536,10 @@ namespace SalesForceOAuth
                                 returnFileds.FieldLabel = rdr["search_field_label"].ToString().Trim();
                                 returnFileds.FieldName = rdr["search_field_name"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
+
+                                returnFileds.ValueType = rdr["search_field_type"].ToString().Trim();
+                                returnFileds.RelatedEntity = rdr["search_field_name"].ToString().Trim();
+                                returnFileds.RelatedField = rdr["related_entity_field_name"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -812,7 +820,7 @@ namespace SalesForceOAuth
                                 backendFields.FieldType = rdr["backend_fieldtype"].ToString().Trim();
                                 backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
                                 backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
-                                backendFields.IsUsingCurrentDate = Convert.ToInt32(rdr["backend_use_current_date"]);
+                                backendFields.IsUsingCurrentDate = (rdr["backend_use_current_date"].ToString().Trim() == "") ? 0 : 1;
                                 returnFields.Add(backendFields);
                             }
                         }
@@ -883,8 +891,9 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_dynamics_backend_fields (objectref, groupid, entity, backend_field_name, backend_field_value)";
-                    sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.ValueDetail + "' )";
+                    
+                    string sql = "INSERT INTO integration_dynamics_backend_fields (objectref, groupid, entity, backend_field_name, backend_fieldtype, backend_lookup_entity, backend_lookup_entity_value, backend_lookup_entity_recordid, backend_use_current_date, backend_field_value)";
+                    sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.FieldType + "','" + BackEndFields.LookupEntityName + "','" + BackEndFields.LookupEntityRecordValue + "','" + BackEndFields.LookupEntityRecordId + "','" + BackEndFields.IsUsingCurrentDate + "','" + BackEndFields.ValueDetail + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();

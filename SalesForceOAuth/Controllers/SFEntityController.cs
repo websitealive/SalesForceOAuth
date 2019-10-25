@@ -161,9 +161,6 @@ namespace SalesForceOAuth.Controllers
                 MyAppsDb.GetAPICredentials(lData.ObjectRef, lData.GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //find lead owner user
-                // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-
                 SuccessResponse sR;
                 dynamic newEntity = new ExpandoObject();
 
@@ -370,7 +367,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
                 query.Append(" where Name like '%" + SValue.Trim() + "%' ");
                 query.Append(filters.ToString());
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {

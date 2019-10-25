@@ -72,6 +72,7 @@ namespace SalesForceOAuth.Controllers
                             #region set properties
                             string ownerInfo, postMessage, chatEntity, parentLookupField;
                             IOrganizationService objser = (IOrganizationService)proxyservice;
+
                             Entity registration;
                             Entity post = new Entity("post");
                             post["source"] = new OptionSetValue(2);
@@ -149,9 +150,6 @@ namespace SalesForceOAuth.Controllers
                             }
                             else if (entitySettings.SaveChatsTo == "custom_activity_type")
                             {
-                                //The code of block in the if condition is only for Sounders Client
-                                //if ((lData.ObjectRef == "c1" && lData.GroupId == 8370) | (lData.ObjectRef == "dev0" && lData.GroupId == 7))
-                                //if (lData.ObjectRef == "c1" && lData.GroupId == 8370)
                                 if (lData.ObjectRef == "c1" && lData.GroupId == 8370)
                                 {
                                     Entity task = new Entity("task");
@@ -174,6 +172,28 @@ namespace SalesForceOAuth.Controllers
                                     task2["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
                                 }
                                 newChatId = objser.Create(task2);
+
+                                // chats push to contact on in case of lData.ObjectRef == "ellucian" && lData.GroupId == 8
+                                // if (lData.ObjectRef == "ellucian" && lData.GroupId == 8)
+                                if (lData.ObjectRef == "ellucian" && lData.GroupId == 8 && ItemType == "opportunity")
+                                {
+                                    ColumnSet col = new ColumnSet();
+                                    col.AddColumn("parentcontactid");
+                                    Entity contactRec = objser.Retrieve("opportunity", new Guid(ItemId), col);
+                                    if (contactRec.Attributes.Contains("parentcontactid"))
+                                    {
+                                        // first get the contat id
+                                        Entity contactTask = new Entity(entitySettings.CustomActivityName);
+                                        contactTask["subject"] = "AliveChat ID: " + lData.SessionId;
+                                        contactTask["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                        contactTask["regardingobjectid"] = new EntityReference("contact", ((Microsoft.Xrm.Sdk.EntityReference)contactRec.Attributes["parentcontactid"]).Id);
+                                        if (OwnerId != "")
+                                        {
+                                            contactTask["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                        }
+                                        objser.Create(contactTask);
+                                    }
+                                }
                             }
                             else
                             {
@@ -184,8 +204,27 @@ namespace SalesForceOAuth.Controllers
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 newChatId = objser.Create(note);
-                            }
 
+                                // chats push to contact on in case of lData.ObjectRef == "ellucian" && lData.GroupId == 8
+                                // if (lData.ObjectRef == "ellucian" && lData.GroupId == 8)
+                                if (lData.ObjectRef == "ellucian" && lData.GroupId == 8 && ItemType == "opportunity")
+                                {
+                                    ColumnSet col = new ColumnSet();
+                                    col.AddColumn("parentcontactid");
+                                    Entity contactRec = objser.Retrieve("opportunity", new Guid(ItemId), col);
+                                    if (contactRec.Attributes.Contains("parentcontactid"))
+                                    {
+                                        // first get the contat id
+                                        Entity contactNote = new Entity("annotation");
+                                        contactNote["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
+                                        contactNote["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                        contactNote["objectid"] = new EntityReference("contact", ((Microsoft.Xrm.Sdk.EntityReference)contactRec.Attributes["parentcontactid"]).Id);
+                                        objser.Create(contactNote);
+                                    }
+                                }
+
+                            }
+                            
                             if (newChatId != Guid.Empty)
                             {
                                 IsChatPushed = true;

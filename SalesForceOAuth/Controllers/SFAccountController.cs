@@ -115,7 +115,7 @@ namespace SalesForceOAuth.Controllers
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 //find lead owner user
-                // System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
                     "where Username like '%" + lData.OwnerEmail + "%' " +

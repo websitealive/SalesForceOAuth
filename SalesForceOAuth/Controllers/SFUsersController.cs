@@ -36,7 +36,7 @@ namespace SalesForceOAuth.Controllers
                 MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
                     "where Username like '%" + SValue + "%' " +
                     "OR Email like '%" + SValue + "%' " ).ConfigureAwait(false);

@@ -47,7 +47,7 @@ namespace SalesForceOAuth.Controllers
                 string[] customSearchLabelArray = sLabelOptional.Split('|');
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 query += " where Id ='" + refId + "'";
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {
