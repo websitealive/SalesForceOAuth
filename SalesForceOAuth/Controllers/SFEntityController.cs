@@ -174,7 +174,14 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            MyAppsDb.AddProperty(newEntity, inputField.FieldName, inputField.Value);
+                            if(inputField.FieldType == "datetime")
+                            {
+                                MyAppsDb.AddProperty(newEntity, inputField.FieldName, Convert.ToDateTime(inputField.Value));
+                            }
+                            else
+                            {
+                                MyAppsDb.AddProperty(newEntity, inputField.FieldName, inputField.Value);
+                            }
                         }
 
                     }

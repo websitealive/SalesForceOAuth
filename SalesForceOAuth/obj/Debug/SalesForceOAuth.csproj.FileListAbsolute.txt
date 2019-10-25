@@ -225,6 +225,8 @@ D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAut
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreCompileInputs.cache
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\SourceCode SaleForce\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.dll
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\ApplicationInsights.config
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\csc.exe
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
@@ -245,7 +247,6 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Antlr3.Runtime.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Dto.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.Notification.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\CRM.WebServices.dll
-D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.SqlServer.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\JWT.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AI.Agent.Intercept.dll
@@ -326,7 +327,6 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.WebPages.Deployment.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.WebPages.Razor.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\WebApiContrib.Formatting.Jsonp.pdb
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Antlr3.Runtime.pdb
-D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.SqlServer.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AspNet.Identity.Core.xml
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AspNet.Identity.Owin.xml

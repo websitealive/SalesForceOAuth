@@ -33,7 +33,7 @@ namespace SalesForceOAuth.Controllers
             }
             string urlReferrer = Request.RequestUri.Authority.ToString();
             IntegrationConstants integrationConstants = Repository.GetIntegrationConstants(ObjectRef, urlReferrer, CrmType, AppType);
-            string url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=" + integrationConstants.RedirectedUrl;
+            string url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=https://app-stage.alive5.com/oauth-hubspot";
             return MyAppsDb.ConvertJSONOutput(url, HttpStatusCode.OK, false);
         }
 
@@ -60,6 +60,7 @@ namespace SalesForceOAuth.Controllers
             user.IntegrationConstants = Repository.GetIntegrationConstants(ObjectRef, urlReferrer, crmType, AppType);
             // hub spot crm api
             OuthDetail outhDetails = HubSpot.GetAuthorizationTokens(user);
+            
             if (outhDetails.Is_Authenticated)
             {
                 user.UrlReferrer = urlReferrer;

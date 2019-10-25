@@ -41,9 +41,17 @@ namespace SalesForceOAuth.Models
 
         public string RelatedField { get; set; }
 
+        public string IsUsingRelatedEntityOptionalFields { get; set; }
+
+        public string OptionalFieldsName { get; set; }
+
+        public string OptionalFieldsLabel { get; set; }
+
         public int BusinessRequired { get; set; }
 
         public int MaxLength { get; set; }
+
+        public int IsUsingCurrentDate { get; set; }
     }
 
     public class CustomFields

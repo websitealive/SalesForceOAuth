@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 
 namespace CRM.WebServices
 {
@@ -41,6 +40,11 @@ namespace CRM.WebServices
         public int ownerId { get; set; }
         public string type { get; set; }
         public long timestamp { get; set; }
+        public string bodyPreview { get; set; }
+        public List<object> queueMembershipIds { get; set; }
+        public bool bodyPreviewIsTruncated { get; set; }
+        public string bodyPreviewHtml { get; set; }
+        public bool gdprDeleted { get; set; }
     }
 
     public class Associations
@@ -79,6 +83,7 @@ namespace CRM.WebServices
             {
                 var response = client.Execute(request);
                 outhDetails = JsonConvert.DeserializeObject<OuthDetail>(response.Content);
+                outhDetails.expires_on = DateTime.Now.AddSeconds(outhDetails.expires_in).ToString();
                 outhDetails.Is_Authenticated = response.IsSuccessful;
             }
             catch (Exception ex)
@@ -88,6 +93,58 @@ namespace CRM.WebServices
             }
             return outhDetails;
         }
+
+        public static OuthDetail RefreshAuthorizationTokens(CRMUser user)
+        {
+            OuthDetail outhDetails = new OuthDetail();
+
+            var client = new RestClient(user.IntegrationConstants.ApiUrl);
+            var request = new RestRequest("/oauth/v1/token", Method.POST);
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("grant_type", "refresh_token");
+            request.AddParameter("client_id", user.IntegrationConstants.ClientId);
+            request.AddParameter("client_secret", user.IntegrationConstants.SecretKey);
+            request.AddParameter("refresh_token", user.OuthDetail.refresh_token);
+            try
+            {
+                var response = client.Execute(request);
+                outhDetails = JsonConvert.DeserializeObject<OuthDetail>(response.Content);
+                outhDetails.expires_on = DateTime.Now.AddSeconds(outhDetails.expires_in).ToString();
+                outhDetails.Is_Authenticated = response.IsSuccessful;
+            }
+            catch (Exception ex)
+            {
+                outhDetails.Is_Authenticated = false;
+                outhDetails.error_message = "Some Thing Went Wrong Please Try later";
+            }
+            return outhDetails;
+        }
+
+        //public static OuthDetail GetAuthorizationTokensInfo(CRMUser user)
+        //{
+        //    OuthDetail outhDetails = new OuthDetail();
+
+        //    var client = new RestClient(user.IntegrationConstants.ApiUrl);
+        //    var request = new RestRequest("/oauth/v1/token", Method.POST);
+        //    request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+        //    request.AddParameter("grant_type", "refresh_token");
+        //    request.AddParameter("client_id", user.IntegrationConstants.ClientId);
+        //    request.AddParameter("client_secret", user.IntegrationConstants.SecretKey);
+
+        //    try
+        //    {
+        //        var response = client.Execute(request);
+        //        outhDetails = JsonConvert.DeserializeObject<OuthDetail>(response.Content);
+        //        outhDetails.expires_on = DateTime.Now.AddSeconds(outhDetails.expires_in).ToString();
+        //        outhDetails.Is_Authenticated = response.IsSuccessful;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        outhDetails.Is_Authenticated = false;
+        //        outhDetails.error_message = "Some Thing Went Wrong Please Try later";
+        //    }
+        //    return outhDetails;
+        //}
 
         public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded)
         {
@@ -107,7 +164,7 @@ namespace CRM.WebServices
 
             request.AddJsonBody(d);
             var response = client.Execute(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsRecordAdded = true;
                 return "Record Added Successfully";
@@ -120,17 +177,16 @@ namespace CRM.WebServices
             }
         }
 
-        public static string PostChats(CRMUser user, string message, out bool IsChatAdded, out string ChatId)
+        public static string PostChats(CRMUser user, string message, int entityId, out bool IsChatAdded, out string ChatId)
         {
-            RootObjectNote n = new RootObjectNote()
-            {
-                associations = new Associations() { contactIds = new List<int>() { 901 } },
+            RootObjectNote n = new RootObjectNote() {
+                associations = new Associations() { contactIds = new List<int>() { entityId } },
                 metadata = new Metadata() { body = message },
                 engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
             };
             string d = JsonConvert.SerializeObject(n);
             var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest("/engagements/v1/engagements", Method.POST);
+            var request = new RestRequest("/engagements/v1/engagements" , Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
 
@@ -152,28 +208,34 @@ namespace CRM.WebServices
             }
         }
 
-        public static string UpdateChats(CRMUser user, string message, string chatId, out bool IsChatAdded)
+        public static string UpdateChats(CRMUser user, string message, int entityId, string chatId, out bool IsChatAdded)
         {
-            RootObjectNote n = new RootObjectNote()
-            {
-                associations = new Associations() { contactIds = new List<int>() { 901 } },
-                metadata = new Metadata() { body = message },
-                engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
-            };
-            string d = JsonConvert.SerializeObject(n);
             var client = new RestClient(user.ApiUrl);
             RestRequest request = new RestRequest();
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            
             // Get previous record
             request = new RestRequest("/engagements/v1/engagements/" + chatId, Method.GET);
-            var getChat = client.Execute(request);
-            if (getChat.StatusCode == System.Net.HttpStatusCode.OK)
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            var response = client.Execute(request);
+
+            
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(getChat.Content);
+                RootObject chats = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
                 var chat = responseContent.metadata.body;
                 chat = chat + message;
                 request = new RestRequest("/engagements/v1/engagements/" + chatId, Method.PATCH);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+                RootObjectNote n = new RootObjectNote()
+                {
+                    associations = new Associations() { contactIds = new List<int>() { entityId } },
+                    metadata = new Metadata() { body = chat },
+                    engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+                };
+                string d = JsonConvert.SerializeObject(n);
                 request.AddJsonBody(d);
                 var updateChat = client.Execute(request);
                 if (updateChat.StatusCode == System.Net.HttpStatusCode.OK)
@@ -194,38 +256,21 @@ namespace CRM.WebServices
             }
         }
 
-        public static List<CrmEntity> GetRecordByEmail(CRMUser user, string email)
+        public static CrmEntity GetRecordByEmail(CRMUser user, string email)
         {
-            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
+            CrmEntity retEntityRecord = new CrmEntity();
             var client = new RestClient(user.ApiUrl);
-
             var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
-            var request2 = new RestRequest("/contacts/v1/search/query?q=" + email);
-
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-
-            request2.AddHeader("Content-Type", "application/json");
-            request2.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-
             var response = client.Execute(request);
-            var response2 = client.Execute(request2);
 
-            if (response2.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                RootObject contact2 = JsonConvert.DeserializeObject<RootObject>(response2.Content);
-                var contactttt2 = JsonConvert.SerializeObject(response2.Content);
-                var contact3 = JsonConvert.DeserializeObject(response2.Content);
-
-                    foreach (var t in contactttt2)
-                {
-                    int x = 3;
-                }
-                
-                //retEntityRecord.Email = contact.properties.email.value;
-                //retEntityRecord.FirstName = contact.properties.firstname.value;
-                //retEntityRecord.LastName = contact.properties.lastname.value;
+                retEntityRecord.Email = contact.properties.email.value;
+                retEntityRecord.FirstName = contact.properties.firstname.value;
+                retEntityRecord.LastName = contact.properties.lastname.value;
                 return retEntityRecord;
             }
             else
@@ -239,9 +284,34 @@ namespace CRM.WebServices
             return "";
         }
 
-        public static string GetRecordList()
+        public static List<CrmEntity> GetRecordList(CRMUser user, string sValue)
         {
-            return "";
+            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
+            var client = new RestClient(user.ApiUrl);
+            var request = new RestRequest("/contacts/v1/contact/email/" + sValue + "/profile?", Method.GET);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            var response = client.Execute(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                CrmEntity rec = new CrmEntity()
+                {
+                    Id = contact.vid,
+                    Email = contact.properties.email.value,
+                    FirstName = contact.properties.firstname.value,
+                    LastName = contact.properties.lastname.value,
+                    CrmType = CrmType.HubSpot,
+                    AppType = AppType.Alive5
+                };
+                retEntityRecord.Add(rec);
+                return retEntityRecord;
+            }
+            else
+            {
+                return retEntityRecord;
+            }
         }
     }
 }

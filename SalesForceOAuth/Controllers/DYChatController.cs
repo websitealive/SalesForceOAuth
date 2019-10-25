@@ -70,7 +70,7 @@ namespace SalesForceOAuth.Controllers
                         using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                         {
                             #region set properties
-                            string postMessage, chatEntity, parentLookupField;
+                            string ownerInfo, postMessage, chatEntity, parentLookupField;
                             IOrganizationService objser = (IOrganizationService)proxyservice;
                             Entity registration;
                             Entity post = new Entity("post");
@@ -84,10 +84,13 @@ namespace SalesForceOAuth.Controllers
                                 Entity chk = objser.Retrieve("systemuser", new Guid(OwnerId), entityColumn);
 
                                 postMessage = "Chat with AliveChat ID: " + lData.SessionId + " Created By " + chk.Attributes["fullname"];
+                                ownerInfo = "Chat Created By " + chk.Attributes["fullname"];
+                                lData.Message = lData.Message + "|" + ownerInfo;
                             }
                             else
                             {
                                 postMessage = "AliveChat ID: " + lData.SessionId + " is Created.";
+                                ownerInfo = null;
                             }
                             #endregion
 
@@ -197,7 +200,14 @@ namespace SalesForceOAuth.Controllers
                                         }
                                         else if (item.FieldType == "datetime")
                                         {
-                                            parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                            if(item.IsUsingCurrentDate == 1)
+                                            {
+                                                parentEntity[item.FieldName] = DateTime.Now;
+                                            }
+                                            else
+                                            {
+                                                parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                            }
                                         }
                                         else if (item.FieldType == "currency")
                                         {

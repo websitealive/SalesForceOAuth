@@ -56,23 +56,11 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
 
-                //string ChatEntityName = string.Empty;
-                //string RelationField = string.Empty;
-                //if (lData.EntitytType.ToLower() == "account")
-                //{
-                //    RelationField = "ayu_accountid";
-                //    ChatEntityName = "ayu_alive5sms";
-                //}
-                //else if (lData.EntitytType.ToLower() == "contact")
-                //{
-                //    RelationField = "ayu_contactid";
-                //    ChatEntityName = "ayu_contactalive5sms";
-                //}
-                //else
-                //{
-                //    RelationField = "ayu_leadid";
-                //    ChatEntityName = "ayu_leadalive5sms";
-                //}
+                
+
+                // Wher to save chats
+                EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, urlReferrer);
+
                 Guid newChatId = Guid.Empty;
                 PostedObjectDetail pObject = new PostedObjectDetail();
                 string HeadingSms = " App: " + lData.App + " |  Name: " + lData.OwnerName + " |  E-mail: " + lData.OwnerEmail + " |  Phone Number: " + lData.OwnerPhone + " | | Chat Content |";
@@ -85,11 +73,48 @@ namespace SalesForceOAuth.Controllers
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
                         IOrganizationService objser = (IOrganizationService)proxyservice;
-                        Entity note = new Entity("annotation");
-                        note["subject"] = lData.Subject;
-                        note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                        note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                        newChatId = objser.Create(note);
+                        if (entitySettings.SaveChatsTo == "alivechat_entity")
+                        {
+                            string ChatEntityName = string.Empty;
+                            string RelationField = string.Empty;
+                            if (lData.EntitytType.ToLower() == "account")
+                            {
+                                RelationField = "ayu_accountid";
+                                ChatEntityName = "ayu_alive5sms";
+                            }
+                            else if (lData.EntitytType.ToLower() == "contact")
+                            {
+                                RelationField = "ayu_contactid";
+                                ChatEntityName = "ayu_contactalive5sms";
+                            }
+                            else if (lData.EntitytType.ToLower() == "lead")
+                            {
+                                RelationField = "ayu_leadid";
+                                ChatEntityName = "ayu_leadalive5sms";
+                            }
+                            else
+                            {
+                                ChatEntityName = "ayu_chat";
+                                RelationField = "ayu_" + lData.EntitytType.ToLower() + "id";
+                            }
+                        }
+                        else if (entitySettings.SaveChatsTo == "custom_activity_type")
+                        {
+                            Entity task2 = new Entity(entitySettings.CustomActivityName);
+                            task2["subject"] = "AliveChat ID: " + lData.SessionId;
+                            task2["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            task2["regardingobjectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+
+                            newChatId = objser.Create(task2);
+                        }
+                        else
+                        {
+                            Entity note = new Entity("annotation");
+                            note["subject"] = lData.Subject;
+                            note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                            note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+                            newChatId = objser.Create(note);
+                        }
                     }
                     if (newChatId != Guid.Empty)
                     {

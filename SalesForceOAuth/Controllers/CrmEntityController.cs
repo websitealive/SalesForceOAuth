@@ -85,6 +85,18 @@ namespace SalesForceOAuth.Controllers
             }
             //  Get current user log in detail
             CRMUser user = Repository.GetCrmCreditionalsDetail(crmEntity.ObjectRef, crmEntity.GroupId, Request.RequestUri.Authority.ToString(), crmEntity.CrmType);
+            
+            //if(Convert.ToDateTime(user.OuthDetail.expires_on) < DateTime.Now)
+            if (Convert.ToDateTime(user.OuthDetail.expires_on) < DateTime.Now)
+            {
+                user.IntegrationConstants = Repository.GetIntegrationConstants(crmEntity.ObjectRef, Request.RequestUri.Authority.ToString(), crmEntity.CrmType, AppType.Alive5);
+                user.UrlReferrer = Request.RequestUri.Authority.ToString();
+                user.ObjectRef = crmEntity.ObjectRef;
+                user.GroupId = crmEntity.GroupId;
+                user.CrmType = crmEntity.CrmType;
+                user.OuthDetail = HubSpot.RefreshAuthorizationTokens(user);
+                Repository.UpdateCrmCreditionals(user);
+            }
             bool IsRecordAdded;
             var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded);
             if (IsRecordAdded)
@@ -98,7 +110,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetEntityRecord(string Token, int GroupId, string ObjectRef, string SVAlue, CrmType CrmType, string Entity)
+        public async Task<HttpResponseMessage> GetEntityRecord(string Token, int GroupId, string ObjectRef, string SVAlue, CrmType CrmType, string Entity, string callback)
         {
             try
             {
@@ -110,15 +122,27 @@ namespace SalesForceOAuth.Controllers
             }
             //  Get current user log in detail
             CRMUser user = Repository.GetCrmCreditionalsDetail(ObjectRef, GroupId, Request.RequestUri.Authority.ToString(), CrmType);
-            List<CrmEntity> retRecord = HubSpot.GetRecordByEmail(user, SVAlue);
-            if (retRecord != null)
-            {
-                var len = MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.OK, false);
-                return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.OK, false);
-            }
-            else
-                return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.NotFound, false);
+            List<CrmEntity> retRecord = HubSpot.GetRecordList(user, SVAlue);
+            return MyAppsDb.ConvertJSONPOutput(callback, retRecord, HttpStatusCode.OK, false);
         }
+
+        //[HttpGet]
+        //public async System.Threading.Tasks.Task<HttpResponseMessage> GetEntityRecord(string Token, int GroupId, string ObjectRef, string SVAlue, CrmType CrmType, string Entity)
+        //{
+        //    try
+        //    {
+        //        JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(ex, "CRM-IsAuthenticated", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+        //    }
+        //    //  Get current user log in detail
+        //    CRMUser user = Repository.GetCrmCreditionalsDetail(ObjectRef, GroupId, Request.RequestUri.Authority.ToString(), CrmType);
+        //    List<CrmEntity> retRecord = HubSpot.GetRecordList(user, SVAlue);
+        //    return MyAppsDb.ConvertJSONPOutput("callback", retRecord, HttpStatusCode.OK, false);
+        //    //return MyAppsDb.ConvertJSONOutput(retRecord, HttpStatusCode.OK, false);
+        //}
 
         [HttpPost]
         public async Task<HttpResponseMessage> PostAddMessage(MessageDataCopy lData)
@@ -142,11 +166,13 @@ namespace SalesForceOAuth.Controllers
             bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, Request.RequestUri.Authority.ToString(), out ChatId, out RowId);
             if (flag)
             {
-                HubSpot.UpdateChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), ChatId, out IsChatAdded);
+                //HubSpot.UpdateChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), ChatId, out IsChatAdded);
+                HubSpot.UpdateChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), ChatId, out IsChatAdded);
             }
             else
             {
-                HubSpot.PostChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), out IsChatAdded, out ChatId);
+                //HubSpot.PostChats(user, lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), out IsChatAdded, out ChatId);
+                HubSpot.PostChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), out IsChatAdded, out ChatId);
             }
             if (IsChatAdded)
             {

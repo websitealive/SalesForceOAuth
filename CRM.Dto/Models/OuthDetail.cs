@@ -14,5 +14,8 @@ namespace CRM.Dto
         public string token_type { get; set; }
         public string error { get; set; }
         public string error_message { get; set; }
+        public string localendpoint { get; set; }
+        public double expires_in { get; set; }
+        public string expires_on { get; set; }
     }
 }

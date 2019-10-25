@@ -268,6 +268,55 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
+        public static FieldsModel GetDYExportFieldsForLookup(string objectRef, string exportFieldId, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_dynamics_custom_fields where id = '" + exportFieldId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                returnFileds.FieldName = rdr["fieldname"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entityname"].ToString().Trim();
+                                returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
+                                returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
+
+                                returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                returnFileds.IsUsingRelatedEntityOptionalFields = rdr["use_relatedentity_optioal_fields"].ToString().Trim();
+                                returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
         public static List<FieldsModel> GetConstantInputFields(string objectRef, int groupId, string urlReferrer, string entity)
         {
             List<FieldsModel> returnFileds = new List<FieldsModel>();
@@ -594,6 +643,7 @@ namespace SalesForceOAuth
                                 detailFields.ID = int.Parse(rdr["id"].ToString().Trim());
                                 detailFields.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 detailFields.FieldName = rdr["detail_field_name"].ToString().Trim();
+                                detailFields.FieldType = rdr["detail_field_type"].ToString().Trim();
                                 detailFields.EntityType = rdr["entity_name"].ToString().Trim();
 
                                 returnFileds.Add(detailFields);
@@ -638,6 +688,7 @@ namespace SalesForceOAuth
                                 returnFileds.FieldLabel = rdr["detail_field_label"].ToString().Trim();
                                 returnFileds.FieldName = rdr["detail_field_name"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
+                                returnFileds.FieldType = rdr["detail_field_type"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -666,13 +717,12 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_dynamic_detailedview_fields (objectref, groupid, entity_name, detail_field_name, detail_field_label)";
-                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
+                    string sql = "INSERT INTO integration_dynamic_detailedview_fields (objectref, groupid, entity_name, detail_field_type, detail_field_name, detail_field_label)";
+                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
                     return "Detail Fields Added Successfully";
-
                 }
                 catch (Exception ex)
                 {
@@ -762,6 +812,7 @@ namespace SalesForceOAuth
                                 backendFields.FieldType = rdr["backend_fieldtype"].ToString().Trim();
                                 backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
                                 backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
+                                backendFields.IsUsingCurrentDate = Convert.ToInt32(rdr["backend_use_current_date"]);
                                 returnFields.Add(backendFields);
                             }
                         }
@@ -1112,6 +1163,9 @@ namespace SalesForceOAuth
                             while (rdr.Read())
                             {
                                 returnEntitySettings.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                returnEntitySettings.SaveChatsTo = rdr["chat_save_to"].ToString().Trim();
+                                returnEntitySettings.CustomActivityName = rdr["custom_activity_name"].ToString().Trim();
+
                                 returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
                                 returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
                                 returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
@@ -1147,8 +1201,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_dynamic_entity (objectref, groupid, leads_required, contacts_required, accounts_required, allow_leads_creation, allow_contacts_creation, allow_accounts_creation)";
-                    sql += "VALUES ('" + EntitySettingsName.ObjectRef + "','" + EntitySettingsName.GroupId + "','" + EntitySettingsName.IsLeadRequired + "','" + EntitySettingsName.IsContactRequired + "','" + EntitySettingsName.IsAccountRequired + "','" + EntitySettingsName.AllowLeadCreation + "','" + EntitySettingsName.AllowContactCreation + "','" + EntitySettingsName.AllowAccountCreation + "')";
+                    string sql = "INSERT INTO integration_dynamic_entity (objectref, groupid, chat_save_to, custom_activity_name, leads_required, contacts_required, accounts_required, allow_leads_creation, allow_contacts_creation, allow_accounts_creation)";
+                    sql += "VALUES ('" + EntitySettingsName.ObjectRef + "','" + EntitySettingsName.GroupId + "','" + EntitySettingsName.SaveChatsTo + "','" + EntitySettingsName.CustomActivityName + "','" + EntitySettingsName.IsLeadRequired + "','" + EntitySettingsName.IsContactRequired + "','" + EntitySettingsName.IsAccountRequired + "','" + EntitySettingsName.AllowLeadCreation + "','" + EntitySettingsName.AllowContactCreation + "','" + EntitySettingsName.AllowAccountCreation + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -1170,7 +1224,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_dynamic_entity Set leads_required = '" + EntitySettingsName.IsLeadRequired + "', contacts_required = '" + EntitySettingsName.IsContactRequired + "', accounts_required = '" + EntitySettingsName.IsAccountRequired + "', allow_leads_creation = '" + EntitySettingsName.AllowLeadCreation + "', allow_contacts_creation = '" + EntitySettingsName.AllowContactCreation + "', allow_accounts_creation = '" + EntitySettingsName.AllowAccountCreation + "'";
+                    string sql = "Update integration_dynamic_entity Set chat_save_to = '" + EntitySettingsName.SaveChatsTo + "', custom_activity_name = '" + EntitySettingsName.CustomActivityName + "', leads_required = '" + EntitySettingsName.IsLeadRequired + "', contacts_required = '" + EntitySettingsName.IsContactRequired + "', accounts_required = '" + EntitySettingsName.IsAccountRequired + "', allow_leads_creation = '" + EntitySettingsName.AllowLeadCreation + "', allow_contacts_creation = '" + EntitySettingsName.AllowContactCreation + "', allow_accounts_creation = '" + EntitySettingsName.AllowAccountCreation + "'";
                     sql += " WHERE id = " + EntitySettingsName.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2409,8 +2463,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation)";
-                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "')";
+                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search)";
+                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -2432,7 +2486,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "'";
+                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "'";
                     sql += " WHERE id = " + EntityDetail.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2493,6 +2547,7 @@ namespace SalesForceOAuth
                                 entity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 entity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 entity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
+                                entity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
                                 returnEntityList.Add(entity);
                             }
                         }
@@ -2531,6 +2586,8 @@ namespace SalesForceOAuth
                                 returnEntity.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
+                                returnEntity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
+                                returnEntity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
                             }
                         }
                         rdr.Close();
@@ -2604,10 +2661,32 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "insert into integration_crm_authentication(objectref, groupid, username, password, api_url, access_token, refresh_token, crm_type)";
-                    sql += "VALUES ('" + crmUser.ObjectRef + "','" + crmUser.GroupId + "','" + crmUser.UserName + "','" + crmUser.Password + "','" + crmUser.ApiUrl + "','" + crmUser.OuthDetail.access_token + "','" + crmUser.OuthDetail.refresh_token + "','" + crmUser.CrmType + "')";
+                    string sql = "insert into integration_crm_authentication(objectref, groupid, username, password, api_url, access_token, refresh_token, crm_type, expires_in, expires_on)";
+                    sql += "VALUES ('" + crmUser.ObjectRef + "','" + crmUser.GroupId + "','" + crmUser.UserName + "','" + crmUser.Password + "','" + crmUser.ApiUrl + "','" + crmUser.OuthDetail.access_token + "','" + crmUser.OuthDetail.refresh_token + "','" + crmUser.CrmType + "','" + crmUser.OuthDetail.expires_in + "','" + crmUser.OuthDetail.expires_on + "')";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static void UpdateCrmCreditionals(CRMUser crmUser)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(crmUser.UrlReferrer, crmUser.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string updateSql = "Update integration_crm_authentication Set access_token = '" + crmUser.OuthDetail.access_token + "', refresh_token = '" + crmUser.OuthDetail.refresh_token + "', expires_in = '" + crmUser.OuthDetail.expires_in + "', expires_on = '" + crmUser.OuthDetail.expires_on + "'"; 
+                    updateSql += " WHERE crm_type = '" + crmUser.CrmType + "' AND objectref = '" + crmUser.ObjectRef + "' AND groupid = " + crmUser.GroupId;
+                    MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
                 }
                 catch (Exception ex)
@@ -2677,6 +2756,7 @@ namespace SalesForceOAuth
                                 OuthDetail outhDetail = new OuthDetail();
                                 outhDetail.refresh_token = rdr["refresh_token"].ToString().Trim();
                                 outhDetail.access_token =  rdr["access_token"].ToString().Trim();
+                                outhDetail.expires_on = rdr["expires_on"].ToString().Trim();
                                 returnCrmUser.OuthDetail = outhDetail;
                             }
                         }
