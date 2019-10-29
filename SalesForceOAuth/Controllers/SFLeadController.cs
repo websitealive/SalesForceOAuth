@@ -167,7 +167,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("OR Email like '%" + SValue.Trim() + "%' ");
                 query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
                 query.Append(filters.ToString());
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {

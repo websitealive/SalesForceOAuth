@@ -137,7 +137,7 @@ namespace SalesForceOAuth.Controllers
                 query.Append("SELECT Id, Name, CloseDate, StageName From Opportunity ");
                 query.Append("where Name like '%" + SValue + "%' ");
 
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
                 {

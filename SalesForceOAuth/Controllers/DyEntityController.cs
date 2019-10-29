@@ -359,10 +359,14 @@ namespace SalesForceOAuth.Controllers
                 FieldsModel getExportFieldForLookup = new FieldsModel();
                 if (IslookupSearch)
                 {
-                    getExportFieldForLookup = Repository.GetDYExportFieldsForLookup(ObjectRef, ExportFieldId, urlReferrer);
-                    searchEntity = getExportFieldForLookup.RelatedEntity;
-                    lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
-                    lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
+                    if(ExportFieldId != null)
+                    {
+                        getExportFieldForLookup = Repository.GetDYExportFieldsForLookup(ObjectRef, ExportFieldId, urlReferrer);
+                        searchEntity = getExportFieldForLookup.RelatedEntity;
+                        lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
+                        lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
+                    }
+                    searchEntity = Entity;
                 }
                 else
                 {
