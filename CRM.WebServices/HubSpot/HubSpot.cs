@@ -13,8 +13,9 @@ namespace CRM.WebServices
     {
         public int vid { get; set; }
 
-        public Properties properties { get; set; }
+        public string message { get; set; }
 
+        public Properties properties { get; set; }
         public Engagement engagement { get; set; }
         public Associations associations { get; set; }
         public Metadata metadata { get; set; }
@@ -146,7 +147,7 @@ namespace CRM.WebServices
         //    return outhDetails;
         //}
 
-        public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded)
+        public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out int? recordPrimaryId)
         {
             List<Property> p1 = new List<Property>();
             p1.Add(new Property() { property = "firstname", value = crmEntity.FirstName });
@@ -167,29 +168,33 @@ namespace CRM.WebServices
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsRecordAdded = true;
+                RootObject responseContent = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                recordPrimaryId = responseContent.vid;
                 return "Record Added Successfully";
             }
             else
             {
                 IsRecordAdded = false;
-                ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
-                return "Some Thing went wrong. Please Contact Administrator !";
+                RootObject responseContent = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                recordPrimaryId = null;
+                return responseContent.message;
             }
         }
 
         public static string PostChats(CRMUser user, string message, int entityId, out bool IsChatAdded, out string ChatId)
         {
+            DateTime baseDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            long timeStamp = (long)(DateTime.Now.ToUniversalTime() - baseDate).TotalMilliseconds;
             RootObjectNote n = new RootObjectNote() {
                 associations = new Associations() { contactIds = new List<int>() { entityId } },
                 metadata = new Metadata() { body = message },
-                engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+                engagement = new Engagement() { active = true, ownerId = 1, timestamp = timeStamp, type = "NOTE" }
             };
             string d = JsonConvert.SerializeObject(n);
             var client = new RestClient(user.ApiUrl);
             var request = new RestRequest("/engagements/v1/engagements" , Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-
             request.AddJsonBody(d);
             var response = client.Execute(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -203,7 +208,6 @@ namespace CRM.WebServices
             {
                 IsChatAdded = false;
                 ChatId = null;
-                // ResponceContent responseContent = JsonConvert.DeserializeObject<ResponceContent>(response.Content);
                 return "Some Thing went wrong. Please Contact Administrator !";
             }
         }
