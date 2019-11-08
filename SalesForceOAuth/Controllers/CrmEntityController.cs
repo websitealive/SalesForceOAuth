@@ -97,10 +97,11 @@ namespace SalesForceOAuth.Controllers
                 Repository.UpdateCrmCreditionals(user);
             }
             bool IsRecordAdded;
-            var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded);
+            int? recordPrimaryId;
+            var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded, out recordPrimaryId);
             if (IsRecordAdded)
             {
-                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+                return MyAppsDb.ConvertJSONOutput(new CrmEntity() { EntityId = recordPrimaryId.ToString(), Message = message } , HttpStatusCode.OK, false);
             }
             else
             {

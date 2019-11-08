@@ -348,7 +348,7 @@ namespace SalesForceOAuth
                                     customInputFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
                                     customInputFields.FieldType = rdr["fieldtype"].ToString().Trim();
                                     customInputFields.LookupEntityName = rdr["relatedentity"].ToString().Trim();
-                                    customInputFields.LookupEntityRecordId = rdr["valuedetail"].ToString().Trim();
+                                    customInputFields.LookupEntityRecordId = rdr["relatedentityid"].ToString().Trim();
 
                                     returnFileds.Add(customInputFields);
                                     //CustomFieldModel customInputFields = new CustomFieldModel();

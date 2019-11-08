@@ -56,10 +56,11 @@ namespace SalesForceOAuth.Controllers
                 organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
                 homeRealmUri = null;
 
-                
-
                 // Wher to save chats
                 EntitySettings entitySettings = Repository.GetDyEntitySettings(lData.ObjectRef, lData.GroupId, urlReferrer);
+
+                // Get Back End Fields
+                var getBackEndFeields = Repository.GetDYBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntitytType);
 
                 Guid newChatId = Guid.Empty;
                 PostedObjectDetail pObject = new PostedObjectDetail();
@@ -68,7 +69,6 @@ namespace SalesForceOAuth.Controllers
                 if (!flag)
                 {
                     // Inserting the new chat
-
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
@@ -115,62 +115,103 @@ namespace SalesForceOAuth.Controllers
                             note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
                             newChatId = objser.Create(note);
                         }
-                    }
-                    if (newChatId != Guid.Empty)
-                    {
-                        pObject.Id = newChatId.ToString();
-                        pObject.ObjectName = "Chat";
-                        pObject.Message = "Chat added successfully!";
 
-                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
+                        if (newChatId != Guid.Empty)
+                        {
+                            if (getBackEndFeields.Count > 0)
+                            {
+                                Entity parentEntity = proxyservice.Retrieve(lData.EntitytType.ToLower(), new Guid(lData.EntitytId), new ColumnSet(true));
+                                foreach (var item in getBackEndFeields)
+                                {
+                                    if (item.FieldType == "lookup")
+                                    {
+                                        parentEntity[item.FieldName] = new EntityReference(item.LookupEntityName, new Guid(item.LookupEntityRecordId));
+                                    }
+                                    else if (item.FieldType == "datetime")
+                                    {
+                                        if (item.IsUsingCurrentDate == 1)
+                                        {
+                                            parentEntity[item.FieldName] = DateTime.Now;
+                                        }
+                                        else
+                                        {
+                                            parentEntity[item.FieldName] = Convert.ToDateTime(item.ValueDetail);
+                                        }
+                                    }
+                                    else if (item.FieldType == "currency")
+                                    {
+                                        parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
+                                    }
+                                    else
+                                    {
+                                        parentEntity[item.FieldName] = item.ValueDetail;
+                                    }
+                                }
+                                proxyservice.Update(parentEntity);
+                            }
 
-                        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
-                    }
-                    else
-                    {
-                        return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
-                    }
+                            pObject.Id = newChatId.ToString();
+                            pObject.ObjectName = "Chat";
+                            pObject.Message = "Chat added successfully!";
 
+                            Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
+
+                            return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
+                        }
+                        else
+                        {
+                            return MyAppsDb.ConvertJSONOutput("Could not add new Chat, check mandatory fields", HttpStatusCode.InternalServerError, true);
+                        }
+                    }
                 }
                 else
                 {
                     // Update the Previous chat
-                    ColumnSet cols = new ColumnSet(new String[] { "notetext" });
                     System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     using (OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials))
                     {
                         try
                         {
-                            //Entity retrievedChats3 = proxyservice.Retrieve()
-
-                            Entity retrievedChats = proxyservice.Retrieve("annotation", new Guid(ChatId), cols);
-                            var newChats = lData.Message;
-                            retrievedChats.Attributes["notetext"] = retrievedChats.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
-                            proxyservice.Update(retrievedChats);
+                            if (entitySettings.SaveChatsTo == "custom_activity_type")
+                            {
+                                ColumnSet cols = new ColumnSet(new String[] { "description" });
+                                Entity retrievedtask = new Entity(entitySettings.CustomActivityName);
+                                var newChats = lData.Message;
+                                retrievedtask.Attributes["description"] = retrievedtask.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                proxyservice.Update(retrievedtask);
+                            }
+                            else
+                            {
+                                ColumnSet cols = new ColumnSet(new String[] { "notetext" });
+                                Entity retrievedNote = proxyservice.Retrieve("annotation", new Guid(ChatId), cols);
+                                var newChats = lData.Message;
+                                retrievedNote.Attributes["notetext"] = retrievedNote.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                proxyservice.Update(retrievedNote);
+                            }
                         }
                         catch (Exception)
                         {
-                            IOrganizationService objser = (IOrganizationService)proxyservice;
-                            Entity note = new Entity("annotation");
-                            note["subject"] = lData.Subject;
-                            note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                            note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
-                            newChatId = objser.Create(note);
+                            if (entitySettings.SaveChatsTo == "custom_activity_type")
+                            {
+                                Entity task2 = new Entity(entitySettings.CustomActivityName);
+                                task2["subject"] = "AliveChat ID: " + lData.SessionId;
+                                task2["description"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                task2["regardingobjectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+
+                                newChatId = proxyservice.Create(task2);
+                            }
+                            else
+                            {
+                                Entity note = new Entity("annotation");
+                                note["subject"] = lData.Subject;
+                                note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                                note["objectid"] = new EntityReference(lData.EntitytType.ToLower(), new Guid(lData.EntitytId));
+                                newChatId = proxyservice.Create(note);
+                            }
                         }
 
                     }
-                    if (newChatId != Guid.Empty)
-                    {
-                        pObject.Id = newChatId.ToString();
-                        pObject.ObjectName = "Chat";
-                        pObject.Message = "Chat added successfully!";
-
-                        Repository.DeleteChatInfo(lData.ObjectRef, urlReferrer, RowId);
-                        Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
-
-                        return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
-                    }
-                    else if (newChatId == Guid.Empty)
+                    if (newChatId == Guid.Empty)
                     {
                         pObject.Id = lData.ChatId.ToString();
                         pObject.ObjectName = "Chat";
