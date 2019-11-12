@@ -1696,3 +1696,6 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 10/23/2019 4:27:54 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: LogicalName is required when entity id is not specified
 10/29/2019 11:41:41 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'rel entity' was not found in the MetadataCache.
 10/29/2019 11:43:00 AM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: The entity with a name = 'rel entity' was not found in the MetadataCache.
+08/11/2019 12:16:37 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+08/11/2019 12:16:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+08/11/2019 12:17:18 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity

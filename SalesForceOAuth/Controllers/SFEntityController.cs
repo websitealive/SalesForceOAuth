@@ -171,7 +171,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            if(inputField.FieldType == "datetime")
+                            if (inputField.FieldType == "datetime")
                             {
                                 MyAppsDb.AddProperty(newEntity, inputField.FieldName, Convert.ToDateTime(inputField.Value));
                             }
@@ -322,7 +322,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedEntities(string Token, string ObjectRef, int GroupId, string SiteRef, string Entity, string SValue, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetSearchedEntities(string Token, string ObjectRef, int GroupId, string SiteRef, string Entity, string SValue, string callback, bool IslookupSearch = false, string ExportFieldId = null)
         {
             string InstanceUrl = "", AccessToken = "", ApiVersion = "";
             string outputPayload;
@@ -343,10 +343,29 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
+                string searchEntity = "", lookupFieldLabel = "", lookupFieldName = "";
+
                 List<EntityModel> listToReturn = new List<EntityModel>();
+                FieldsModel getExportFieldForLookup = new FieldsModel();
+
+                if (IslookupSearch)
+                {
+                    if (ExportFieldId != null)
+                    {
+                        getExportFieldForLookup = Repository.GetSFExportFieldsForLookup(ObjectRef, ExportFieldId, urlReferrer);
+                        searchEntity = getExportFieldForLookup.RelatedEntity;
+                        //lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
+                        //lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
+                    }
+                    searchEntity = Entity;
+                }
+
                 string cSearchField = "";
                 string cSearchFieldLabels = "";
+                //Below line 1st checks credentials if OK then returns list of custom search fields if any
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, Entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
+
+                //Below line Get a list of custom entities if any
                 EntityModel dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
@@ -355,6 +374,7 @@ namespace SalesForceOAuth.Controllers
                 StringBuilder filters = new StringBuilder();
                 string[] customSearchFieldArray = cSearchField.Split('|');
                 string[] customSearchLabelArray = cSearchFieldLabels.Split('|');
+                //If custom search fields exist on admin side
                 if (cSearchField.Length > 0)
                 {
                     foreach (string csA in customSearchFieldArray)
@@ -363,10 +383,18 @@ namespace SalesForceOAuth.Controllers
                         filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
+                if (IslookupSearch)
+                {
+                    query.Append("SELECT Id, name From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
+                }
+                else
+                {
+                    query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
+                    query.Append(" where Name like '%" + SValue.Trim() + "%' ");
+                    query.Append(filters.ToString());
+                }
                 //Id, FirstName, LastName, Company, Email, Phone
-                query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
-                query.Append(" where Name like '%" + SValue.Trim() + "%' ");
-                query.Append(filters.ToString());
+
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
                 if (cont.Records.Count > 0)
@@ -375,9 +403,13 @@ namespace SalesForceOAuth.Controllers
                     {
                         EntityModel l = new EntityModel();
                         l.EntityPrimaryKey = c.Id;
+                        l.EntityDispalyName = c.Name;
                         l.EntityUniqueName = Entity;
-                        var chk = dynamicEntity.PrimaryFieldUniqueName;
-                        l.PrimaryFieldValue = c[chk];
+                        if (!IslookupSearch)
+                        {
+                            var chk = dynamicEntity.PrimaryFieldUniqueName;
+                            l.PrimaryFieldValue = c[chk];
+                        }
                         if (cSearchField.Length > 0)
                         {
                             int noOfcustomItems = 0; int i = 0;

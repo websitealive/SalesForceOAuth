@@ -1489,6 +1489,58 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
+
+
+
+        public static FieldsModel GetSFExportFieldsForLookup(string objectRef, string exportFieldId, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_salesforce_custom_fields where id = '" + exportFieldId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                returnFileds.FieldName = rdr["fieldname"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
+                                returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
+                                returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
+                                returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                //returnFileds.IsUsingRelatedEntityOptionalFields = rdr["use_relatedentity_optioal_fields"].ToString().Trim();
+                                //returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                //returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+
         public static string AddSFExportFields(FieldsModel ExportFields, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
