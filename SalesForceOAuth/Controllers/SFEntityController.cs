@@ -171,14 +171,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            if (inputField.FieldType == "datetime")
-                            {
-                                MyAppsDb.AddProperty(newEntity, inputField.FieldName, Convert.ToDateTime(inputField.Value));
-                            }
-                            else
-                            {
-                                MyAppsDb.AddProperty(newEntity, inputField.FieldName, inputField.Value);
-                            }
+                            MyAppsDb.AddProperty(newEntity, inputField.FieldName, inputField.Value, inputField.FieldType);
                         }
 
                     }
@@ -337,6 +330,7 @@ namespace SalesForceOAuth.Controllers
             //Access token update
             string urlReferrer = Request.RequestUri.Authority.ToString();
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(SiteRef), urlReferrer);
+
             if (msg.StatusCode != HttpStatusCode.OK)
             {
                 return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, false);

@@ -1699,3 +1699,19 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 08/11/2019 12:16:37 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:16:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:17:18 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+13/11/2019 5:01:15 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 8:51:33 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of boolean from VALUE_NUMBER_FLOAT value 44000.0 or request may be missing a required field at [line:1, column:57]
+14/11/2019 11:18:34 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Parent Account ID: id value of incorrect type: ajmal1
+14/11/2019 12:25:35 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 12:36:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+14/11/2019 12:45:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 12:47:00 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 12:51:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 12:53:10 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 3:59:43 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: An element with the same key 'ParentId' already exists in the ExpandoObject.
+15/11/2019 11:48:33 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: An element with the same key 'ParentId' already exists in the ExpandoObject.
+15/11/2019 12:51:41 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Parent Account ID: id value of incorrect type: ajmal5
+15/11/2019 2:06:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'fieldNmeeeeeeeId' on sobject of type Account
+15/11/2019 4:23:08 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+15/11/2019 4:34:55 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
+15/11/2019 4:36:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
