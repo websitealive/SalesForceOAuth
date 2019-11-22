@@ -13,6 +13,7 @@ using SalesForceOAuth.Web_API_Helper_Code;
 using System.Dynamic;
 using System.Collections.Generic;
 using Microsoft.Xrm.Sdk;
+using System.Globalization;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -247,7 +248,7 @@ namespace SalesForceOAuth.Controllers
                     }
                     else if (propertyType == "datetime")
                     {
-                        propertyValue = Convert.ToDateTime(propertyValue);
+                        propertyValue = Convert.ToDateTime(propertyValue.ToString(), CultureInfo.InvariantCulture);
                     }
                     else if (propertyType == "picklist")
                     {
