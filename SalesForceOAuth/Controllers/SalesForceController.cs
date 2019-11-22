@@ -249,6 +249,10 @@ namespace SalesForceOAuth.Controllers
                     {
                         propertyValue = Convert.ToDateTime(propertyValue);
                     }
+                    else if (propertyType == "picklist")
+                    {
+
+                    }
                 }
                 expandoDict.Add(propertyName, propertyValue);
             }

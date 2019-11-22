@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="HubSpot\HubSpot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SalesForce\SalesForce.cs" />
     <Compile Include="Sugar\Sugar.cs" />
   </ItemGroup>
   <ItemGroup>

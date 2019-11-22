@@ -337,7 +337,7 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                string searchEntity = "", lookupFieldLabel = "", lookupFieldName = "";
+                string searchEntity = "", lookupOptionalFieldLabel = "", lookupOptionalFieldName = "";
 
                 List<EntityModel> listToReturn = new List<EntityModel>();
                 FieldsModel getExportFieldForLookup = new FieldsModel();
@@ -348,8 +348,8 @@ namespace SalesForceOAuth.Controllers
                     {
                         getExportFieldForLookup = Repository.GetSFExportFieldsForLookup(ObjectRef, ExportFieldId, urlReferrer);
                         searchEntity = getExportFieldForLookup.RelatedEntity;
-                        //lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
-                        //lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
+                        lookupOptionalFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
+                        lookupOptionalFieldName = getExportFieldForLookup.OptionalFieldsName;
                     }
                     searchEntity = Entity;
                 }
@@ -379,7 +379,11 @@ namespace SalesForceOAuth.Controllers
                 }
                 if (IslookupSearch)
                 {
-                    query.Append("SELECT Id, name From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
+                    if (lookupOptionalFieldName != "")
+                        // TODO: Some of the entities does not a have field namely "name" (e.g. Contract entity in SF)
+                        query.Append("SELECT Id, name, " + lookupOptionalFieldName + " From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
+                    else
+                        query.Append("SELECT Id, name From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
                 }
                 else
                 {
@@ -399,6 +403,18 @@ namespace SalesForceOAuth.Controllers
                         l.EntityPrimaryKey = c.Id;
                         l.EntityDispalyName = c.Name;
                         l.EntityUniqueName = Entity;
+                        if (lookupOptionalFieldName != "")
+                        {
+                            l.OptionalFieldDisplayName = lookupOptionalFieldName;
+                            l.OptionalFieldValue = c[lookupOptionalFieldName];
+                        }
+                        else
+                        {
+                            l.OptionalFieldDisplayName = string.Empty;
+                            l.OptionalFieldValue = string.Empty;
+                        }
+
+                        //l.OptionalFieldValue = c.
                         if (!IslookupSearch)
                         {
                             var chk = dynamicEntity.PrimaryFieldUniqueName;

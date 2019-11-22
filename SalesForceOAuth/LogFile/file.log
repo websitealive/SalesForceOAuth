@@ -1715,3 +1715,29 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 15/11/2019 4:23:08 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
 15/11/2019 4:34:55 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
 15/11/2019 4:36:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
+20/11/2019 11:22:12 AM ==> Internal Error: 
+20/11/2019 11:23:13 AM ==> Internal Error: 
+20/11/2019 11:25:20 AM ==> Internal Error: 
+20/11/2019 11:26:19 AM ==> Internal Error: 
+20/11/2019 6:25:20 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+20/11/2019 6:26:44 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+20/11/2019 6:27:45 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ExpectedRevenue. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+20/11/2019 6:34:33 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ExpectedRevenue. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+20/11/2019 6:34:42 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+21/11/2019 10:18:02 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+21/11/2019 11:10:58 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:13:24 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:16:39 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:27:01 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal19
+21/11/2019 11:30:59 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal9
+21/11/2019 11:35:12 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal9
+21/11/2019 12:43:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 12:44:37 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 12:51:34 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 1:09:36 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 1:19:49 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CaseNumber. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:21:06 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:21:34 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:22:02 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:23:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:25:13 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CreatedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
