@@ -1699,3 +1699,14 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 08/11/2019 12:16:37 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:16:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:17:18 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+11/18/2019 3:40:07 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+11/20/2019 10:50:03 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
+11/20/2019 10:50:23 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
+11/20/2019 10:50:38 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
+11/20/2019 10:51:46 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
+11/20/2019 10:52:48 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
+11/20/2019 10:54:38 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
+11/20/2019 10:56:19 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
+11/20/2019 11:43:49 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/21/2019 12:30:47 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'
+11/21/2019 12:37:06 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'

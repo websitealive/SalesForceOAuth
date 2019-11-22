@@ -73,7 +73,7 @@ namespace SalesForceOAuth.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage PostNewEntityRecord(CrmEntity crmEntity)
+        public HttpResponseMessage PostEntityRecord(CrmEntity crmEntity)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace SalesForceOAuth.Controllers
             }
             //  Get current user log in detail
             CRMUser user = Repository.GetCrmCreditionalsDetail(crmEntity.ObjectRef, crmEntity.GroupId, Request.RequestUri.Authority.ToString(), crmEntity.CrmType);
-            
+
             if (Convert.ToDateTime(user.OuthDetail.expires_on) < DateTime.Now)
             {
                 user.IntegrationConstants = Repository.GetIntegrationConstants(crmEntity.ObjectRef, Request.RequestUri.Authority.ToString(), crmEntity.CrmType, AppType.Alive5);
@@ -101,7 +101,7 @@ namespace SalesForceOAuth.Controllers
             var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded, out recordPrimaryId);
             if (IsRecordAdded)
             {
-                return MyAppsDb.ConvertJSONOutput(new CrmEntity() { EntityId = recordPrimaryId.ToString(), Message = message } , HttpStatusCode.OK, false);
+                return MyAppsDb.ConvertJSONOutput(new CrmEntity() { EntityId = recordPrimaryId.ToString(), Message = message }, HttpStatusCode.OK, false);
             }
             else
             {
@@ -132,7 +132,8 @@ namespace SalesForceOAuth.Controllers
                 user.OuthDetail = HubSpot.RefreshAuthorizationTokens(user);
                 Repository.UpdateCrmCreditionals(user);
             }
-            List<CrmEntity> retRecord = HubSpot.GetRecordList(user, SVAlue);
+            var entityInfo = Repository.GetEntity(Request.RequestUri.Authority.ToString(), ObjectRef, GroupId, Entity, CrmType.ToString());
+            CrmEntity retRecord = HubSpot.GetRecordList(user, entityInfo, SVAlue);
             return MyAppsDb.ConvertJSONPOutput(callback, retRecord, HttpStatusCode.OK, false);
         }
 
@@ -189,5 +190,266 @@ namespace SalesForceOAuth.Controllers
         {
             return null;
         }
+
+        #region Dynamics Added Entities
+
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetEntityList(string Token, string ObjectRef, int GroupId, CrmType Crmtype, string callback)
+        {
+
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                var entityList = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, Crmtype.ToString());
+                var entityFields = Repository.GetFormCustomFields(ObjectRef, GroupId, urlReferrer);
+                foreach (var entity in entityList)
+                {
+                    foreach (var fields in entityFields)
+                    {
+                        if (entity.EntityUniqueName.ToLower() == fields.Entity.ToLower())
+                        {
+                            entity.CustomFields = fields.CustomFieldsList;
+                        }
+                    }
+
+                }
+                return MyAppsDb.ConvertJSONPOutput(callback, entityList, HttpStatusCode.OK, false);
+
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+            }
+        }
+
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetEntityById(string Token, string ObjectRef, int EntityId, string callback)
+        {
+
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                var entitySettings = Repository.GetEntityById(urlReferrer, ObjectRef, EntityId);
+                return MyAppsDb.ConvertJSONPOutput(callback, entitySettings, HttpStatusCode.OK, false);
+
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccount-GetSearchedEntities", "Unhandled exception", HttpStatusCode.Conflict);
+            }
+        }
+
+        [HttpPost]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostEntity(EntityModel lData)
+        {
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                Exception Message;
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                lData.CrmType = CrmType.HubSpot.ToString();
+                var messgae = Repository.AddEntity(lData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DyEntity-PostEntiySettings", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UpdateEntity(EntityModel lData)
+        {
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(lData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var messgae = Repository.UpdateEntity(lData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(messgae, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DyEntity-PostEntiySettings", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpDelete]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteEntity(string Token, int Id, string ObjectRef)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var message = Repository.DeleteEntity(ObjectRef, urlReferrer, Id);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Delete Entity", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+        }
+        #endregion
+
+        #region Customs Fields
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string Token, string ObjectRef, int GroupId, string callback, bool IsEntityForm = false)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                if (!IsEntityForm)
+                {
+                    var FieldsList = Repository.GetCustomFields(ObjectRef, GroupId, urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    var FieldsList = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer);
+                    return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetExportFields", "Message", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFieldByID(string Token, string ObjectRef, int FieldId, string callback)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Field By Id", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var FieldsList = Repository.GetDYExportFieldsById(FieldId, ObjectRef, urlReferrer);
+                return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetExportFields", "Message", HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+        [HttpPost]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> PostExportFields(FieldsModel ExportFieldData)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var message = Repository.AddCustomFields(ExportFieldData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPut]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UpdateExportFields(FieldsModel ExportFieldData)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(ExportFieldData.Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                var message = Repository.UpdateCustomFields(ExportFieldData, urlReferrer);
+                return MyAppsDb.ConvertJSONOutput(message, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+        [HttpDelete]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> DeleteExportFields(string Token, int Id, string ObjectRef)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                string ErrorMessage;
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                MessageResponce retMessage = new MessageResponce();
+                retMessage.Success = Repository.DeleteCustomFields(Id, ObjectRef, urlReferrer, out ErrorMessage);
+                retMessage.Error = ErrorMessage;
+                return MyAppsDb.ConvertJSONOutput(retMessage, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "DY Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
+            }
+        }
+        #endregion
     }
 }

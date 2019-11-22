@@ -43,7 +43,7 @@ namespace CRM.WebServices
         public static string UpdateEntity(CRMUser user, CrmEntity crmEntity)
         {
             var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest("/rest/v10/" + crmEntity.EntityName + "/" + crmEntity.EntityId, Method.PUT);
+            var request = new RestRequest("/rest/v10/" + crmEntity.EntityUniqueName + "/" + crmEntity.EntityId, Method.PUT);
             request.AddHeader("Cache-Control", "no-cache");
             OuthDetail OuthDetail = Authenticate(user);
             request.AddHeader("OAuth-Token", OuthDetail.access_token);

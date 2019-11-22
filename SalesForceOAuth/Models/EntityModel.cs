@@ -31,6 +31,8 @@ namespace SalesForceOAuth.Models
 
         public string CrmType { get; set; }
 
+        public string SubUrl { get; set; }
+
         public List<CustomFieldModel> CustomFields { get; set; }
 
     }

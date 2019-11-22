@@ -44,6 +44,7 @@
     <Compile Include="Models\CrmEntity.cs" />
     <Compile Include="Models\CrmType.cs" />
     <Compile Include="Models\CRMUser.cs" />
+    <Compile Include="Models\EntityFieldsMetaData.cs" />
     <Compile Include="Models\IntegrationConstants.cs" />
     <Compile Include="Models\OrganizationDetail.cs" />
     <Compile Include="Models\OuthDetail.cs" />

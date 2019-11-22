@@ -59,7 +59,7 @@ namespace SalesForceOAuth.Controllers
             CrmEntity entity = new CrmEntity()
             {
                 EntityId = Entity_id,
-                EntityName = "Leads",
+                EntityPrimaryKey = "Leads",
                 Message = data.Message.Replace("|", "\r\n").Replace("&#39;", "'")
             };
             string message = Sugar.UpdateEntity(user, entity);

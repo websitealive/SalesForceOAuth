@@ -1,4 +1,5 @@
-﻿using Salesforce.Common.Models;
+﻿using CRM.Dto;
+using Salesforce.Common.Models;
 using Salesforce.Force;
 using SalesForceOAuth.Models;
 using System;
@@ -366,7 +367,7 @@ namespace SalesForceOAuth.Controllers
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, Entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
 
                 //Below line Get a list of custom entities if any
-                EntityModel dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
+                CrmEntity dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();

@@ -196,7 +196,7 @@ namespace SalesForceOAuth.Controllers
                     Entity registration = new Entity(lData.EntityUniqueName);
                     //registration[lData.PrimaryFieldUniqueName] = lData.PrimaryFieldValue;
 
-                    #region Dynamic Inout Fields
+                    #region Dynamic Input Fields
                     if (lData.CustomFields != null)
                     {
                         foreach (CustomFieldModel inputField in lData.CustomFields)
@@ -887,9 +887,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         query.ColumnSet.AddColumn(item);
                     }
-
                     query.Criteria.AddFilter(filter1);
-
                     EntityCollection result1 = objser.RetrieveMultiple(query);
                     if (result1.Entities.Count > 0)
                     {
@@ -899,7 +897,6 @@ namespace SalesForceOAuth.Controllers
                     {
                         return MyAppsDb.ConvertJSONPOutput(callback, "false", HttpStatusCode.OK, false);
                     }
-
                 }
             }
             catch (Exception ex)

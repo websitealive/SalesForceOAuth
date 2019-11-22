@@ -30,6 +30,7 @@ namespace CRM.WebServices
     }
     public class Property
     {
+        public string name { get; set; }
         public string property { get; set; }
         public string value { get; set; }
     }
@@ -121,45 +122,21 @@ namespace CRM.WebServices
             return outhDetails;
         }
 
-        //public static OuthDetail GetAuthorizationTokensInfo(CRMUser user)
-        //{
-        //    OuthDetail outhDetails = new OuthDetail();
-
-        //    var client = new RestClient(user.IntegrationConstants.ApiUrl);
-        //    var request = new RestRequest("/oauth/v1/token", Method.POST);
-        //    request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-        //    request.AddParameter("grant_type", "refresh_token");
-        //    request.AddParameter("client_id", user.IntegrationConstants.ClientId);
-        //    request.AddParameter("client_secret", user.IntegrationConstants.SecretKey);
-
-        //    try
-        //    {
-        //        var response = client.Execute(request);
-        //        outhDetails = JsonConvert.DeserializeObject<OuthDetail>(response.Content);
-        //        outhDetails.expires_on = DateTime.Now.AddSeconds(outhDetails.expires_in).ToString();
-        //        outhDetails.Is_Authenticated = response.IsSuccessful;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        outhDetails.Is_Authenticated = false;
-        //        outhDetails.error_message = "Some Thing Went Wrong Please Try later";
-        //    }
-        //    return outhDetails;
-        //}
-
         public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out int? recordPrimaryId)
         {
-            List<Property> p1 = new List<Property>();
-            p1.Add(new Property() { property = "firstname", value = crmEntity.FirstName });
-            p1.Add(new Property() { property = "lastname", value = crmEntity.LastName });
-            p1.Add(new Property() { property = "email", value = crmEntity.Email });
-            Properties p = new Properties()
+            List<Property> property = new List<Property>();
+            foreach (var item in crmEntity.CustomFields)
             {
-                properties = p1
+                property.Add(new Property() { name = item.FieldName, property = item.FieldName, value = item.Value });
+            }
+            Properties properties = new Properties()
+            {
+                properties = property
             };
-            string d = JsonConvert.SerializeObject(p);
+            string d = JsonConvert.SerializeObject(properties);
             var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest("/contacts/v1/" + crmEntity.EntityName, Method.POST);
+            //var request = new RestRequest("/contacts/v1/" + crmEntity.EntityName, Method.POST);
+            var request = new RestRequest(crmEntity.SubUrl, Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
 
@@ -260,37 +237,9 @@ namespace CRM.WebServices
             }
         }
 
-        public static CrmEntity GetRecordByEmail(CRMUser user, string email)
+        public static CrmEntity GetSearchedRecord(CRMUser user, string sValue)
         {
             CrmEntity retEntityRecord = new CrmEntity();
-            var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-            var response = client.Execute(request);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                retEntityRecord.Email = contact.properties.email.value;
-                retEntityRecord.FirstName = contact.properties.firstname.value;
-                retEntityRecord.LastName = contact.properties.lastname.value;
-                return retEntityRecord;
-            }
-            else
-            {
-                return retEntityRecord;
-            }
-        }
-
-        public static string GetRecordById()
-        {
-            return "";
-        }
-
-        public static List<CrmEntity> GetRecordList(CRMUser user, string sValue)
-        {
-            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
             var client = new RestClient(user.ApiUrl);
             var request = new RestRequest("/contacts/v1/contact/email/" + sValue + "/profile?", Method.GET);
             request.AddHeader("Content-Type", "application/json");
@@ -300,16 +249,85 @@ namespace CRM.WebServices
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                CrmEntity rec = new CrmEntity()
+                //retEntityRecord.CustomFields.Add(new Dto.Models.EntityFieldsMetaData() { FieldLabel = "adsd", });
+                //retEntityRecord.Email = contact.properties.email.value;
+                //retEntityRecord.FirstName = contact.properties.firstname.value;q
+                //retEntityRecord.LastName = contact.properties.lastname.value;
+                return retEntityRecord;
+            }
+            else
+            {
+                return retEntityRecord;
+            }
+        }
+
+        //public static CrmEntity GetRecordByEmail(CRMUser user, string email)
+        //{
+        //    CrmEntity retEntityRecord = new CrmEntity();
+        //    var client = new RestClient(user.ApiUrl);
+        //    var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
+        //    request.AddHeader("Content-Type", "application/json");
+        //    request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+        //    var response = client.Execute(request);
+
+        //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        //    {
+        //        RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+        //        retEntityRecord.Email = contact.properties.email.value;
+        //        retEntityRecord.FirstName = contact.properties.firstname.value;
+        //        retEntityRecord.LastName = contact.properties.lastname.value;
+        //        return retEntityRecord;
+        //    }
+        //    else
+        //    {
+        //        return retEntityRecord;
+        //    }
+        //}
+
+        public static string GetRecordById()
+        {
+            return "";
+        }
+
+        public static CrmEntity GetRecordList(CRMUser user, CrmEntity entityInfo, string sValue)
+        {
+            CrmEntity retEntityRecord = new CrmEntity();
+            var client = new RestClient(user.ApiUrl);
+            var request = new RestRequest(entityInfo.SubUrl + "/email/" + sValue + "/profile?", Method.GET);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            var response = client.Execute(request);
+            RootObject info = JsonConvert.DeserializeObject<RootObject>(response.Content);
+            retEntityRecord.Message = info.message;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                EntityFieldsMetaData rec = new EntityFieldsMetaData()
                 {
-                    Id = contact.vid,
-                    Email = contact.properties.email.value,
-                    FirstName = contact.properties.firstname.value,
-                    LastName = contact.properties.lastname.value,
-                    CrmType = CrmType.HubSpot,
-                    AppType = AppType.Alive5
+                    FieldLabel = "Email",
+                    FieldName = "email",
+                    Value = info.properties.email.value
                 };
-                retEntityRecord.Add(rec);
+                try
+                {
+                    retEntityRecord.CustomFields = new List<EntityFieldsMetaData>();
+                    retEntityRecord.CustomFields.Add(rec);
+                }
+                catch (Exception ex)
+                {
+                    var obj = ex;
+                    throw;
+                }
+                
+                //CrmEntity rec = new CrmEntity()
+                //{
+                //    Id = contact.vid,
+                //    Email = contact.properties.email.value,
+                //    FirstName = contact.properties.firstname.value,
+                //    LastName = contact.properties.lastname.value,
+                //    CrmType = CrmType.HubSpot,
+                //    AppType = AppType.Alive5
+                //};
+                //retEntityRecord.Add(rec);
                 return retEntityRecord;
             }
             else

@@ -22,6 +22,7 @@ using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using SalesForceOAuth.Models;
+using CRM.Dto;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -45,7 +46,7 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
-                EntityModel primaryEntityColumn = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, entity, "dy");
+                CrmEntity primaryEntityColumn = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, entity, "dy");
                 List<EntityColumn> retEntityColumn = BusinessLogic.DynamicCommon.GetDynamicDetailFileds(ObjectRef, GroupId, entity, urlReferrer);
                 if (primaryEntityColumn.PrimaryFieldDisplayName != null && primaryEntityColumn.PrimaryFieldUniqueName != null)
                 {

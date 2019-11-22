@@ -2524,8 +2524,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search)";
-                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "')";
+                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search, sub_url)";
+                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "','" + EntityDetail.SubUrl + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -2547,7 +2547,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "'";
+                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "', sub_url = '" + EntityDetail.SubUrl + "'";
                     sql += " WHERE id = " + EntityDetail.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2609,6 +2609,7 @@ namespace SalesForceOAuth
                                 entity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 entity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
                                 entity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
+                                entity.SubUrl = rdr["sub_url"].ToString().Trim();
                                 returnEntityList.Add(entity);
                             }
                         }
@@ -2649,6 +2650,7 @@ namespace SalesForceOAuth
                                 returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 returnEntity.AllowRecordCreation = Convert.ToInt32(rdr["allow_entity_record_creation"].ToString().Trim());
                                 returnEntity.AllowRecordSearch = Convert.ToInt32(rdr["allow_entity_record_search"].ToString().Trim());
+                                returnEntity.SubUrl = rdr["sub_url"].ToString().Trim();
                             }
                         }
                         rdr.Close();
@@ -2669,9 +2671,9 @@ namespace SalesForceOAuth
             return returnEntity;
         }
 
-        public static EntityModel GetEntity(string UrlReferrer, string ObjectRef, int GroupId, string Entity, string crmType)
+        public static CrmEntity GetEntity(string UrlReferrer, string ObjectRef, int GroupId, string Entity, string crmType)
         {
-            EntityModel returnEntity = new EntityModel();
+            CrmEntity returnEntity = new CrmEntity();
             string connStr = MyAppsDb.GetConnectionStringbyURL(UrlReferrer, ObjectRef);
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -2689,6 +2691,7 @@ namespace SalesForceOAuth
                                 //returnEntitySettings.EntityUniqueName = rdr["entity_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
+                                returnEntity.SubUrl = rdr["sub_url"].ToString().Trim();
                                 // returnEntitySettings.PrimaryFieldValue = rdr["entity_primary_field_display_name"].ToString().Trim();
 
                             }
@@ -2711,6 +2714,277 @@ namespace SalesForceOAuth
             return returnEntity;
         }
 
+        #endregion
+
+        #region CRM Custom Field
+
+        public static List<CustomFields> GetFormCustomFields(string objectRef, int groupId, string urlReferrer)
+        {
+            List<CustomFields> returnFileds = new List<CustomFields>();
+            //var counter = GetDefaultFields(entityName, Crm.Dynamic).Count;
+            //returnFileds.AddRange(GetDefaultFields(entityName, Crm.Dynamic));
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string fieldType = "user_input_field";
+                    string sql = "SELECT * from integration_crm_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND valuetype = '" + fieldType + "'  ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                CustomFieldModel exportFieldsList = new CustomFieldModel();
+                                exportFieldsList.Id = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                exportFieldsList.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                exportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                exportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+
+                                List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
+                                fieldsList.Add(exportFieldsList);
+
+                                if (returnFileds.Count == 0)
+                                {
+                                    returnFileds.Add(new CustomFields()
+                                    {
+                                        Entity = rdr["entityname"].ToString().Trim().ToLower(),
+                                        CustomFieldsList = fieldsList
+                                    });
+                                }
+                                else
+                                {
+                                    CustomFields customField = returnFileds.FirstOrDefault(e => e.Entity == rdr["entityname"].ToString().Trim().ToLower());
+                                    if (customField == null)
+                                    {
+                                        returnFileds.Add(new CustomFields()
+                                        {
+                                            Entity = rdr["entityname"].ToString().Trim().ToLower(),
+                                            CustomFieldsList = fieldsList
+                                        });
+                                    }
+                                    else
+                                    {
+                                        customField.CustomFieldsList.Add(exportFieldsList);
+                                    }
+                                }
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static List<FieldsModel> GetCustomFields(string objectRef, int groupId, string urlReferrer)
+        {
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_crm_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                FieldsModel exportFields = new FieldsModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                exportFields.FieldName = rdr["fieldname"].ToString().Trim();
+                                exportFields.EntityType = rdr["entityname"].ToString().Trim();
+                                exportFields.ValueType = rdr["valuetype"].ToString().Trim();
+                                exportFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
+
+                                returnFileds.Add(exportFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static FieldsModel GetCustomFieldsById(int ExportFieldID, string ObjectRef, string urlReferrer)
+        {
+            FieldsModel returnFileds = new FieldsModel();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_crm_custom_fields where id = '" + ExportFieldID + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
+                                returnFileds.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
+                                returnFileds.FieldName = rdr["fieldname"].ToString().Trim();
+                                returnFileds.FieldType = rdr["fieldtype"].ToString().Trim();
+                                returnFileds.EntityType = rdr["entityname"].ToString().Trim();
+                                returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
+                                returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
+                                returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                returnFileds.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
+                                returnFileds.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                returnFileds.IsUsingRelatedEntityOptionalFields = (rdr["use_relatedentity_optioal_fields"].ToString().Trim() == "1") ? "true" : "false";
+                                returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+                                // returnFileds.IsUsingCurrentDate = (rdr["use_current_date"].ToString().Trim() == "1") ? "true" : "false";
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static string AddCustomFields(FieldsModel ExportFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    bool flag = false;
+                    string integrationId = null;
+                    string sqlFetchIntegration = "SELECT id FROM integration_dynamics_settings WHERE ObjectRef = '" + ExportFields.ObjectRef + "' AND GroupId = " + ExportFields.GroupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sqlFetchIntegration, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                integrationId = rdr["id"].ToString().Trim();
+                                flag = true;
+                            }
+                        }
+                        rdr.Close();
+                    }
+
+                    if (flag)
+                    {
+                        string sql = "INSERT INTO integration_crm_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity, use_current_date)";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "','" + ExportFields.IsUsingCurrentDate + "' )";
+                        MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                        int rows = cmd1.ExecuteNonQuery();
+                        conn.Close();
+                        return "Custom Fields Added Successfully";
+                    }
+                    else
+                    {
+                        conn.Close();
+                        return "MS Dynamic Account In not Configured";
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static string UpdateCustomFields(FieldsModel ExportFields, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ExportFields.ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "Update integration_crm_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "', use_relatedentity_optioal_fields = '" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "', relatedentity_optional_filedlabel = '" + ExportFields.OptionalFieldsLabel + "', relatedentity_optional_fieldname = '" + ExportFields.OptionalFieldsName + "', use_current_date = '" + ExportFields.IsUsingCurrentDate + "'";
+                    sql += " WHERE id = " + ExportFields.ID;
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    int rows = cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return "Export Fields Updated Successfully";
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
+        public static bool DeleteCustomFields(int Id, string ObjectRef, string urlReferrer, out string ErrorMessage)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sqlDel = "DELETE FROM integration_crm_custom_fields WHERE id = " + Id;
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd1.ExecuteNonQuery();
+                    ErrorMessage = null;
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
         #endregion
 
         #region Crm
