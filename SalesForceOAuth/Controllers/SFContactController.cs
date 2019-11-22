@@ -33,7 +33,9 @@ namespace SalesForceOAuth.Controllers
             string urlReferrer = Request.RequestUri.Authority.ToString();
             HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(lData.ObjectRef, lData.GroupId, System.Web.HttpUtility.UrlDecode(lData.siteRef), urlReferrer);
             if (msg.StatusCode != HttpStatusCode.OK)
-            { return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, false); }
+            {
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, false);
+            }
             try
             {
                 string InstanceUrl = "", AccessToken = "", ApiVersion = "";
@@ -52,7 +54,10 @@ namespace SalesForceOAuth.Controllers
                 }
                 SuccessResponse sR;
                 dynamic newContact = new ExpandoObject();
-                newContact.FirstName = lData.FirstName; newContact.LastName = lData.LastName; newContact.Email = lData.Email; newContact.Phone = lData.Phone;
+                newContact.FirstName = lData.FirstName;
+                newContact.LastName = lData.LastName;
+                newContact.Email = lData.Email;
+                newContact.Phone = lData.Phone;
                 newContact.accountid = lData.AccountId;
                 if (ownerId != "" && lData.OwnerEmail != "")
                 {
@@ -66,7 +71,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            MyAppsDb.AddProperty(newContact, inputField.FieldName, inputField.Value);
+                            MyAppsDb.AddProperty(newContact, inputField.FieldName, inputField.Value, inputField.FieldType);
                         }
 
                     }

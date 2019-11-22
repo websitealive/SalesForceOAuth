@@ -1516,9 +1516,9 @@ namespace SalesForceOAuth
                                 returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
                                 returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
                                 returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
-                                //returnFileds.IsUsingRelatedEntityOptionalFields = rdr["use_relatedentity_optioal_fields"].ToString().Trim();
-                                //returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
-                                //returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+                                returnFileds.IsUsingRelatedEntityOptionalFields = rdr["use_relatedentity_optioal_fields"].ToString().Trim();
+                                returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
 
                             }
                         }

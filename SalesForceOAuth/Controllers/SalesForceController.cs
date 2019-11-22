@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 using SalesForceOAuth.Web_API_Helper_Code;
 using System.Dynamic;
 using System.Collections.Generic;
+using Microsoft.Xrm.Sdk;
+using System.Globalization;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -213,14 +215,48 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-        public static void AddProperty(ExpandoObject expando, string propertyName, object propertyValue)
+        public static void AddProperty(ExpandoObject expando, string propertyName, object propertyValue, string propertyType = null)
         {
             // ExpandoObject supports IDictionary so we can extend it like this
             var expandoDict = expando as IDictionary<string, object>;
             if (expandoDict.ContainsKey(propertyName))
                 expandoDict[propertyName] = propertyValue;
             else
+            {
+                if (propertyType == "textbox")
+                {
+                    //expandoDict.Add(propertyName, propertyValue);
+                }
+                else if (propertyType == "boolean")
+                {
+                    if (propertyValue.Equals("1"))
+                        propertyValue = true;
+                    else
+                        propertyValue = false;
+                }
+                else if (propertyType != null)
+                {
+                    if (propertyType.Equals("currency"))
+                    {
+                        //propertyValue = new Money(Convert.ToDecimal(propertyValue));
+                        propertyValue = Convert.ToDouble(propertyValue);
+                    }
+                    else if (propertyType.Equals("lookup"))
+                    {
+                        //registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
+                        propertyName = propertyName + "Id";
+                    }
+                    else if (propertyType == "datetime")
+                    {
+                        propertyValue = Convert.ToDateTime(propertyValue.ToString(), CultureInfo.InvariantCulture);
+                    }
+                    else if (propertyType == "picklist")
+                    {
+
+                    }
+                }
                 expandoDict.Add(propertyName, propertyValue);
+            }
         }
 
         public static void GetRedirectURLParameters(ref string sf_authoize_url, ref string sf_clientid, string urlReferrer, string objectRef)

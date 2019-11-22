@@ -156,7 +156,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            MyAppsDb.AddProperty(newAccount, inputField.FieldName, inputField.Value);
+                            MyAppsDb.AddProperty(newAccount, inputField.FieldName, inputField.Value, inputField.FieldType);
                         }
 
                     }
