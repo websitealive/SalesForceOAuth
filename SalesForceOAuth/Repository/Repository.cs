@@ -1568,8 +1568,8 @@ namespace SalesForceOAuth
 
                     if (flag)
                     {
-                        string sql = "INSERT INTO integration_salesforce_custom_fields (objectref, groupid, integration_id, entity_name, fieldname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "' )";
+                        string sql = "INSERT INTO integration_salesforce_custom_fields (objectref, groupid, integration_id, entity_name, fieldname, fieldtype, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, use_relatedentity_optioal_fields, relatedentity_optional_filedlabel, relatedentity_optional_fieldname, use_current_date, relatedentity)";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName  + "','" + ExportFields.FieldType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.IsUsingRelatedEntityOptionalFields + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ExportFields.IsUsingCurrentDate + "','" + ExportFields.RelatedEntity + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();

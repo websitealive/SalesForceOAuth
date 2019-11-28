@@ -1699,14 +1699,51 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 08/11/2019 12:16:37 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:16:58 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
 08/11/2019 12:17:18 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
-11/18/2019 3:40:07 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
-11/20/2019 10:50:03 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
-11/20/2019 10:50:23 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
-11/20/2019 10:50:38 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
-11/20/2019 10:51:46 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '0' for key 'PRIMARY'
-11/20/2019 10:52:48 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
-11/20/2019 10:54:38 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
-11/20/2019 10:56:19 AM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Duplicate entry '00000000000' for key 'PRIMARY'
-11/20/2019 11:43:49 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
-11/21/2019 12:30:47 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'
-11/21/2019 12:37:06 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'
+13/11/2019 5:01:15 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 8:51:33 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Cannot deserialize instance of boolean from VALUE_NUMBER_FLOAT value 44000.0 or request may be missing a required field at [line:1, column:57]
+14/11/2019 11:18:34 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Parent Account ID: id value of incorrect type: ajmal1
+14/11/2019 12:25:35 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 12:36:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+14/11/2019 12:45:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+14/11/2019 12:47:00 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 12:51:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 12:53:10 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Campaign' on sobject of type Campaign
+14/11/2019 3:59:43 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: An element with the same key 'ParentId' already exists in the ExpandoObject.
+15/11/2019 11:48:33 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: An element with the same key 'ParentId' already exists in the ExpandoObject.
+15/11/2019 12:51:41 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Parent Account ID: id value of incorrect type: ajmal5
+15/11/2019 2:06:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'fieldNmeeeeeeeId' on sobject of type Account
+15/11/2019 4:23:08 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+15/11/2019 4:34:55 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
+15/11/2019 4:36:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'Checkbox_acc_test' on sobject of type Account
+20/11/2019 11:22:12 AM ==> Internal Error: 
+20/11/2019 11:23:13 AM ==> Internal Error: 
+20/11/2019 11:25:20 AM ==> Internal Error: 
+20/11/2019 11:26:19 AM ==> Internal Error: 
+20/11/2019 6:25:20 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+20/11/2019 6:26:44 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+20/11/2019 6:27:45 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ExpectedRevenue. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+20/11/2019 6:34:33 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ExpectedRevenue. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+20/11/2019 6:34:42 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+21/11/2019 10:18:02 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+21/11/2019 11:10:58 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:13:24 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:16:39 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal5
+21/11/2019 11:27:01 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal19
+21/11/2019 11:30:59 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal9
+21/11/2019 11:35:12 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account ID: id value of incorrect type: ajmal9
+21/11/2019 12:43:30 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 12:44:37 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 12:51:34 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 1:09:36 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'name' on sobject of type Case
+21/11/2019 1:19:49 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CaseNumber. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:21:06 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:21:34 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:22:02 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:23:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: ClosedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+21/11/2019 2:25:13 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Unable to create/update fields: CreatedDate. Please check the security settings of this field and verify that it is read/write for your profile or permission set.
+22/11/2019 1:03:42 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+22/11/2019 1:04:45 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+22/11/2019 1:06:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+22/11/2019 1:10:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
+28/11/2019 12:53:00 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: expired access/refresh token
+   at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
