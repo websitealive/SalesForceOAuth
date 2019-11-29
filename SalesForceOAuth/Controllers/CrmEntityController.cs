@@ -133,7 +133,7 @@ namespace SalesForceOAuth.Controllers
                 Repository.UpdateCrmCreditionals(user);
             }
             var entityInfo = Repository.GetEntity(Request.RequestUri.Authority.ToString(), ObjectRef, GroupId, Entity, CrmType.ToString());
-            CrmEntity retRecord = HubSpot.GetRecordList(user, entityInfo, SVAlue);
+            List<CrmEntity> retRecord = HubSpot.GetRecordList(user, entityInfo, SVAlue);
             return MyAppsDb.ConvertJSONPOutput(callback, retRecord, HttpStatusCode.OK, false);
         }
 
@@ -168,11 +168,19 @@ namespace SalesForceOAuth.Controllers
             bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, Request.RequestUri.Authority.ToString(), out ChatId, out RowId);
             if (flag)
             {
-                HubSpot.UpdateChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), ChatId, out IsChatAdded);
+                HubSpot.UpdateChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), lData.EntitytType, Convert.ToInt64(lData.EntitytId), ChatId, out IsChatAdded);
             }
             else
             {
-                HubSpot.PostChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), Convert.ToInt32(lData.EntitytId), out IsChatAdded, out ChatId);
+                try
+                {
+                    HubSpot.PostChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), lData.EntitytType, Int64.Parse(lData.EntitytId), out IsChatAdded, out ChatId);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
             }
             if (IsChatAdded)
             {

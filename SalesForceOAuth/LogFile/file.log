@@ -1710,3 +1710,16 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 11/20/2019 11:43:49 AM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
 11/21/2019 12:30:47 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'
 11/21/2019 12:37:06 PM ==> Function: Dy Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unknown column 'use_relatedentity_optioal_fields' in 'field list'
+11/28/2019 2:04:29 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open(), Exception Message: Unable to connect to any of the specified MySQL hosts.
+11/28/2019 2:25:10 PM ==> Function: DYAccount-GetSearchedEntities : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.EndOfStreamException: Attempted to read past the end of the stream.
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.Authentication.MySqlAuthenticationPlugin.ReadPacket(), Exception Message: Authentication to host 'dev-rds.cnhwwuo7wmxs.us-west-2.rds.amazonaws.com' for user 'root' using method 'mysql_native_password' failed with message: Reading from the stream has failed.

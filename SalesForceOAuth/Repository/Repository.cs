@@ -2524,8 +2524,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search, sub_url)";
-                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "','" + EntityDetail.SubUrl + "')";
+                    string sql = "INSERT INTO integration_crm_entity (objectref, groupid, crm_type, entity_name, entity_display_name, entity_primary_key_name, entity_primary_field_name, entity_primary_field_display_name, allow_entity_record_creation, allow_entity_record_search, sub_url)";
+                    sql += "VALUES ('" + EntityDetail.ObjectRef + "','" + EntityDetail.GroupId + "','" + EntityDetail.CrmType + "','" + EntityDetail.EntityUniqueName + "','" + EntityDetail.EntityDispalyName + "','" + EntityDetail.EntityPrimaryKey + "','" + EntityDetail.PrimaryFieldUniqueName + "','" + EntityDetail.PrimaryFieldDisplayName + "','" + EntityDetail.AllowRecordCreation + "','" + EntityDetail.AllowRecordSearch + "','" + EntityDetail.SubUrl + "')";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -2547,7 +2547,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "', sub_url = '" + EntityDetail.SubUrl + "'";
+                    string sql = "Update integration_crm_entity Set entity_name = '" + EntityDetail.EntityUniqueName + "', entity_display_name = '" + EntityDetail.EntityDispalyName + "', entity_primary_key_name = '" + EntityDetail.EntityPrimaryKey + "', entity_primary_field_name = '" + EntityDetail.PrimaryFieldUniqueName + "', entity_primary_field_display_name = '" + EntityDetail.PrimaryFieldDisplayName + "', allow_entity_record_creation = '" + EntityDetail.AllowRecordCreation + "', allow_entity_record_search = '" + EntityDetail.AllowRecordSearch + "', sub_url = '" + EntityDetail.SubUrl + "'";
                     sql += " WHERE id = " + EntityDetail.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -2603,6 +2603,7 @@ namespace SalesForceOAuth
                             {
                                 EntityModel entity = new EntityModel();
                                 entity.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                entity.EntityPrimaryKey = rdr["entity_primary_key_name"].ToString().Trim();
                                 entity.EntityUniqueName = rdr["entity_name"].ToString().Trim();
                                 entity.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
                                 entity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
@@ -2644,6 +2645,7 @@ namespace SalesForceOAuth
                             while (rdr.Read())
                             {
                                 returnEntity.ID = Convert.ToInt32(rdr["id"].ToString().Trim());
+                                returnEntity.EntityPrimaryKey = rdr["entity_primary_key_name"].ToString().Trim();
                                 returnEntity.EntityUniqueName = rdr["entity_name"].ToString().Trim();
                                 returnEntity.EntityDispalyName = rdr["entity_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
@@ -2688,7 +2690,8 @@ namespace SalesForceOAuth
                         {
                             while (rdr.Read())
                             {
-                                //returnEntitySettings.EntityUniqueName = rdr["entity_name"].ToString().Trim();
+                                returnEntity.EntityUniqueName = rdr["entity_name"].ToString().Trim();
+                                returnEntity.EntityPrimaryKey = rdr["entity_primary_key_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldDisplayName = rdr["entity_primary_field_display_name"].ToString().Trim();
                                 returnEntity.PrimaryFieldUniqueName = rdr["entity_primary_field_name"].ToString().Trim();
                                 returnEntity.SubUrl = rdr["sub_url"].ToString().Trim();

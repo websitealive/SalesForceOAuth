@@ -1,8 +1,10 @@
 ﻿using CRM.Dto;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +14,7 @@ namespace CRM.WebServices
     public class RootObject
     {
         public int vid { get; set; }
-
         public string message { get; set; }
-
         public Properties properties { get; set; }
         public Engagement engagement { get; set; }
         public Associations associations { get; set; }
@@ -26,6 +26,7 @@ namespace CRM.WebServices
         public Property email { get; set; }
         public Property firstname { get; set; }
         public Property lastname { get; set; }
+        public Associations associations { get; set; }
         public List<Property> properties { get; set; }
     }
     public class Property
@@ -51,7 +52,13 @@ namespace CRM.WebServices
 
     public class Associations
     {
-        public List<int> contactIds { get; set; }
+        public List<Int64> associatedCompanyIds { get; set; }
+        public List<Int64> associatedVids { get; set; }
+        // Below properties are used for engagments
+        public List<Int64> contactIds { get; set; }
+        public List<Int64> companyIds { get; set; }
+        public List<Int64> dealIds { get; set; }
+        public List<Int64> ownerIds { get; set; }
     }
 
     public class Metadata
@@ -59,12 +66,12 @@ namespace CRM.WebServices
         public string body { get; set; }
     }
 
-    public class RootObjectNote
-    {
-        public Engagement engagement { get; set; }
-        public Associations associations { get; set; }
-        public Metadata metadata { get; set; }
-    }
+    //public class RootObjectNote
+    //{
+    //    public Engagement engagement { get; set; }
+    //    public Associations associations { get; set; }
+    //    public Metadata metadata { get; set; }
+    //}
     // Note End
     public class HubSpot
     {
@@ -125,17 +132,39 @@ namespace CRM.WebServices
         public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out int? recordPrimaryId)
         {
             List<Property> property = new List<Property>();
+            Associations associations = new Associations();
+            
             foreach (var item in crmEntity.CustomFields)
             {
-                property.Add(new Property() { name = item.FieldName, property = item.FieldName, value = item.Value });
+                if(item.FieldType == "textbox")
+                {
+                    property.Add(new Property() { name = item.FieldName, property = item.FieldName, value = item.Value });
+                } else
+                {
+                    if(crmEntity.EntityUniqueName == "deal")
+                    {
+                        if (item.FieldName == "associatedVids")
+                        {
+                            List<Int64> associatedVids = new List<Int64>();
+                            associatedVids.Add(Convert.ToInt64(item.Value));
+                            associations.associatedVids = associatedVids;
+                        }
+                        if (item.FieldName == "associatedCompanyIds")
+                        {
+                            List<Int64> associatedCompanyIds = new List<Int64>();
+                            associatedCompanyIds.Add(Convert.ToInt64(item.Value));
+                            associations.associatedCompanyIds = associatedCompanyIds;
+                        }
+                    }
+                }
             }
             Properties properties = new Properties()
             {
+                associations = associations,
                 properties = property
             };
             string d = JsonConvert.SerializeObject(properties);
             var client = new RestClient(user.ApiUrl);
-            //var request = new RestRequest("/contacts/v1/" + crmEntity.EntityName, Method.POST);
             var request = new RestRequest(crmEntity.SubUrl, Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
@@ -158,12 +187,28 @@ namespace CRM.WebServices
             }
         }
 
-        public static string PostChats(CRMUser user, string message, int entityId, out bool IsChatAdded, out string ChatId)
+        public static string PostChats(CRMUser user, string message, string entityName, Int64 entityId, out bool IsChatAdded, out string ChatId)
         {
             DateTime baseDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             long timeStamp = (long)(DateTime.Now.ToUniversalTime() - baseDate).TotalMilliseconds;
-            RootObjectNote n = new RootObjectNote() {
-                associations = new Associations() { contactIds = new List<int>() { entityId } },
+            Associations associations = new Associations();
+            List<Int64> associatedIds = new List<Int64>();
+            associatedIds.Add(entityId);
+            if (entityName == "contact")
+            {
+                associations.contactIds = associatedIds;
+            }
+            if (entityName == "companies")
+            {
+                associations.companyIds = associatedIds;
+            }
+            if (entityName == "deal")
+            {
+                associations.dealIds = associatedIds;
+            }
+            RootObject n = new RootObject()
+            {
+                associations = associations,
                 metadata = new Metadata() { body = message },
                 engagement = new Engagement() { active = true, ownerId = 1, timestamp = timeStamp, type = "NOTE" }
             };
@@ -189,7 +234,7 @@ namespace CRM.WebServices
             }
         }
 
-        public static string UpdateChats(CRMUser user, string message, int entityId, string chatId, out bool IsChatAdded)
+        public static string UpdateChats(CRMUser user, string message, string entityName, Int64 entityId, string chatId, out bool IsChatAdded)
         {
             var client = new RestClient(user.ApiUrl);
             RestRequest request = new RestRequest();
@@ -210,11 +255,34 @@ namespace CRM.WebServices
                 request = new RestRequest("/engagements/v1/engagements/" + chatId, Method.PATCH);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-                RootObjectNote n = new RootObjectNote()
+                //RootObjectNote n = new RootObjectNote()
+                //{
+                //    associations = new Associations() { contactIds = new List<int>() { entityId } },
+                //    metadata = new Metadata() { body = chat },
+                //    engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+                //};
+                DateTime baseDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                long timeStamp = (long)(DateTime.Now.ToUniversalTime() - baseDate).TotalMilliseconds;
+                Associations associations = new Associations();
+                List<Int64> associatedIds = new List<Int64>();
+                associatedIds.Add(entityId);
+                if (entityName == "contact")
                 {
-                    associations = new Associations() { contactIds = new List<int>() { entityId } },
+                    associations.contactIds = associatedIds;
+                }
+                if (entityName == "companies")
+                {
+                    associations.companyIds = associatedIds;
+                }
+                if (entityName == "deal")
+                {
+                    associations.dealIds = associatedIds;
+                }
+                RootObject n = new RootObject()
+                {
+                    associations = associations,
                     metadata = new Metadata() { body = chat },
-                    engagement = new Engagement() { active = true, ownerId = 1, timestamp = 1409172644778, type = "NOTE" }
+                    engagement = new Engagement() { active = true, ownerId = 1, timestamp = timeStamp, type = "NOTE" }
                 };
                 string d = JsonConvert.SerializeObject(n);
                 request.AddJsonBody(d);
@@ -250,7 +318,7 @@ namespace CRM.WebServices
             {
                 RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
                 //retEntityRecord.CustomFields.Add(new Dto.Models.EntityFieldsMetaData() { FieldLabel = "adsd", });
-                //retEntityRecord.Email = contact.properties.email.value;
+                // retEntityRecord. = contact.properties.email.value;
                 //retEntityRecord.FirstName = contact.properties.firstname.value;q
                 //retEntityRecord.LastName = contact.properties.lastname.value;
                 return retEntityRecord;
@@ -261,79 +329,72 @@ namespace CRM.WebServices
             }
         }
 
-        //public static CrmEntity GetRecordByEmail(CRMUser user, string email)
-        //{
-        //    CrmEntity retEntityRecord = new CrmEntity();
-        //    var client = new RestClient(user.ApiUrl);
-        //    var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
-        //    request.AddHeader("Content-Type", "application/json");
-        //    request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
-        //    var response = client.Execute(request);
-
-        //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        //    {
-        //        RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-        //        retEntityRecord.Email = contact.properties.email.value;
-        //        retEntityRecord.FirstName = contact.properties.firstname.value;
-        //        retEntityRecord.LastName = contact.properties.lastname.value;
-        //        return retEntityRecord;
-        //    }
-        //    else
-        //    {
-        //        return retEntityRecord;
-        //    }
-        //}
-
-        public static string GetRecordById()
-        {
-            return "";
-        }
-
-        public static CrmEntity GetRecordList(CRMUser user, CrmEntity entityInfo, string sValue)
+        public static CrmEntity GetRecordByEmail(CRMUser user, string email)
         {
             CrmEntity retEntityRecord = new CrmEntity();
             var client = new RestClient(user.ApiUrl);
-            var request = new RestRequest(entityInfo.SubUrl + "/email/" + sValue + "/profile?", Method.GET);
+            var request = new RestRequest("/contacts/v1/contact/email/" + email + "/profile?", Method.GET);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
             var response = client.Execute(request);
-            RootObject info = JsonConvert.DeserializeObject<RootObject>(response.Content);
-            retEntityRecord.Message = info.message;
+
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                EntityFieldsMetaData rec = new EntityFieldsMetaData()
-                {
-                    FieldLabel = "Email",
-                    FieldName = "email",
-                    Value = info.properties.email.value
-                };
-                try
-                {
-                    retEntityRecord.CustomFields = new List<EntityFieldsMetaData>();
-                    retEntityRecord.CustomFields.Add(rec);
-                }
-                catch (Exception ex)
-                {
-                    var obj = ex;
-                    throw;
-                }
-                
-                //CrmEntity rec = new CrmEntity()
-                //{
-                //    Id = contact.vid,
-                //    Email = contact.properties.email.value,
-                //    FirstName = contact.properties.firstname.value,
-                //    LastName = contact.properties.lastname.value,
-                //    CrmType = CrmType.HubSpot,
-                //    AppType = AppType.Alive5
-                //};
-                //retEntityRecord.Add(rec);
+                RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                //retEntityRecord.EntityDispalyName = contact.properties.email.value;
+                //retEntityRecord.FirstName = contact.properties.firstname.value;
+                //retEntityRecord.LastName = contact.properties.lastname.value;
                 return retEntityRecord;
             }
             else
             {
                 return retEntityRecord;
             }
+        }
+
+        public static string GetRecordById()
+        {
+            return "";
+        }
+
+        public static List<CrmEntity> GetRecordList(CRMUser user, CrmEntity entityInfo, string sValue)
+        {
+            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
+            string suburl = string.Empty;
+            if (entityInfo.SubUrl.Contains("contact")) {
+                suburl = entityInfo.SubUrl + "/email/" + sValue + "/profile?";
+            } else
+            {
+                suburl = entityInfo.SubUrl + "/paged?properties=" + entityInfo.PrimaryFieldUniqueName;
+            }
+            var client = new RestClient(user.ApiUrl);
+            var request = new RestRequest(suburl, Method.GET);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", "Bearer " + user.OuthDetail.access_token);
+            var response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                if (entityInfo.SubUrl.Contains("contact")) {
+                    RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                    entityInfo.EntityPrimaryKey = contact.vid.ToString();
+                    entityInfo.PrimaryFieldValue = contact.properties.email.value;
+                    retEntityRecord.Add(entityInfo);
+                } else
+                {
+                    dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                    string entitieRecords = entityInfo.SubUrl.IndexOf('/') == 0 ? entityInfo.SubUrl.Substring(1, entityInfo.SubUrl.IndexOf('/', entityInfo.SubUrl.IndexOf('/') + 1) - 1) : entityInfo.SubUrl.Substring(0, entityInfo.SubUrl.IndexOf('/'));
+                    foreach (var item in info[entitieRecords])
+                    {
+                        if (((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString().Contains(sValue))
+                        {
+                            entityInfo.EntityPrimaryKey = ((Newtonsoft.Json.Linq.JValue)item[entityInfo.EntityPrimaryKey]).Value.ToString();
+                            entityInfo.PrimaryFieldValue = ((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString();
+                            retEntityRecord.Add(entityInfo);
+                        }
+                    }
+                }
+            }
+            return retEntityRecord;
         }
     }
 }
