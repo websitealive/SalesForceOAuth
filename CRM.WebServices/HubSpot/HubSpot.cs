@@ -66,13 +66,6 @@ namespace CRM.WebServices
         public string body { get; set; }
     }
 
-    //public class RootObjectNote
-    //{
-    //    public Engagement engagement { get; set; }
-    //    public Associations associations { get; set; }
-    //    public Metadata metadata { get; set; }
-    //}
-    // Note End
     public class HubSpot
     {
         public static OuthDetail GetAuthorizationTokens(CRMUser user)
@@ -129,7 +122,7 @@ namespace CRM.WebServices
             return outhDetails;
         }
 
-        public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out int? recordPrimaryId)
+        public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out Int64? recordPrimaryId)
         {
             List<Property> property = new List<Property>();
             Associations associations = new Associations();
@@ -174,8 +167,8 @@ namespace CRM.WebServices
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsRecordAdded = true;
-                RootObject responseContent = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                recordPrimaryId = responseContent.vid;
+                dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                recordPrimaryId = info[crmEntity.EntityPrimaryKey];
                 return "Record Added Successfully";
             }
             else
@@ -359,10 +352,12 @@ namespace CRM.WebServices
 
         public static List<CrmEntity> GetRecordList(CRMUser user, CrmEntity entityInfo, string sValue)
         {
-            List<CrmEntity> retEntityRecord = new List<CrmEntity>();
+            List<CrmEntity> retRecordList = new List<CrmEntity>();
             string suburl = string.Empty;
-            if (entityInfo.SubUrl.Contains("contact")) {
-                suburl = entityInfo.SubUrl + "/email/" + sValue + "/profile?";
+            if (entityInfo.SubUrl.Contains("contact"))
+            {
+                // suburl = entityInfo.SubUrl + "/email/" + sValue + "/profile?";
+                suburl = "contacts/v1/search/query?q=" + sValue;
             } else
             {
                 suburl = entityInfo.SubUrl + "/paged?properties=" + entityInfo.PrimaryFieldUniqueName;
@@ -374,27 +369,52 @@ namespace CRM.WebServices
             var response = client.Execute(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                if (entityInfo.SubUrl.Contains("contact")) {
-                    RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
-                    entityInfo.EntityPrimaryKey = contact.vid.ToString();
-                    entityInfo.PrimaryFieldValue = contact.properties.email.value;
-                    retEntityRecord.Add(entityInfo);
-                } else
+                dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                string entitieRecords = entityInfo.SubUrl.IndexOf('/') == 0 ? entityInfo.SubUrl.Substring(1, entityInfo.SubUrl.IndexOf('/', entityInfo.SubUrl.IndexOf('/') + 1) - 1) : entityInfo.SubUrl.Substring(0, entityInfo.SubUrl.IndexOf('/'));
+                var ccc = info[entitieRecords];
+                foreach (var item in info[entitieRecords])
                 {
-                    dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
-                    string entitieRecords = entityInfo.SubUrl.IndexOf('/') == 0 ? entityInfo.SubUrl.Substring(1, entityInfo.SubUrl.IndexOf('/', entityInfo.SubUrl.IndexOf('/') + 1) - 1) : entityInfo.SubUrl.Substring(0, entityInfo.SubUrl.IndexOf('/'));
-                    foreach (var item in info[entitieRecords])
+                    CrmEntity retRecord = new CrmEntity();
+                    retRecord.EntityUniqueName = entityInfo.EntityUniqueName;
+                    retRecord.EntityDispalyName = entityInfo.EntityPrimaryKey;
+                    retRecord.PrimaryFieldUniqueName = entityInfo.PrimaryFieldUniqueName;
+                    if (entityInfo.SubUrl.Contains("contact"))
                     {
-                        if (((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString().Contains(sValue))
+                        retRecord.EntityPrimaryKeyValue = ((Newtonsoft.Json.Linq.JValue)item[entityInfo.EntityPrimaryKey]).Value.ToString();
+                        retRecord.PrimaryFieldValue = ((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString();
+                        retRecordList.Add(retRecord);
+                    }
+                    else
+                    {
+                        if (((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString().ToLower().Contains(sValue.ToLower()))
                         {
-                            entityInfo.EntityPrimaryKey = ((Newtonsoft.Json.Linq.JValue)item[entityInfo.EntityPrimaryKey]).Value.ToString();
-                            entityInfo.PrimaryFieldValue = ((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString();
-                            retEntityRecord.Add(entityInfo);
-                        }
+                            retRecord.EntityPrimaryKeyValue = ((Newtonsoft.Json.Linq.JValue)item[entityInfo.EntityPrimaryKey]).Value.ToString();
+                            retRecord.PrimaryFieldValue = ((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString();
+                            retRecordList.Add(retRecord);
+                        }  
                     }
                 }
+                //if (entityInfo.SubUrl.Contains("contact")) {
+                //    RootObject contact = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                //    entityInfo.EntityPrimaryKey = contact.vid.ToString();
+                //    entityInfo.PrimaryFieldValue = contact.properties.email.value;
+                //    retEntityRecord.Add(entityInfo);
+                //} else
+                //{
+                //    dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
+                //    string entitieRecords = entityInfo.SubUrl.IndexOf('/') == 0 ? entityInfo.SubUrl.Substring(1, entityInfo.SubUrl.IndexOf('/', entityInfo.SubUrl.IndexOf('/') + 1) - 1) : entityInfo.SubUrl.Substring(0, entityInfo.SubUrl.IndexOf('/'));
+                //    foreach (var item in info[entitieRecords])
+                //    {
+                //        if (((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString().Contains(sValue))
+                //        {
+                //            entityInfo.EntityPrimaryKey = ((Newtonsoft.Json.Linq.JValue)item[entityInfo.EntityPrimaryKey]).Value.ToString();
+                //            entityInfo.PrimaryFieldValue = ((Newtonsoft.Json.Linq.JValue)item["properties"][entityInfo.PrimaryFieldUniqueName].value).Value.ToString();
+                //            retEntityRecord.Add(entityInfo);
+                //        }
+                //    }
+                //}
             }
-            return retEntityRecord;
+            return retRecordList;
         }
     }
 }

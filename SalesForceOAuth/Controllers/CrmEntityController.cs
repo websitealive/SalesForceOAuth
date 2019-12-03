@@ -97,7 +97,7 @@ namespace SalesForceOAuth.Controllers
                 Repository.UpdateCrmCreditionals(user);
             }
             bool IsRecordAdded;
-            int? recordPrimaryId;
+            Int64? recordPrimaryId;
             var message = HubSpot.PostNewRecord(user, crmEntity, out IsRecordAdded, out recordPrimaryId);
             if (IsRecordAdded)
             {
