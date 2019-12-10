@@ -21,9 +21,10 @@ namespace CRM.Dto
 
         public int ID { get; set; }
         public string EntityId { get; set; }
-        public string EntityPrimaryKey { get; set; }
         public string EntityUniqueName { get; set; }
         public string EntityDispalyName { get; set; }
+        public string EntityPrimaryKey { get; set; }
+        public string EntityPrimaryKeyValue { get; set; }
         public string PrimaryFieldUniqueName { get; set; }
         public string PrimaryFieldDisplayName { get; set; }
         public string PrimaryFieldValue { get; set; }

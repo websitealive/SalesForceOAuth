@@ -9,7 +9,7 @@ namespace CRM.Dto
     public class EntityFieldsMetaData
     {
         public int Sr { get; set; }
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string FieldName { get; set; }
         public string FieldLabel { get; set; }
         public string Value { get; set; }
