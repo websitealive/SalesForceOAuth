@@ -2870,9 +2870,9 @@ namespace SalesForceOAuth
                                 returnFileds.RelatedEntity = rdr["relatedentity"].ToString().Trim();
                                 returnFileds.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                 returnFileds.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                                returnFileds.IsUsingRelatedEntityOptionalFields = (rdr["use_relatedentity_optioal_fields"].ToString().Trim() == "1") ? "true" : "false";
-                                returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
-                                returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
+                                //returnFileds.IsUsingRelatedEntityOptionalFields = (rdr["use_relatedentity_optioal_fields"].ToString().Trim() == "1") ? "true" : "false";
+                                //returnFileds.OptionalFieldsLabel = rdr["relatedentity_optional_filedlabel"].ToString().Trim();
+                                //returnFileds.OptionalFieldsName = rdr["relatedentity_optional_fieldname"].ToString().Trim();
                                 // returnFileds.IsUsingCurrentDate = (rdr["use_current_date"].ToString().Trim() == "1") ? "true" : "false";
                             }
                         }
@@ -2902,37 +2902,43 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    bool flag = false;
-                    string integrationId = null;
-                    string sqlFetchIntegration = "SELECT id FROM integration_dynamics_settings WHERE ObjectRef = '" + ExportFields.ObjectRef + "' AND GroupId = " + ExportFields.GroupId.ToString();
-                    MySqlCommand cmd = new MySqlCommand(sqlFetchIntegration, conn);
-                    using (MySqlDataReader rdr = cmd.ExecuteReader())
-                    {
-                        if (rdr.HasRows)
-                        {
-                            while (rdr.Read())
-                            {
-                                integrationId = rdr["id"].ToString().Trim();
-                                flag = true;
-                            }
-                        }
-                        rdr.Close();
-                    }
+                    //bool flag = false;
+                    //string integrationId = null;
+                    //string sqlFetchIntegration = "SELECT id FROM integration_dynamics_settings WHERE ObjectRef = '" + ExportFields.ObjectRef + "' AND GroupId = " + ExportFields.GroupId.ToString();
+                    //MySqlCommand cmd = new MySqlCommand(sqlFetchIntegration, conn);
+                    //using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    //{
+                    //    if (rdr.HasRows)
+                    //    {
+                    //        while (rdr.Read())
+                    //        {
+                    //            integrationId = rdr["id"].ToString().Trim();
+                    //            flag = true;
+                    //        }
+                    //    }
+                    //    rdr.Close();
+                    //}
 
-                    if (flag)
-                    {
-                        string sql = "INSERT INTO integration_crm_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity, use_current_date)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "','" + ExportFields.IsUsingCurrentDate + "' )";
-                        MySqlCommand cmd1 = new MySqlCommand(sql, conn);
-                        int rows = cmd1.ExecuteNonQuery();
-                        conn.Close();
-                        return "Custom Fields Added Successfully";
-                    }
-                    else
-                    {
-                        conn.Close();
-                        return "MS Dynamic Account In not Configured";
-                    }
+                    //if (flag)
+                    //{
+                    //    string sql = "INSERT INTO integration_crm_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity, use_current_date)";
+                    //    sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "','" + ExportFields.IsUsingCurrentDate + "' )";
+                    //    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    //    int rows = cmd1.ExecuteNonQuery();
+                    //    conn.Close();
+                    //    return "Custom Fields Added Successfully";
+                    //}
+                    //else
+                    //{
+                    //    conn.Close();
+                    //    return "MS Dynamic Account In not Configured";
+                    //}
+                    string sql = "INSERT INTO integration_crm_custom_fields (objectref, groupid, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentity, use_current_date)";
+                    sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.RelatedEntity + "','" + ExportFields.IsUsingCurrentDate + "' )";
+                    MySqlCommand cmd1 = new MySqlCommand(sql, conn);
+                    int rows = cmd1.ExecuteNonQuery();
+                    conn.Close();
+                    return "Custom Fields Added Successfully";
 
                 }
                 catch (Exception ex)

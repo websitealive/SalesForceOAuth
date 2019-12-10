@@ -347,10 +347,10 @@ E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CopyComplete
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
-D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\ApplicationInsights.config
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\csc.exe
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.CodeAnalysis.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.CSharp.Core.targets

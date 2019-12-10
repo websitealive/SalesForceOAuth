@@ -124,39 +124,30 @@ namespace CRM.WebServices
 
         public static string PostNewRecord(CRMUser user, CrmEntity crmEntity, out bool IsRecordAdded, out Int64? recordPrimaryId)
         {
-            List<Property> property = new List<Property>();
-            Associations associations = new Associations();
-            
+            dynamic propertiesList = new ExpandoObject();
+            List<dynamic> properties = new List<dynamic>();
+            dynamic associations = new ExpandoObject();
             foreach (var item in crmEntity.CustomFields)
             {
-                if(item.FieldType == "textbox")
+                if (item.FieldType == "textbox")
                 {
-                    property.Add(new Property() { name = item.FieldName, property = item.FieldName, value = item.Value });
-                } else
+                    dynamic property = new ExpandoObject();
+                    property.name = item.FieldName;
+                    property.property = item.FieldName;
+                    property.value = item.Value;
+                    properties.Add(property);
+                    propertiesList.properties = properties;
+                }
+                else
                 {
-                    if(crmEntity.EntityUniqueName == "deal")
-                    {
-                        if (item.FieldName == "associatedVids")
-                        {
-                            List<Int64> associatedVids = new List<Int64>();
-                            associatedVids.Add(Convert.ToInt64(item.Value));
-                            associations.associatedVids = associatedVids;
-                        }
-                        if (item.FieldName == "associatedCompanyIds")
-                        {
-                            List<Int64> associatedCompanyIds = new List<Int64>();
-                            associatedCompanyIds.Add(Convert.ToInt64(item.Value));
-                            associations.associatedCompanyIds = associatedCompanyIds;
-                        }
-                    }
+                    List<dynamic> ids = new List<dynamic>();
+                    ids.Add(item.Value);
+                    ((IDictionary<String, Object>)associations)[item.FieldName] = ids;
+                    propertiesList.associations = associations;
                 }
             }
-            Properties properties = new Properties()
-            {
-                associations = associations,
-                properties = property
-            };
-            string d = JsonConvert.SerializeObject(properties);
+
+            string d = JsonConvert.SerializeObject(propertiesList);
             var client = new RestClient(user.ApiUrl);
             var request = new RestRequest(crmEntity.SubUrl, Method.POST);
             request.AddHeader("Content-Type", "application/json");
@@ -164,7 +155,7 @@ namespace CRM.WebServices
 
             request.AddJsonBody(d);
             var response = client.Execute(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IsRecordAdded = true;
                 dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -174,9 +165,9 @@ namespace CRM.WebServices
             else
             {
                 IsRecordAdded = false;
-                RootObject responseContent = JsonConvert.DeserializeObject<RootObject>(response.Content);
+                dynamic info = JsonConvert.DeserializeObject<dynamic>(response.Content);
                 recordPrimaryId = null;
-                return responseContent.message;
+                return info["message"];
             }
         }
 

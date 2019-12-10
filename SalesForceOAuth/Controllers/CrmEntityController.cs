@@ -370,7 +370,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                var FieldsList = Repository.GetDYExportFieldsById(FieldId, ObjectRef, urlReferrer);
+                var FieldsList = Repository.GetCustomFieldsById(FieldId, ObjectRef, urlReferrer);
                 return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
