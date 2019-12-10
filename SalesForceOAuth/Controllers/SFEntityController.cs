@@ -338,7 +338,7 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                string searchEntity = "", lookupOptionalFieldLabel = "", lookupOptionalFieldName = "";
+                string searchEntity = "", lookupOptionalFieldLabel = "", lookupOptionalFieldName = "", IsUsingRelatedEntityOptionalFields = "";
 
                 List<EntityModel> listToReturn = new List<EntityModel>();
                 FieldsModel getExportFieldForLookup = new FieldsModel();
@@ -351,6 +351,7 @@ namespace SalesForceOAuth.Controllers
                         searchEntity = getExportFieldForLookup.RelatedEntity;
                         lookupOptionalFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
                         lookupOptionalFieldName = getExportFieldForLookup.OptionalFieldsName;
+                        IsUsingRelatedEntityOptionalFields = getExportFieldForLookup.IsUsingRelatedEntityOptionalFields;
                     }
                     searchEntity = Entity;
                 }
@@ -380,15 +381,17 @@ namespace SalesForceOAuth.Controllers
                 }
                 if (IslookupSearch)
                 {
-                    if (lookupOptionalFieldName != "")
-                        // TODO: Some of the entities does not a have field namely "name" (e.g. Contract entity in SF)
-                        query.Append("SELECT Id, name, " + lookupOptionalFieldName + " From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
-                    else
-                        query.Append("SELECT Id, name From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
+                    //TODO: lookupOptionalFieldName is saved "null" instead of NULL. It happens when an export field is created of type lookup.
+                    //=> This check will be removed when that "null" is handled means save value as NULL if optional option is not selected by the user
+                        if (IsUsingRelatedEntityOptionalFields == "1")
+                            // TODO: Some of the entities does not a have field namely "name" (e.g. Contract entity in SF)
+                            query.Append("SELECT Id, name, " + lookupOptionalFieldName + " From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
+                        else
+                            query.Append("SELECT Id, name From " + Entity + " where Name like '%" + SValue.Trim() + "%' ");
                 }
                 else
                 {
-                    query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
+                    query.Append("SELECT Id " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
                     query.Append(" where Name like '%" + SValue.Trim() + "%' ");
                     query.Append(filters.ToString());
                 }
@@ -404,7 +407,7 @@ namespace SalesForceOAuth.Controllers
                         l.EntityPrimaryKey = c.Id;
                         l.EntityDispalyName = c.Name;
                         l.EntityUniqueName = Entity;
-                        if (lookupOptionalFieldName != "")
+                        if (IsUsingRelatedEntityOptionalFields == "1")
                         {
                             l.OptionalFieldDisplayName = lookupOptionalFieldName;
                             l.OptionalFieldValue = c[lookupOptionalFieldName];

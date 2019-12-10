@@ -891,7 +891,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    
+
                     string sql = "INSERT INTO integration_dynamics_backend_fields (objectref, groupid, entity, backend_field_name, backend_fieldtype, backend_lookup_entity, backend_lookup_entity_value, backend_lookup_entity_recordid, backend_use_current_date, backend_field_value)";
                     sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.FieldType + "','" + BackEndFields.LookupEntityName + "','" + BackEndFields.LookupEntityRecordValue + "','" + BackEndFields.LookupEntityRecordId + "','" + BackEndFields.IsUsingCurrentDate + "','" + BackEndFields.ValueDetail + "' )";
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
@@ -1283,7 +1283,8 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "SELECT * from integration_salesforce_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    string valueType = "user_input_field";
+                    string sql = "SELECT * from integration_salesforce_custom_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND valuetype = '" + valueType + "'  ";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {
@@ -1297,6 +1298,9 @@ namespace SalesForceOAuth
                                 exportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
                                 exportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
                                 exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
+                                exportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
+                                exportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                exportFieldsList.IsUsingCurrentDate = Convert.ToInt32(rdr["use_current_date"].ToString().Trim());
 
                                 List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
                                 fieldsList.Add(exportFieldsList);
@@ -1326,58 +1330,6 @@ namespace SalesForceOAuth
                                     }
                                 }
                             }
-
-                            //ExportFields contactExportFields = new ExportFields();
-                            //contactExportFields.Entity = "Contact";
-                            //ExportFields leadExportFields = new ExportFields();
-                            //leadExportFields.Entity = "Lead";
-                            //ExportFields accountExportFields = new ExportFields();
-                            //accountExportFields.Entity = "Account";
-
-                            //List<ExportFieldModel> contactFieldsList = new List<ExportFieldModel>();
-                            //List<ExportFieldModel> leadFieldsList = new List<ExportFieldModel>();
-                            //List<ExportFieldModel> accountFieldsList = new List<ExportFieldModel>();
-
-
-                            //while (rdr.Read())
-                            //{
-                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "contact")
-                            //    {
-                            //        ExportFieldModel contactExportFieldsList = new ExportFieldModel();
-                            //        contactExportFieldsList.FieldType = "Custom";
-                            //        contactExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                            //        contactExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                            //        contactExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                            //        contactExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                            //        contactFieldsList.Add(contactExportFieldsList);
-                            //    }
-                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "lead")
-                            //    {
-                            //        ExportFieldModel leadExportFieldsList = new ExportFieldModel();
-                            //        leadExportFieldsList.FieldType = "Custom";
-                            //        leadExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                            //        leadExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                            //        leadExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                            //        leadExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                            //        leadFieldsList.Add(leadExportFieldsList);
-                            //    }
-                            //    if (rdr["entity_name"].ToString().Trim().ToLower() == "account")
-                            //    {
-                            //        ExportFieldModel accountExportFieldsList = new ExportFieldModel();
-                            //        accountExportFieldsList.FieldType = "Custom";
-                            //        accountExportFieldsList.FiledLabel = rdr["inputfieldlabel"].ToString().Trim();
-                            //        accountExportFieldsList.FieldName = rdr["fieldname"].ToString().Trim();
-                            //        accountExportFieldsList.BusinessRequired = Convert.ToInt32(rdr["businessrequired"].ToString().Trim());
-                            //        accountExportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
-                            //        accountFieldsList.Add(accountExportFieldsList);
-                            //    }
-                            //}
-                            //contactExportFields.ExportFieldsList = contactFieldsList;
-                            //returnFileds.Add(contactExportFields);
-                            //leadExportFields.ExportFieldsList = leadFieldsList;
-                            //returnFileds.Add(leadExportFields);
-                            //accountExportFields.ExportFieldsList = accountFieldsList;
-                            //returnFileds.Add(accountExportFields);
                         }
                         rdr.Close();
                     }
@@ -1569,7 +1521,7 @@ namespace SalesForceOAuth
                     if (flag)
                     {
                         string sql = "INSERT INTO integration_salesforce_custom_fields (objectref, groupid, integration_id, entity_name, fieldname, fieldtype, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, use_relatedentity_optioal_fields, relatedentity_optional_filedlabel, relatedentity_optional_fieldname, use_current_date, relatedentity)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName  + "','" + ExportFields.FieldType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.IsUsingRelatedEntityOptionalFields + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ExportFields.IsUsingCurrentDate + "','" + ExportFields.RelatedEntity + "' )";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.EntityType + "','" + ExportFields.FieldName + "','" + ExportFields.FieldType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.IsUsingRelatedEntityOptionalFields + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ExportFields.IsUsingCurrentDate + "','" + ExportFields.RelatedEntity + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();
@@ -1886,8 +1838,10 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_salesforce_detailedview_fields (objectref, groupid, entity_type, sf_variable, label)";
-                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "' )";
+                    string sql = "INSERT INTO integration_salesforce_detailedview_fields (objectref, groupid, entity_type, sf_variable, label, field_type)";
+                    sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "','" + DetailFields.FieldType + "' )";
+
+               
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -1979,6 +1933,9 @@ namespace SalesForceOAuth
                                 backendFields.ValueDetail = rdr["backend_field_value"].ToString().Trim();
                                 backendFields.EntityType = rdr["entity"].ToString().Trim();
                                 backendFields.FieldType = rdr["backend_field_type"].ToString().Trim();
+                                backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
+                                backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
+                                backendFields.IsUsingCurrentDate = (rdr["backend_use_current_date"].ToString().Trim() == "") ? 0 : 1;
 
                                 returnFields.Add(backendFields);
                             }
@@ -2050,8 +2007,13 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_salesforce_backend_fields (objectref, groupid, entity, backend_field_name, backend_field_value)";
-                    sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.ValueDetail + "' )";
+                    string sql = "INSERT INTO integration_salesforce_backend_fields (objectref, groupid, entity, backend_field_name, backend_field_value, backend_field_type, backend_lookup_entity, backend_lookup_entity_value, backend_lookup_entity_recordid, backend_use_current_date)";
+                    sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.ValueDetail + "','" + BackEndFields.FieldType + "','" + BackEndFields.LookupEntityName + "','" + BackEndFields.LookupEntityRecordValue + "','" + BackEndFields.LookupEntityRecordId + "','" + BackEndFields.IsUsingCurrentDate + "' )";
+
+                    //string sql = "INSERT INTO integration_dynamics_backend_fields (objectref, groupid, entity, backend_field_name, backend_fieldtype, backend_lookup_entity, backend_lookup_entity_value, backend_lookup_entity_recordid, backend_use_current_date, backend_field_value)";
+                    //sql += "VALUES ('" + BackEndFields.ObjectRef + "'," + BackEndFields.GroupId.ToString() + ",'" + BackEndFields.EntityType + "','" + BackEndFields.FieldName + "','" + BackEndFields.FieldType + "','" + BackEndFields.LookupEntityName + "','" + BackEndFields.LookupEntityRecordValue + "','" + BackEndFields.LookupEntityRecordId + "','" + BackEndFields.IsUsingCurrentDate + "','" + BackEndFields.ValueDetail + "' )";
+
+
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -3027,7 +2989,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string updateSql = "Update integration_crm_authentication Set access_token = '" + crmUser.OuthDetail.access_token + "', refresh_token = '" + crmUser.OuthDetail.refresh_token + "', expires_in = '" + crmUser.OuthDetail.expires_in + "', expires_on = '" + crmUser.OuthDetail.expires_on + "'"; 
+                    string updateSql = "Update integration_crm_authentication Set access_token = '" + crmUser.OuthDetail.access_token + "', refresh_token = '" + crmUser.OuthDetail.refresh_token + "', expires_in = '" + crmUser.OuthDetail.expires_in + "', expires_on = '" + crmUser.OuthDetail.expires_on + "'";
                     updateSql += " WHERE crm_type = '" + crmUser.CrmType + "' AND objectref = '" + crmUser.ObjectRef + "' AND groupid = " + crmUser.GroupId;
                     MySqlCommand cmd1 = new MySqlCommand(updateSql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -3099,7 +3061,7 @@ namespace SalesForceOAuth
                                 returnCrmUser.Password = rdr["password"].ToString().Trim();
                                 OuthDetail outhDetail = new OuthDetail();
                                 outhDetail.refresh_token = rdr["refresh_token"].ToString().Trim();
-                                outhDetail.access_token =  rdr["access_token"].ToString().Trim();
+                                outhDetail.access_token = rdr["access_token"].ToString().Trim();
                                 outhDetail.expires_on = rdr["expires_on"].ToString().Trim();
                                 returnCrmUser.OuthDetail = outhDetail;
                             }

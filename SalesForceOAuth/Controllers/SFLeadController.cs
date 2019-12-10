@@ -49,6 +49,10 @@ namespace SalesForceOAuth.Controllers
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 //find lead owner user
                 lData.OwnerEmail = (lData.OwnerEmail == null ? "" : lData.OwnerEmail);
+
+
+
+
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>("SELECT Id, Username, Email From User " +
                     "where Username like '%" + lData.OwnerEmail + "%' " +
                     "OR Email like '%" + lData.OwnerEmail + "%' ").ConfigureAwait(false);
@@ -74,7 +78,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         if (inputField.Value != null)
                         {
-                            MyAppsDb.AddProperty(newLead, inputField.FieldName, inputField.Value);
+                            MyAppsDb.AddProperty(newLead, inputField.FieldName, inputField.Value, inputField.FieldType);
                             //dictionaryLead.Add(inputField.FieldName, inputField.Value);
                         }
 

@@ -1747,3 +1747,84 @@ No such column 'AccountNumber' on entity 'Account'. If you are attempting to use
 22/11/2019 1:10:31 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: String was not recognized as a valid DateTime.
 28/11/2019 12:53:00 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : Salesforce.Common.ForceException: expired access/refresh token
    at Salesforce.Common.AuthenticationClient.<TokenRefreshAsync>d__13.MoveNext(), Exception Message: One or more errors occurred.
+29/11/2019 11:36:13 AM ==> Function: Dy GetExportFields : Message--Internal exception : , Exception Message: Timeout in IO operation
+29/11/2019 12:04:12 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): An established connection was aborted by the software in your host machine
+   at System.Net.Sockets.Socket.Send(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size), Exception Message: Unable to write data to the transport connection: An established connection was aborted by the software in your host machine.
+29/11/2019 12:04:12 PM ==> "Unhandled exception--Internal exception : System.Net.Sockets.SocketException (0x80004005): An established connection was aborted by the software in your host machine\r\n   at System.Net.Sockets.Socket.Send(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)\r\n   at System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size), Exception Message: Unable to write data to the transport connection: An established connection was aborted by the software in your host machine."
+29/11/2019 12:20:50 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+29/11/2019 12:20:51 PM ==> "Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation"
+29/11/2019 12:25:02 PM ==> Internal Error: 
+29/11/2019 12:25:02 PM ==> "Internal Error: "
+29/11/2019 12:28:04 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Connection must be valid and open.
+29/11/2019 12:43:21 PM ==> Function: SalesForce-GetAccessToken : Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation
+29/11/2019 12:43:22 PM ==> "Unhandled exception--Internal exception : , Exception Message: Timeout in IO operation"
+04/12/2019 11:23:34 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+04/12/2019 11:27:45 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+04/12/2019 11:28:56 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+04/12/2019 11:31:31 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+04/12/2019 11:34:55 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'FieldName13' on sobject of type Account
+04/12/2019 11:39:24 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'FieldName13' on sobject of type Account
+04/12/2019 11:45:48 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'FieldName13' on sobject of type Account
+04/12/2019 5:49:20 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+04/12/2019 5:50:16 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+05/12/2019 10:03:46 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'ContactId' on sobject of type Account
+05/12/2019 10:07:32 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'ContactId' on sobject of type Account
+05/12/2019 10:14:14 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'ContactId' on sobject of type Account
+05/12/2019 10:31:02 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+05/12/2019 10:32:06 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+05/12/2019 10:32:48 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+05/12/2019 10:44:59 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Account: bad field names on insert/update call: Bool_Test1__pc
+05/12/2019 10:53:54 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+05/12/2019 12:03:48 PM ==> Function: SF Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+05/12/2019 12:06:08 PM ==> Function: SF Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+05/12/2019 12:06:54 PM ==> Function: SF Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+05/12/2019 12:26:10 PM ==> Function: SF Export Fields : Unable to add Export Fields--Internal exception : , Exception Message: Unable to connect to any of the specified MySQL hosts.
+05/12/2019 3:19:25 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+06/12/2019 10:20:05 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+10/12/2019 10:43:00 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , AccountNumber, AccountNumber, Name, Phone  from
+                           ^
+ERROR at Row:1:Column:28
+duplicate field selected: AccountNumber
+10/12/2019 10:43:57 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id , AccountNumber, AccountNumber, Name, Phone  from
+                           ^
+ERROR at Row:1:Column:28
+duplicate field selected: AccountNumber
+10/12/2019 10:47:18 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Company, FirstName, LastName, Company, Email, Phone  from lead
+                              ^
+ERROR at Row:1:Column:43
+duplicate field selected: Company
+10/12/2019 10:47:31 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Company, FirstName, LastName, Company, Email, Phone  from lead
+                              ^
+ERROR at Row:1:Column:43
+duplicate field selected: Company
+10/12/2019 10:48:29 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Company, FirstName, LastName, Company, Email, Phone  from lead
+                              ^
+ERROR at Row:1:Column:43
+duplicate field selected: Company
+10/12/2019 10:49:22 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Company, FirstName, LastName, Company, Email, Phone  from lead
+                              ^
+ERROR at Row:1:Column:43
+duplicate field selected: Company
+10/12/2019 10:51:33 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Company, FirstName, LastName, Company, Email, Phone  from lead
+                              ^
+ERROR at Row:1:Column:43
+duplicate field selected: Company
+10/12/2019 11:01:36 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Pac_ID__c, Checkbox_acc_test__c, Parent, AccountNumber, Name, Phone
+                                 ^
+ERROR at Row:1:Column:61
+No such column 'Parent' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+10/12/2019 11:04:11 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+Pac_ID__c, Checkbox_acc_test__c, Parent, AccountNumber, Name, Phone
+                                 ^
+ERROR at Row:1:Column:61
+No such column 'Parent' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+10/12/2019 11:26:19 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Index was outside the bounds of the array.

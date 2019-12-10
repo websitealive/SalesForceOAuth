@@ -71,7 +71,7 @@ namespace SalesForceOAuth.Controllers
                 dynamic UpdateRecord = new ExpandoObject();
                 foreach (var item in getBackEndFeields)
                 {
-                    MyAppsDb.AddProperty(UpdateRecord, item.FieldName, item.ValueDetail);
+                    MyAppsDb.AddProperty(UpdateRecord, item.FieldName, item.ValueDetail, item.FieldType);
                 }
 
                 if (string.IsNullOrEmpty(ChatId))

@@ -37,7 +37,6 @@ namespace SalesForceOAuth.Controllers
                     var FieldsList = Repository.GetSFFormExportFields(ObjectRef, GroupId, urlReferrer);
                     return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
                 }
-
             }
             catch (Exception ex)
             {

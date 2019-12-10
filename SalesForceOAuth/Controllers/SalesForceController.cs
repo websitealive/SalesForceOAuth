@@ -243,8 +243,15 @@ namespace SalesForceOAuth.Controllers
                     }
                     else if (propertyType.Equals("lookup"))
                     {
-                        //registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
-                        propertyName = propertyName + "Id";
+                        //TODO: Currently we can't differntiate b/w custom & default objects, since default has "Id" appended while custom don't have.
+                        //Solution: find an api which will tell us whether this field is custom or default
+                        if (!propertyName.EndsWith("__c"))
+                        {
+                            //registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
+                            propertyName = propertyName + "Id";
+                        }
+
+
                     }
                     else if (propertyType == "datetime")
                     {
