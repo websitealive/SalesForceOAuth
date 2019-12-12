@@ -87,6 +87,9 @@ namespace SalesForceOAuth.Models
 
         public string Table { get; set; }
 
+        public int IsUsingCurrentDate { get; set; }
+        
+
         //public int Sr { get; set; }
 
         //public int Id { get; set; }
