@@ -191,7 +191,7 @@ namespace SalesForceOAuth.Controllers
                 {
                     PostedObjectDetail output = new PostedObjectDetail();
                     output.Id = sR.Id;
-                    output.ObjectName = lData.PrimaryFieldUniqueName;
+                    output.ObjectName = lData.EntityUniqueName;
                     output.Message = lData.PrimaryFieldUniqueName + " added successfully!";
                     return MyAppsDb.ConvertJSONOutput(output, HttpStatusCode.OK, false);
                 }
@@ -391,7 +391,10 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
-                    query.Append("SELECT Id " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
+                    //TODO: Normally we enter PrimaryFieldUniqueName = "name". In such case our query becomes as below
+                    //select Id, name from entity where Name like SValue
+                    //Noteeeeeeeeeeeeeeee: Some entities do not have a "Name" column
+                    query.Append("SELECT Id, " + dynamicEntity.PrimaryFieldUniqueName + " " + columns.ToString() + " From " + Entity);
                     query.Append(" where Name like '%" + SValue.Trim() + "%' ");
                     query.Append(filters.ToString());
                 }

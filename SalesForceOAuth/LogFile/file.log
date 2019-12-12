@@ -1828,3 +1828,21 @@ Pac_ID__c, Checkbox_acc_test__c, Parent, AccountNumber, Name, Phone
 ERROR at Row:1:Column:61
 No such column 'Parent' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
 10/12/2019 11:26:19 AM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Index was outside the bounds of the array.
+10/12/2019 2:39:11 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+10/12/2019 6:04:28 PM ==> Function: SfChats-PostChats : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+10/12/2019 6:04:52 PM ==> Function: SfChats-PostChats : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+10/12/2019 6:05:26 PM ==> Function: SfChats-PostChats : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+10/12/2019 6:08:06 PM ==> Function: SfChats-PostChats : Your request isn't authorized!--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+11/12/2019 11:33:53 AM ==> Internal Error: System.Net.Sockets.SocketException (0x80004005): No such host is known
+   at System.Net.Dns.GetAddrInfo(String name)
+   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)
+   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)
+   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)
+   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)
+   at MySql.Data.MySqlClient.NativeDriver.Open()
+11/12/2019 11:33:53 AM ==> "Internal Error: System.Net.Sockets.SocketException (0x80004005): No such host is known\r\n   at System.Net.Dns.GetAddrInfo(String name)\r\n   at System.Net.Dns.InternalGetHostByName(String hostName, Boolean includeIPv6)\r\n   at System.Net.Dns.GetHostEntry(String hostNameOrAddress)\r\n   at MySql.Data.Common.MyNetworkStream.CreateStream(MySqlConnectionStringBuilder settings, Boolean unix)\r\n   at MySql.Data.Common.StreamCreator.GetStream(MySqlConnectionStringBuilder settings)\r\n   at MySql.Data.MySqlClient.NativeDriver.Open()"
+11/12/2019 2:13:29 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: No such column 'null' on sobject of type Account
+11/12/2019 4:54:42 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
+11/12/2019 5:00:58 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
+11/12/2019 5:02:16 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
+11/12/2019 5:05:04 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist

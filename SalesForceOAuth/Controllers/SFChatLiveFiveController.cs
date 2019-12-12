@@ -61,10 +61,11 @@ namespace SalesForceOAuth.Controllers
                 PostedObjectDetail output = new PostedObjectDetail();
                 SuccessResponse sR;
                 dynamic lTemp = new ExpandoObject();
-                lTemp.Subject = lData.Subject;
-                lTemp.Description = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                lTemp.Status = "Completed";
-                if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact") lTemp.WhoId = lData.EntitytId; else lTemp.WhatId = lData.EntitytId;
+                
+                if (lData.EntitytType.ToLower() == "lead" || lData.EntitytType.ToLower() == "contact")
+                    lTemp.WhoId = lData.EntitytId;
+                else
+                    lTemp.WhatId = lData.EntitytId;
 
                 // Get Back End Fields and create object for update
                 var getBackEndFeields = Repository.GetSFBackEndFields(lData.ObjectRef, lData.GroupId, urlReferrer, lData.EntitytType.ToLower());
@@ -74,8 +75,12 @@ namespace SalesForceOAuth.Controllers
                     MyAppsDb.AddProperty(UpdateRecord, item.FieldName, item.ValueDetail, item.FieldType);
                 }
 
-                if (string.IsNullOrEmpty(ChatId))
+                //if (string.IsNullOrEmpty(ChatId))
+                if (!flag)
                 {
+                    lTemp.Subject = lData.Subject;
+                    lTemp.Description = HeadingSms.Replace("|", "\r\n") + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+                    lTemp.Status = "Completed";
                     sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
                     if (getBackEndFeields.Count > 0)
                     {
@@ -90,6 +95,27 @@ namespace SalesForceOAuth.Controllers
                 {
                     try
                     {
+                        //var queryAllID = "Select Id, Description from Task";
+                        //QueryResult<dynamic> cont1 = await client.QueryAsync<dynamic>(queryAllID.ToString()).ConfigureAwait(false);
+
+                        var que = "  SELECT Id, Description FROM Task WHERE Id = '" + ChatId + "'";
+                        QueryResult<dynamic> cont5 = await client.QueryAsync<dynamic>(que.ToString()).ConfigureAwait(false);
+
+                       
+                        string messg = "";
+
+                        foreach (dynamic c in cont5.Records)
+                        {
+                            messg = c.Description; break;
+                        }
+
+                        lTemp.Description = messg + "\r\n" + lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                        //lTemp.Description = cont5;
+
+
+
+
                         sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
                         if (getBackEndFeields.Count > 0)
                         {
@@ -99,7 +125,7 @@ namespace SalesForceOAuth.Controllers
                         output.ObjectName = "Chat";
                         output.Message = "Chat updated successfully!";
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
                         if (getBackEndFeields.Count > 0)
