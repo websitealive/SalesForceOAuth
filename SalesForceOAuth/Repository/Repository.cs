@@ -862,6 +862,7 @@ namespace SalesForceOAuth
                                 returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
                                 returnFileds.FieldName = rdr["backend_field_name"].ToString().Trim();
                                 returnFileds.ValueDetail = rdr["backend_field_value"].ToString().Trim();
+                                returnFileds.FieldType = rdr["backend_fieldtype"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity"].ToString().Trim();
                             }
                         }
