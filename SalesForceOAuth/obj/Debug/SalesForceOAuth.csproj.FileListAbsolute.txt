@@ -343,7 +343,6 @@ E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.Owin.Security.Micr
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\bin\System.Web.Http.Owin.xml
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\bin\RestSharp.xml
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csprojAssemblyReference.cache
-E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreCompileInputs.cache
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CopyComplete
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 E:\Gol Projects\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb

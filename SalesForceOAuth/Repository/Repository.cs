@@ -2385,7 +2385,7 @@ namespace SalesForceOAuth
                                 returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
                                 returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
                                 returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
-                                returnEntitySettings.AllowAccountCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
+                                returnEntitySettings.AllowAccountCreation = Convert.ToInt32(rdr["allow_accounts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowContactCreation = Convert.ToInt32(rdr["allow_contacts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowLeadCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
                             }
