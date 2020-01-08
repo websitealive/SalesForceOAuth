@@ -129,7 +129,7 @@ namespace SalesForceOAuth.Controllers
                                     }
                                     else if (item.FieldType == "datetime")
                                     {
-                                        if (item.IsUsingCurrentDate == 1)
+                                        if (item.IsUsingCurrentDate == "1")
                                         {
                                             parentEntity[item.FieldName] = DateTime.Now;
                                         }

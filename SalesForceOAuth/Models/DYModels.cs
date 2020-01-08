@@ -53,7 +53,7 @@ namespace SalesForceOAuth.Models
 
         public int MaxLength { get; set; }
 
-        public int IsUsingCurrentDate { get; set; }
+        public string IsUsingCurrentDate { get; set; }
     }
 
     public class CustomFields

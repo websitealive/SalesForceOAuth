@@ -127,6 +127,7 @@ namespace SalesForceOAuth
                                 exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
                                 exportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
                                 exportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
+                                exportFieldsList.IsUsingCurrentDate = Convert.ToInt32(rdr["use_current_date"].ToString().Trim());
 
                                 List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
                                 fieldsList.Add(exportFieldsList);
@@ -404,7 +405,7 @@ namespace SalesForceOAuth
                     if (flag)
                     {
                         string sql = "INSERT INTO integration_dynamics_custom_fields (objectref, groupid, integration_id, fieldname, entityname, valuetype, valuedetail, inputfieldlabel, businessrequired, maxlength, fieldtype, relatedentityid, relatedentity, use_relatedentity_optioal_fields, relatedentity_optional_filedlabel, relatedentity_optional_fieldname, use_current_date)";
-                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.LookupEntityRecordId + "','" + ExportFields.RelatedEntity + "','" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ExportFields.IsUsingCurrentDate + "' )";
+                        sql += "VALUES ('" + ExportFields.ObjectRef + "'," + ExportFields.GroupId.ToString() + ",'" + integrationId + "','" + ExportFields.FieldName + "','" + ExportFields.EntityType + "','" + ExportFields.ValueType + "','" + ExportFields.ValueDetail + "','" + ExportFields.FieldLabel + "','" + ExportFields.BusinessRequired + "','" + ExportFields.MaxLength + "','" + ExportFields.FieldType + "','" + ExportFields.LookupEntityRecordId + "','" + ExportFields.RelatedEntity + "','" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "','" + ExportFields.OptionalFieldsLabel + "','" + ExportFields.OptionalFieldsName + "','" + ((ExportFields.IsUsingCurrentDate == "true") ? 1 : 0) + "' )";
                         MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                         int rows = cmd1.ExecuteNonQuery();
                         conn.Close();
@@ -820,7 +821,7 @@ namespace SalesForceOAuth
                                 backendFields.FieldType = rdr["backend_fieldtype"].ToString().Trim();
                                 backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
                                 backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
-                                backendFields.IsUsingCurrentDate = (rdr["backend_use_current_date"].ToString().Trim() == "") ? 0 : 1;
+                                backendFields.IsUsingCurrentDate = rdr["backend_use_current_date"].ToString().Trim();
                                 returnFields.Add(backendFields);
                             }
                         }
@@ -1936,7 +1937,7 @@ namespace SalesForceOAuth
                                 backendFields.FieldType = rdr["backend_field_type"].ToString().Trim();
                                 backendFields.LookupEntityName = rdr["backend_lookup_entity"].ToString().Trim();
                                 backendFields.LookupEntityRecordId = rdr["backend_lookup_entity_recordid"].ToString().Trim();
-                                backendFields.IsUsingCurrentDate = (rdr["backend_use_current_date"].ToString().Trim() == "") ? 0 : 1;
+                                backendFields.IsUsingCurrentDate = rdr["backend_use_current_date"].ToString().Trim();
 
                                 returnFields.Add(backendFields);
                             }
@@ -2532,10 +2533,28 @@ namespace SalesForceOAuth
             {
                 try
                 {
+                    EntityModel entity = GetEntityById(UrlReferrer, ObjectRef, RowId);
                     conn.Open();
-                    string sqlDel = "DELETE FROM integration_crm_entity  WHERE id = " + RowId;
-                    MySqlCommand cmd1 = new MySqlCommand(sqlDel, conn);
-                    int rowsDeleted = cmd1.ExecuteNonQuery();
+
+                    string sqlDel1 = "DELETE FROM integration_dynamics_custom_fields WHERE objectref = '" + ObjectRef + "' AND entityname = '" + entity.EntityUniqueName +"'";
+                    MySqlCommand cmd1 = new MySqlCommand(sqlDel1, conn);
+                    cmd1.ExecuteNonQuery();
+
+                    string sqlDel2 = "DELETE FROM integration_dynamics_custom_search WHERE objectref = '" + ObjectRef + "' AND entity_name = '" + entity.EntityUniqueName + "'";
+                    MySqlCommand cmd2 = new MySqlCommand(sqlDel2, conn);
+                    cmd2.ExecuteNonQuery();
+
+                    string sqlDel3 = "DELETE FROM integration_dynamic_detailedview_fields WHERE objectref = '" + ObjectRef + "' AND entity_name = '" + entity.EntityUniqueName + "'";
+                    MySqlCommand cmd3 = new MySqlCommand(sqlDel3, conn);
+                    cmd3.ExecuteNonQuery();
+
+                    string sqlDel4 = "DELETE FROM integration_dynamics_backend_fields WHERE objectref = '" + ObjectRef + "' AND entity = '" + entity.EntityUniqueName + "'";
+                    MySqlCommand cmd4 = new MySqlCommand(sqlDel4, conn);
+                    cmd4.ExecuteNonQuery();
+
+                    string sqlDel = "DELETE FROM integration_crm_entity WHERE id = " + RowId;
+                    MySqlCommand cmd = new MySqlCommand(sqlDel, conn);
+                    int rowsDeleted = cmd.ExecuteNonQuery();
                     conn.Close();
                     return true;
                 }

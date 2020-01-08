@@ -1846,3 +1846,6 @@ No such column 'Parent' on entity 'Account'. If you are attempting to use a cust
 11/12/2019 5:00:58 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
 11/12/2019 5:02:16 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
 11/12/2019 5:05:04 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: The requested resource does not exist
+1/1/2020 12:45:21 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The ConditonOperator.Like requires 1 value/s, not 2. Parameter Name: Telephone1
+1/3/2020 4:45:43 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: You should specify a parent contact or account.
+1/7/2020 5:45:36 PM ==> Function: Dy Delete Entity : Your request isn't authorized!--Internal exception : , Exception Message: Unknown column 'entityname' in 'where clause'
