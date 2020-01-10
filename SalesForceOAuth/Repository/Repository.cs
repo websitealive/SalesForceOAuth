@@ -1417,7 +1417,7 @@ namespace SalesForceOAuth
                                 returnFileds.ID = int.Parse(rdr["id"].ToString().Trim());
                                 returnFileds.FieldLabel = rdr["inputfieldlabel"].ToString().Trim();
                                 returnFileds.FieldName = rdr["fieldname"].ToString().Trim();
-                                // returnFileds.FieldType = rdr["fieldtype"].ToString().Trim();
+                                returnFileds.FieldType = rdr["fieldtype"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity_name"].ToString().Trim();
                                 returnFileds.ValueType = rdr["valuetype"].ToString().Trim();
                                 returnFileds.ValueDetail = rdr["valuedetail"].ToString().Trim();
@@ -1552,7 +1552,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_salesforce_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entity_name = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "'";
+                    string sql = "Update integration_salesforce_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entity_name = '" + ExportFields.EntityType + "', fieldtype = '" + ExportFields.FieldType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "'";
                     sql += " WHERE id = " + ExportFields.ID;
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
@@ -1684,8 +1684,13 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO integration_salesforce_custom_search (objectref, groupid, entity_name, search_field_name, search_label)";
-                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FieldLabel + "' )";
+                    string sql = "INSERT INTO integration_salesforce_custom_search (objectref, groupid, entity_name, search_label, search_field_name, search_field_type, related_entity_name, related_entity_field_name)";
+                    sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldLabel + "','" + SearchFields.FieldName + "','" + SearchFields.ValueType + "','" + SearchFields.RelatedEntity + "','" + SearchFields.RelatedField + "' )";
+
+                    //string sql = "entity_name, search_field_name, search_field_label, search_field_type, related_entity_name, related_entity_field_name)";
+                    //sql += "VALUES ('" + SearchFields.ObjectRef + "'," + SearchFields.GroupId.ToString() + ",'" + SearchFields.EntityType + "','" + SearchFields.FieldName + "','" + SearchFields.FieldLabel + "','" + SearchFields.ValueType + "','" + SearchFields.RelatedEntity + "','" + SearchFields.RelatedField + "' )";
+
+
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -1843,7 +1848,7 @@ namespace SalesForceOAuth
                     string sql = "INSERT INTO integration_salesforce_detailedview_fields (objectref, groupid, entity_type, sf_variable, label, field_type)";
                     sql += "VALUES ('" + DetailFields.ObjectRef + "'," + DetailFields.GroupId.ToString() + ",'" + DetailFields.EntityType + "','" + DetailFields.FieldName + "','" + DetailFields.FieldLabel + "','" + DetailFields.FieldType + "' )";
 
-               
+
                     MySqlCommand cmd1 = new MySqlCommand(sql, conn);
                     int rows = cmd1.ExecuteNonQuery();
                     conn.Close();
@@ -2385,7 +2390,7 @@ namespace SalesForceOAuth
                                 returnEntitySettings.IsAccountRequired = Convert.ToInt32(rdr["accounts_required"].ToString().Trim());
                                 returnEntitySettings.IsContactRequired = Convert.ToInt32(rdr["contacts_required"].ToString().Trim());
                                 returnEntitySettings.IsLeadRequired = Convert.ToInt32(rdr["leads_required"].ToString().Trim());
-                                returnEntitySettings.AllowAccountCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
+                                returnEntitySettings.AllowAccountCreation = Convert.ToInt32(rdr["allow_accounts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowContactCreation = Convert.ToInt32(rdr["allow_contacts_creation"].ToString().Trim());
                                 returnEntitySettings.AllowLeadCreation = Convert.ToInt32(rdr["allow_leads_creation"].ToString().Trim());
                             }
@@ -2536,7 +2541,7 @@ namespace SalesForceOAuth
                     EntityModel entity = GetEntityById(UrlReferrer, ObjectRef, RowId);
                     conn.Open();
 
-                    string sqlDel1 = "DELETE FROM integration_dynamics_custom_fields WHERE objectref = '" + ObjectRef + "' AND entityname = '" + entity.EntityUniqueName +"'";
+                    string sqlDel1 = "DELETE FROM integration_dynamics_custom_fields WHERE objectref = '" + ObjectRef + "' AND entityname = '" + entity.EntityUniqueName + "'";
                     MySqlCommand cmd1 = new MySqlCommand(sqlDel1, conn);
                     cmd1.ExecuteNonQuery();
 

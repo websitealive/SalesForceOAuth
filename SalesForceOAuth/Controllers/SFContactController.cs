@@ -204,7 +204,29 @@ namespace SalesForceOAuth.Controllers
                 query.Append("OR FirstName like '%" + SValue.Trim() + "%' ");
                 query.Append("OR LastName like '%" + SValue.Trim() + "%' ");
                 query.Append("OR Email like '%" + SValue.Trim() + "%' ");
-                query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+
+                //TODO: Please make sure that user save phone no in proper US format. when done then make changes to below code accord
+                if (SValue.Trim().Contains<char>('+'))
+                {
+                    query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR Phone like '%" + SValue.Trim().Substring(1) + "%' ");
+                    query.Append("OR Phone like '%" + SValue.Trim().Substring(2) + "%' ");
+                }
+                //Note: USA Telephone no has 10 digits without country code
+                //If SValue does not have + & characters = 11 means country code exist but without '+'
+                else if (!SValue.Trim().Contains<char>('+') && SValue.Trim().Count() == 11)
+                {
+                    query.Append("OR Phone like '%" + SValue.Trim().Substring(1) + "%' ");
+                    query.Append("OR Phone like '%1" + SValue.Trim().Substring(1) + "%' ");
+                    query.Append("OR Phone like '%+1" + SValue.Trim().Substring(1) + "%' ");
+                }
+                //SValue does not have '+' nor 1 => no of digit will be 10 without country code which USA Standard phone no w/o country code
+                else
+                {
+                    query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR Phone like '%1" + SValue.Trim() + "%' ");
+                    query.Append("OR Phone like '%+1" + SValue.Trim() + "%' ");
+                }
                 query.Append(filters.ToString());
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
