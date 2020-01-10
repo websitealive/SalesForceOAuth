@@ -659,7 +659,7 @@ namespace SalesForceOAuth.Controllers
                                             {
                                                 CustomFieldModel Fields = new CustomFieldModel();
                                                 Fields.FieldLabel = field.FieldLabel;
-                                                if (z.Attributes[field.FieldName].ToString() != "Microsoft.Xrm.Sdk.EntityReference")
+                                                if (z.Attributes[field.FieldName].ToString() == "Microsoft.Xrm.Sdk.EntityReference")
                                                 {
                                                     Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
                                                 }
@@ -674,7 +674,7 @@ namespace SalesForceOAuth.Controllers
                                                 }
                                                 else
                                                 {
-                                                    Fields.Value = ((Microsoft.Xrm.Sdk.EntityReference)z.Attributes[field.FieldName]).Name.ToString();
+                                                    Fields.Value = z.Attributes[field.FieldName].ToString();
                                                 }
 
                                                 retSearchFields.Add(Fields);
