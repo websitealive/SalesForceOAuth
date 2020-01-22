@@ -36,11 +36,11 @@ namespace SalesForceOAuth.Controllers
             string url = string.Empty;
             if (urlReferrer.Contains("localhost"))
             {
-                url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=" + integrationConstants.RedirectedUrl;
+                url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=http://localhost:61250/oauth-hubspot";
             }
             else
             {
-                url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=https://app-stage.alive5.com/oauth-hubspot";
+                url = integrationConstants.AuthorizationUrl + "?client_id=" + integrationConstants.ClientId + "&scope=contacts%20automation&redirect_uri=" + integrationConstants.RedirectedUrl;
             }
             return MyAppsDb.ConvertJSONOutput(url, HttpStatusCode.OK, false);
         }
