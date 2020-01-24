@@ -351,6 +351,7 @@ namespace SalesForceOAuth.Controllers
             try
             {
                 string ApplicationURL = "", userName = "", password = "", authType = "", searchEntity = "", lookupFieldLabel = "", lookupFieldName = "";
+                bool isUsingRelatedEntityOptionlFields = false;
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
@@ -365,6 +366,7 @@ namespace SalesForceOAuth.Controllers
                         searchEntity = getExportFieldForLookup.RelatedEntity;
                         lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
                         lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
+                        isUsingRelatedEntityOptionlFields = getExportFieldForLookup.IsUsingRelatedEntityOptionalFields == "0" ? false : true ;
                     }
                     searchEntity = Entity;
                 }
@@ -412,7 +414,7 @@ namespace SalesForceOAuth.Controllers
                     getSearchedFileds.Add(new CustomFieldModel() { FieldType = "PrimaryNameAttribute", FieldName = RetrieveEntityInfo.PrimaryNameAttribute });
                     if (IslookupSearch)
                     {
-                        if(lookupFieldName != "")
+                        if(isUsingRelatedEntityOptionlFields)
                         {
                             getSearchedFileds.Add(new CustomFieldModel() { FieldType = "OptionalLookupField", FieldName = lookupFieldName });
                         }

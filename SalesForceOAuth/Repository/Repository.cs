@@ -2944,7 +2944,7 @@ namespace SalesForceOAuth
                 try
                 {
                     conn.Open();
-                    string sql = "Update integration_crm_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "', use_relatedentity_optioal_fields = '" + ((ExportFields.IsUsingRelatedEntityOptionalFields == "true") ? 1 : 0) + "', relatedentity_optional_filedlabel = '" + ExportFields.OptionalFieldsLabel + "', relatedentity_optional_fieldname = '" + ExportFields.OptionalFieldsName + "', use_current_date = '" + ExportFields.IsUsingCurrentDate + "'";
+                    string sql = "Update integration_crm_custom_fields Set fieldname = '" + ExportFields.FieldName + "', entityname = '" + ExportFields.EntityType + "', valuetype = '" + ExportFields.ValueType + "', valuedetail = '" + ExportFields.ValueDetail + "', inputfieldlabel = '" + ExportFields.FieldLabel + "', businessrequired = '" + ExportFields.BusinessRequired + "', maxlength = '" + ExportFields.MaxLength + "', fieldtype = '" + ExportFields.FieldType + "', relatedentity = '" + ExportFields.RelatedEntity + "', use_current_date = '" + ExportFields.IsUsingCurrentDate + "'";
                     sql += " WHERE id = " + ExportFields.ID;
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     int rows = cmd.ExecuteNonQuery();
