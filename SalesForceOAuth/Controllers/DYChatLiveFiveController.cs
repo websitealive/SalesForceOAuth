@@ -43,7 +43,7 @@ namespace SalesForceOAuth.Controllers
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 string ChatId, RowId;
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, urlReferrer, out ChatId, out RowId);
+                bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, urlReferrer, lData.ThreadId, out ChatId, out RowId);
 
                 Uri organizationUri;
                 Uri homeRealmUri;
@@ -154,7 +154,7 @@ namespace SalesForceOAuth.Controllers
                             pObject.ObjectName = "Chat";
                             pObject.Message = "Chat added successfully!";
 
-                            Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString());
+                            Repository.AddChatInfo(lData.ObjectRef, urlReferrer, "Dynamic", lData.EntitytId, lData.EntitytType, lData.App, newChatId.ToString(), lData.ThreadId);
 
                             return MyAppsDb.ConvertJSONOutput(pObject, HttpStatusCode.OK, false);
                         }

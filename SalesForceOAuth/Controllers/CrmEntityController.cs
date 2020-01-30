@@ -165,7 +165,7 @@ namespace SalesForceOAuth.Controllers
                 user.OuthDetail = HubSpot.RefreshAuthorizationTokens(user);
                 Repository.UpdateCrmCreditionals(user);
             }
-            bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, Request.RequestUri.Authority.ToString(), out ChatId, out RowId);
+            bool flag = Repository.IsChatExist(lData.EntitytId, lData.EntitytType, lData.App, lData.ObjectRef, Request.RequestUri.Authority.ToString(), lData.ThreadId, out ChatId, out RowId);
             if (flag)
             {
                 HubSpot.UpdateChats(user, lData.Message.Replace("|", "</br>").Replace("&#39;", "'"), lData.EntitytType, Convert.ToInt64(lData.EntitytId), ChatId, out IsChatAdded);
@@ -184,7 +184,7 @@ namespace SalesForceOAuth.Controllers
             }
             if (IsChatAdded)
             {
-                Repository.AddChatInfo(lData.ObjectRef, Request.RequestUri.Authority.ToString(), CrmType.HubSpot.ToString(), lData.EntitytId, lData.EntitytType, lData.App, ChatId);
+                Repository.AddChatInfo(lData.ObjectRef, Request.RequestUri.Authority.ToString(), CrmType.HubSpot.ToString(), lData.EntitytId, lData.EntitytType, lData.App, ChatId, lData.ThreadId);
                 return MyAppsDb.ConvertJSONOutput("Chat Added Successfully", HttpStatusCode.OK, false);
             }
             else
