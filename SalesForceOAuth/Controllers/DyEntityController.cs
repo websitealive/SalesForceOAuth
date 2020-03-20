@@ -366,7 +366,7 @@ namespace SalesForceOAuth.Controllers
                         searchEntity = getExportFieldForLookup.RelatedEntity;
                         lookupFieldLabel = getExportFieldForLookup.OptionalFieldsLabel;
                         lookupFieldName = getExportFieldForLookup.OptionalFieldsName;
-                        isUsingRelatedEntityOptionlFields = getExportFieldForLookup.IsUsingRelatedEntityOptionalFields == "0" ? false : true ;
+                        isUsingRelatedEntityOptionlFields = getExportFieldForLookup.IsUsingRelatedEntityOptionalFields == "1" ? true : false ;
                     }
                     searchEntity = Entity;
                 }

@@ -113,9 +113,6 @@ namespace SalesForceOAuth.Controllers
 
                         //lTemp.Description = cont5;
 
-
-
-
                         sR = await client.UpdateAsync("Task", ChatId, lTemp).ConfigureAwait(false);
                         if (getBackEndFeields.Count > 0)
                         {

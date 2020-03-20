@@ -7,11 +7,41 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using SalesForceOAuth;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
+using Microsoft.Xrm.Sdk.Client;
+using System.ServiceModel.Description;
 
 namespace SalesForceOAuth.Controllers
 {
     public class DYExportFieldsController : ApiController
     {
+        [HttpGet]
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetOptionSet(string Token, string ObjectRef, int GroupId, string Entity, string ExportField, string callback)
+        {
+            //check payload if a right jwt token is submitted
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+            }
+            try
+            {
+                var optionSet = GetOptionSetItems(Entity.ToLower(), ExportField, GetServices(ObjectRef, GroupId));
+                return MyAppsDb.ConvertJSONPOutput(callback, optionSet, HttpStatusCode.OK, false);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetOptionSet", "Message", HttpStatusCode.InternalServerError);
+            }
+            
+        }
+
         [HttpGet]
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetExportFields(string Token, string ObjectRef, int GroupId, string callback, bool IsEntityForm = false)
         {
@@ -35,7 +65,17 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
-                    var FieldsList = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer);
+                    List<CustomFields> FieldsList = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer);
+                    foreach (var item in FieldsList)
+                    {
+                        foreach (var fields in item.CustomFieldsList)
+                        {
+                            if(fields.FieldType == "dropdown")
+                            {
+                                fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, GetServices(ObjectRef, GroupId));
+                            }
+                        }
+                    }
                     return MyAppsDb.ConvertJSONPOutput(callback, FieldsList, HttpStatusCode.OK, false);
                 }
             }
@@ -148,6 +188,53 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONOutput(ex, "DY Export Fields", "Unable to add Export Fields", HttpStatusCode.InternalServerError);
             }
+        }
+
+        private IOrganizationService GetServices(string ObjectRef, int GroupId)
+        {
+            string ApplicationURL = "", userName = "", password = "", authType = "";
+            int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, Request.RequestUri.Authority.ToString());
+            Uri organizationUri, homeRealmUri = null;
+            ClientCredentials credentials = new ClientCredentials();
+            ClientCredentials deviceCredentials = new ClientCredentials();
+            credentials.UserName.UserName = userName;
+            credentials.UserName.Password = password;
+            deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
+            deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
+            organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials);
+            return proxyservice; 
+        }
+
+        private List<OptionSet> GetOptionSetItems(string entityName, string optionSetAttributeName, IOrganizationService service)
+        {
+            List<OptionSet> optionList2 = new List<OptionSet>();
+            // Create the Attribute Request.
+            RetrieveAttributeRequest retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = optionSetAttributeName,
+                RetrieveAsIfPublished = true
+            };
+
+            // Get the Response and MetaData. Then convert to Option MetaData Array.
+            RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)service.Execute(retrieveAttributeRequest);
+            PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+            OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+
+            
+            // Add each item in OptionMetadata array to the ListItemCollection object.
+            foreach (OptionMetadata o in optionList)
+            {
+                OptionSet os = new OptionSet();
+                os.Label = o.Label.LocalizedLabels[0].Label;
+                os.Value = o.Value.Value.ToString();
+                optionList2.Add(os);
+            }
+
+            return optionList2;
         }
     }
 }

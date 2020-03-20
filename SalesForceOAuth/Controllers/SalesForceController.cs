@@ -642,7 +642,6 @@ namespace SalesForceOAuth.Controllers
             }
         }
 
-
         public static void GetAPICredentialswithCustomSearchFields(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, ref string customSearchFields, ref string customSearchFieldsLabels, string urlReferrer)
         {
             string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
@@ -697,6 +696,48 @@ namespace SalesForceOAuth.Controllers
                 }
             }
         }
+
+        public static void GetSaleForceAPICredentials(string ObjectRef, int GroupId, string entityType, ref string SFAccessToken, ref string SFApiVersion, ref string SFInstanceUrl, string urlReferrer)
+        {
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, ObjectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM integration_settings WHERE ObjectRef = '" + ObjectRef + "' AND GroupId = " + GroupId.ToString();
+                    //string sql = "SELECT SFAccessToken,SFApiVersion,SFInstanceUrl,frOM integration_settings";
+                    //sql += " WHERE objectref = '" + ObjectRef + "' AND groupid = " + GroupId.ToString();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                SFAccessToken = rdr["SFAccessToken"].ToString().Trim();
+                                SFApiVersion = rdr["SFApiVersion"].ToString().Trim();
+                                SFInstanceUrl = rdr["SFInstanceUrl"].ToString().Trim();
+                                
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException exs)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+        }
+
 
         public static int GetDynamicsCredentialswithCustomSearchFields(string objectRef, int groupId, string entityType, ref string applicationURL, ref string userName, ref string password, ref string authType, ref string customSearchFields, string referrerURL)
         {

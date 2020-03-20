@@ -18,6 +18,7 @@ using MySql.Data.MySqlClient;
 using SalesForceOAuth.Web_API_Helper_Code;
 using Microsoft.Xrm.Sdk.Query;
 using SalesForceOAuth.Models;
+using CRM.Notification;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -177,7 +178,15 @@ namespace SalesForceOAuth.Controllers
                                 ColumnSet cols = new ColumnSet(new String[] { "description" });
                                 Entity retrievedtask = new Entity(entitySettings.CustomActivityName);
                                 var newChats = lData.Message;
-                                retrievedtask.Attributes["description"] = retrievedtask.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                //retrievedtask.Attributes["description"] = retrievedtask.Attributes["description"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                if (lData.App == "Chat")
+                                {
+                                    retrievedtask.Attributes["description"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                }
+                                else
+                                {
+                                    retrievedtask.Attributes["description"] = retrievedtask.Attributes["description"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                }
                                 proxyservice.Update(retrievedtask);
                             }
                             else
@@ -185,7 +194,18 @@ namespace SalesForceOAuth.Controllers
                                 ColumnSet cols = new ColumnSet(new String[] { "notetext" });
                                 Entity retrievedNote = proxyservice.Retrieve("annotation", new Guid(ChatId), cols);
                                 var newChats = lData.Message;
-                                retrievedNote.Attributes["notetext"] = retrievedNote.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                // retrievedNote.Attributes["notetext"] = retrievedNote.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                if (lData.App == "Chat")
+                                {
+                                    // Slack.TestMessage(newChats.Replace("|", "\r\n").Replace("&#39;", "'"));
+                                    retrievedNote.Attributes["notetext"] = newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+
+                                }
+                                else
+                                {
+                                    // Slack.TestMessage(retrievedNote.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'"));
+                                    retrievedNote.Attributes["notetext"] = retrievedNote.Attributes["notetext"] + "\r\n" + newChats.Replace("|", "\r\n").Replace("&#39;", "'");
+                                }
                                 proxyservice.Update(retrievedNote);
                             }
                         }

@@ -1850,3 +1850,81 @@ No such column 'Parent' on entity 'Account'. If you are attempting to use a cust
 1/3/2020 4:45:43 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: You should specify a parent contact or account.
 1/7/2020 5:45:36 PM ==> Function: Dy Delete Entity : Your request isn't authorized!--Internal exception : , Exception Message: Unknown column 'entityname' in 'where clause'
 1/10/2020 11:33:17 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Unable to cast object of type 'System.String' to type 'Microsoft.Xrm.Sdk.EntityReference'.
+25/02/2020 3:50:11 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+25/02/2020 3:52:42 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: Invalid URI: The format of the URI could not be determined.
+25/02/2020 5:12:58 PM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : System.Net.WebException: The underlying connection was closed: An unexpected error occurred on a receive. ---> System.IO.IOException: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host. ---> System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security._SslStream.StartFrameHeader(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.StartReading(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.ProcessRead(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.TlsStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.PooledStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at System.Net.Connection.SyncRead(HttpWebRequest request, Boolean userRetrievedStream, Boolean probeRead)
+   --- End of inner exception stack trace ---
+   at System.Net.HttpWebRequest.GetResponse()
+   at System.ServiceModel.Channels.HttpChannelFactory`1.HttpRequestChannel.HttpChannelRequest.WaitForReply(TimeSpan timeout), Exception Message: An error occurred while receiving the HTTP response to https://sts.websitealive.com:444/adfs/services/trust/13/usernamemixed. This could be due to the service endpoint binding not using the HTTP protocol. This could also be due to an HTTP request context being aborted by the server (possibly due to the service shutting down). See server logs for more details.
+27/02/2020 11:37:56 AM ==> Function: Dy GetExportFields : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+27/02/2020 11:41:21 AM ==> Function: Dy GetExportFields : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+28/02/2020 11:34:09 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not find an attribute with specified name: preferredcontactmethodcode222
+06/03/2020 10:13:32 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The handshake failed due to an unexpected packet format.
+06/03/2020 10:14:16 AM ==> Function: DYAccount-GetSearchedAccounts : Unhandled exception--Internal exception : , Exception Message: The handshake failed due to an unexpected packet format.
+09/03/2020 12:18:10 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+09/03/2020 12:23:44 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+09/03/2020 12:23:47 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+09/03/2020 2:58:18 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : MySql.Data.MySqlClient.MySqlException (0x80004005): Fatal error encountered attempting to read the resultset. ---> MySql.Data.MySqlClient.MySqlException (0x80004005): Reading from the stream has failed. ---> System.IO.IOException: The read operation failed, see inner exception. ---> System.TimeoutException: Unable to read data from the transport connection: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. ---> System.IO.IOException: Unable to read data from the transport connection: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. ---> System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 size)
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   --- End of inner exception stack trace ---
+   at MySql.Data.Common.MyNetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.FixedSizeReader.ReadPacket(Byte[] buffer, Int32 offset, Int32 count)
+   at System.Net.Security._SslStream.StartFrameHeader(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.StartReading(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security._SslStream.ProcessRead(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   --- End of inner exception stack trace ---
+   at System.Net.Security._SslStream.ProcessRead(Byte[] buffer, Int32 offset, Int32 count, AsyncProtocolRequest asyncRequest)
+   at System.Net.Security.SslStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Fatal error encountered during command execution.
+17/03/2020 10:12:06 AM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName, CloseDate]
+18/03/2020 11:51:08 AM ==> Function: Dy GetOptionSet : Message--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+18/03/2020 5:32:23 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Input string was not in a correct format.
+18/03/2020 5:33:47 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Input string was not in a correct format.
+18/03/2020 5:34:42 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Input string was not in a correct format.
+18/03/2020 5:36:01 PM ==> Function: SF GetExportFields : Message--Internal exception : , Exception Message: Input string was not in a correct format.
+19/03/2020 12:25:50 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+19/03/2020 12:26:27 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+19/03/2020 12:28:38 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+19/03/2020 12:32:31 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+19/03/2020 12:32:49 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+19/03/2020 12:39:02 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not convert string to boolean: Open - Not Contacted. Path 'fields[26].defaultValue', line 1, position 36786.
+20/03/2020 3:00:28 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
+20/03/2020 3:02:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
+20/03/2020 3:04:38 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]

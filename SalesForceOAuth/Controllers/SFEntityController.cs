@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace SalesForceOAuth.Controllers
@@ -360,7 +361,8 @@ namespace SalesForceOAuth.Controllers
                 string cSearchFieldLabels = "";
                 //Below line 1st checks credentials if OK then returns list of custom search fields if any
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, Entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
-
+                // Get the detail fields for searching.
+                List <FieldsModel> detailsFields = Repository.GetSFDetailFieldsByEntity(ObjectRef, GroupId, Entity, urlReferrer);
                 //Below line Get a list of custom entities if any
                 CrmEntity dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
@@ -377,6 +379,15 @@ namespace SalesForceOAuth.Controllers
                     {
                         columns.Append("," + csA);
                         filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                    }
+                }
+                // Search By details View Fields
+                if (detailsFields.Count > 0)
+                {
+                    foreach (var detail in detailsFields)
+                    {
+                        columns.Append("," + detail.FieldName);
+                        filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
                 if (IslookupSearch)
@@ -456,6 +467,98 @@ namespace SalesForceOAuth.Controllers
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedEntity", "Unhandled exception", HttpStatusCode.Conflict, false);
             }
+        }
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> IsEntityRecordExist(string Token, string ObjectRef, int GroupId, string SiteRef, string Entity, string SValue, string callback)
+        {
+            string InstanceUrl = "", AccessToken = "", ApiVersion = "";
+            string outputPayload;
+            try
+            {
+                outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLeads-GetSearchedLeads", "Your request isn't authorized!", HttpStatusCode.Conflict, false);
+            }
+            //Access token update
+            string urlReferrer = Request.RequestUri.Authority.ToString();
+            HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode(SiteRef), urlReferrer);
+
+            if (msg.StatusCode != HttpStatusCode.OK)
+            {
+                return MyAppsDb.ConvertJSONOutput(msg.Content.ReadAsStringAsync().Result, msg.StatusCode, false);
+            }
+            try
+            {
+                MyAppsDb.GetSaleForceAPICredentials(ObjectRef, GroupId, Entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, urlReferrer);
+                
+                ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
+                string objectValue = SValue;
+                StringBuilder query = new StringBuilder();
+
+                if (Entity == "account")
+                {
+                    query.Append("SELECT Id From Account ");
+                    query.Append("where Name like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR AccountNumber like '%" + SValue.Trim() + "%' ");
+                }
+                else if(Entity == "contact")
+                {
+                    query.Append("SELECT Id From Contact ");
+                    query.Append("where Name like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR FirstName like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR LastName like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR Email like '%" + SValue.Trim() + "%' ");
+
+                    //TODO: Please make sure that user save phone no in proper US format. when done then make changes to below code accord
+                    if (SValue.Trim().Contains<char>('+'))
+                    {
+                        query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                        query.Append("OR Phone like '%" + SValue.Trim().Substring(1) + "%' ");
+                        query.Append("OR Phone like '%" + SValue.Trim().Substring(2) + "%' ");
+                    }
+                }
+                else if(Entity == "lead")
+                {
+                    query.Append("SELECT Id From Lead ");
+                    query.Append("where Name like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR FirstName like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR LastName like '%" + SValue.Trim() + "%' ");
+                    query.Append("OR Email like '%" + SValue.Trim() + "%' ");
+                    if (SValue.Trim().Contains<char>('+'))
+                    {
+                        query.Append("OR Phone like '%" + SValue.Trim() + "%' ");
+                        query.Append("OR Phone like '%" + SValue.Trim().Substring(1) + "%' ");
+                        query.Append("OR Phone like '%" + SValue.Trim().Substring(2) + "%' ");
+                    }
+                }
+                else
+                {
+                    CrmEntity dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
+                    query.Append("SELECT Id From " + Entity);
+                    query.Append(" where " + dynamicEntity.PrimaryFieldUniqueName + " like '%" + SValue.Trim() + "%' ");
+                }
+                
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                QueryResult<dynamic> cont = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
+                if (cont.Records.Count > 0)
+                {
+                    return MyAppsDb.ConvertJSONPOutput(callback, "true", HttpStatusCode.OK, false);
+                }
+                else
+                {
+                    return MyAppsDb.ConvertJSONPOutput(callback, "false", HttpStatusCode.OK, false);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "SFLead-GetSearchedEntity", "Unhandled exception", HttpStatusCode.Conflict, false);
+            }
+            return null;
         }
 
         [HttpGet]

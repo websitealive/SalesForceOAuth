@@ -88,7 +88,8 @@ namespace SalesForceOAuth.Models
         public string Table { get; set; }
 
         public int IsUsingCurrentDate { get; set; }
-        
+
+        public List<OptionSet> OptionSetList { get; set; }
 
         //public int Sr { get; set; }
 
@@ -105,6 +106,15 @@ namespace SalesForceOAuth.Models
         //public int MaxLength { get; set; }
 
         //public string FieldType { get; set; }
+    }
+
+    public class OptionSet
+    {
+        public int id { get; set; }
+
+        public string Label { get; set; }
+
+        public string Value { get; set; }
     }
 
     public class MessageResponce

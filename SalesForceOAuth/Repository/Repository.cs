@@ -1302,7 +1302,8 @@ namespace SalesForceOAuth
                                 exportFieldsList.MaxLength = Convert.ToInt32(rdr["maxlength"].ToString().Trim());
                                 exportFieldsList.FieldType = rdr["fieldtype"].ToString().Trim();
                                 exportFieldsList.RelatedEntity = rdr["relatedentity"].ToString().Trim();
-                                exportFieldsList.IsUsingCurrentDate = Convert.ToInt32(rdr["use_current_date"].ToString().Trim());
+                                var chkss = rdr["use_current_date"].ToString();
+                                // exportFieldsList.IsUsingCurrentDate = Convert.ToInt32(rdr["use_current_date"].ToString().Trim());
 
                                 List<CustomFieldModel> fieldsList = new List<CustomFieldModel>();
                                 fieldsList.Add(exportFieldsList);
@@ -1443,9 +1444,6 @@ namespace SalesForceOAuth
             return returnFileds;
         }
 
-
-
-
         public static FieldsModel GetSFExportFieldsForLookup(string objectRef, string exportFieldId, string urlReferrer)
         {
             FieldsModel returnFileds = new FieldsModel();
@@ -1493,7 +1491,6 @@ namespace SalesForceOAuth
             }
             return returnFileds;
         }
-
 
         public static string AddSFExportFields(FieldsModel ExportFields, string urlReferrer)
         {
@@ -1762,6 +1759,50 @@ namespace SalesForceOAuth
                 {
                     conn.Open();
                     string sql = "SELECT * from integration_salesforce_detailedview_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                FieldsModel exportFields = new FieldsModel();
+                                exportFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                exportFields.FieldLabel = rdr["label"].ToString().Trim();
+                                exportFields.FieldName = rdr["sf_variable"].ToString().Trim();
+                                exportFields.EntityType = rdr["entity_type"].ToString().Trim();
+
+                                returnFileds.Add(exportFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
+
+        public static List<FieldsModel> GetSFDetailFieldsByEntity(string objectRef, int groupId, string entity, string urlReferrer)
+        {
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_salesforce_detailedview_fields where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND entity_type = '" + entity + "' ";
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     using (MySqlDataReader rdr = cmd.ExecuteReader())
                     {

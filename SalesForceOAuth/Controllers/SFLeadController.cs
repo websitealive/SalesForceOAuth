@@ -148,6 +148,7 @@ namespace SalesForceOAuth.Controllers
                 string cSearchField = "";
                 string cSearchFieldLabels = "";
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "lead", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
+                List<FieldsModel> detailsFields = Repository.GetSFDetailFieldsByEntity(ObjectRef, GroupId, "lead", urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
                 StringBuilder query = new StringBuilder();
@@ -161,6 +162,15 @@ namespace SalesForceOAuth.Controllers
                     {
                         columns.Append("," + csA);
                         filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                    }
+                }
+                // Search By details View Fields
+                if (detailsFields.Count > 0)
+                {
+                    foreach (var detail in detailsFields)
+                    {
+                        columns.Append("," + detail.FieldName);
+                        filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
                     }
                 }
                 //Id, FirstName, LastName, Company, Email, Phone

@@ -91,6 +91,10 @@ namespace SalesForceOAuth.Controllers
                                 {
                                     registration[inputField.FieldName] = inputField.Value;
                                 }
+                                if (inputField.FieldType == "dropdown")
+                                {
+                                    registration[inputField.FieldName] = new OptionSetValue(Convert.ToInt32(inputField.Value));
+                                }
                                 if (inputField.FieldType == "boolean")
                                 {
                                     bool flag = true;
@@ -311,9 +315,9 @@ namespace SalesForceOAuth.Controllers
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
-                string sFieldOptional = "";
-                //int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
-                int output = MyAppsDb.GetDynamicsCredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref ApplicationURL, ref userName, ref password, ref authType, ref sFieldOptional, urlReferrer);
+                //string sFieldOptional = "";
+                int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
+                //int output = MyAppsDb.GetDynamicsCredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref ApplicationURL, ref userName, ref password, ref authType, ref sFieldOptional, urlReferrer);
 
                 var getSearchedFileds = BusinessLogic.DynamicCommon.GetDynamicSearchFileds(ObjectRef, GroupId, "Contact", urlReferrer);
                 List<EntityColumn> getDetailFields = BusinessLogic.DynamicCommon.GetDynamicDetailFileds(ObjectRef, GroupId, "contact", urlReferrer);
