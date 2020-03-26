@@ -484,10 +484,14 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                condition.AttributeName = searchField.FieldName;
-                                condition.Operator = ConditionOperator.Like;
-                                condition.Values.Add("%" + SValue.Trim() + "%");
-                                filter.Conditions.Add(condition);
+                                if(searchField.FieldType != "dropdown")
+                                {
+                                    condition.AttributeName = searchField.FieldName;
+                                    condition.Operator = ConditionOperator.Like;
+                                    condition.Values.Add("%" + SValue.Trim() + "%");
+                                    filter.Conditions.Add(condition);
+                                }
+                                
                             }
                         }
                     }
@@ -570,10 +574,14 @@ namespace SalesForceOAuth.Controllers
                                 }
                                 else
                                 {
-                                    condition1.AttributeName = detailField.FieldName;
-                                    condition1.Operator = ConditionOperator.Like;
-                                    condition1.Values.Add("%" + SValue.Trim() + "%");
-                                    filter.Conditions.Add(condition1);
+                                    if (detailField.FieldType != "dropdown")
+                                    {
+                                        condition1.AttributeName = detailField.FieldName;
+                                        condition1.Operator = ConditionOperator.Like;
+                                        condition1.Values.Add("%" + SValue.Trim() + "%");
+                                        filter.Conditions.Add(condition1);
+                                    }
+                                    
                                 }
                             }
                         }

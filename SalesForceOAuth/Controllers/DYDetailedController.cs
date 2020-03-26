@@ -23,6 +23,8 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using SalesForceOAuth.Models;
 using CRM.Dto;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -105,6 +107,22 @@ namespace SalesForceOAuth.Controllers
                                     else if (fieldValue.ToString() == "datetime")
                                     {
                                         retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((System.DateTime)fieldValue).Month.ToString() + "/" + ((System.DateTime)fieldValue).Day.ToString() + "/" + ((System.DateTime)fieldValue).Year.ToString());
+                                    }
+                                    else if (fieldValue.ToString() == "Microsoft.Xrm.Sdk.OptionSetValue")
+                                    {
+                                        RetrieveAttributeRequest retrieveAttributeRequest = new RetrieveAttributeRequest
+                                        {
+                                            EntityLogicalName = entity.ToLower(),
+                                            LogicalName = item.FieldName,
+                                            RetrieveAsIfPublished = true
+                                        };
+                                        // Get the Response and MetaData. Then convert to Option MetaData Array.
+                                        RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)proxyservice.Execute(retrieveAttributeRequest);
+                                        PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                                        OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+                                        var value = optionList.Where(x => x.Value.Value.ToString() == ((Microsoft.Xrm.Sdk.OptionSetValue)fieldValue).Value.ToString()).Select(v => v.Label.LocalizedLabels[0].Label).FirstOrDefault();
+                                        
+                                        retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = value);
                                     }
                                     else
                                     {

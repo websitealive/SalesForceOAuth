@@ -1928,3 +1928,4 @@ No such column 'Parent' on entity 'Account'. If you are attempting to use a cust
 20/03/2020 3:00:28 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
 20/03/2020 3:02:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
 20/03/2020 3:04:38 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
+26/03/2020 5:56:28 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Could not find an entity with specified name: Contact
