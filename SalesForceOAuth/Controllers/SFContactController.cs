@@ -184,6 +184,7 @@ namespace SalesForceOAuth.Controllers
                 //string cSearchField = "";
                 string cSearchFieldLabels = "";
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, "contact", ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
+                List<FieldsModel> searchFields = Repository.GetSFSearchFieldsByEntity(ObjectRef, GroupId, "contact", urlReferrer);
                 List<FieldsModel> detailsFields = Repository.GetSFDetailFieldsByEntity(ObjectRef, GroupId, "contact", urlReferrer);
                 ForceClient client = new ForceClient(InstanceUrl, AccessToken, ApiVersion);
                 string objectValue = SValue;
@@ -192,12 +193,35 @@ namespace SalesForceOAuth.Controllers
                 StringBuilder filters = new StringBuilder();
                 string[] customSearchFieldArray = cSearchField.Split('|');
                 string[] customSearchLabelArray = cSearchFieldLabels.Split('|');
-                if (cSearchField.Length > 0)
+                //if (cSearchField.Length > 0)
+                //{
+                //    foreach (string csA in customSearchFieldArray)
+                //    {
+                //        columns.Append("," + csA);
+                //        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                //    }
+                //}
+                if (searchFields.Count > 0)
                 {
-                    foreach (string csA in customSearchFieldArray)
+                    foreach (var search in searchFields)
                     {
-                        columns.Append("," + csA);
-                        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                        if (!columns.ToString().Contains(search.FieldName))
+                        {
+                            if (search.FieldType == "datetime")
+                            {
+                                DateTime result;
+                                if (DateTime.TryParse(SValue, out result))
+                                {
+                                    columns.Append("," + search.FieldName);
+                                    filters.Append("OR " + search.FieldName + " equal '%" + result + "%' ");
+                                }
+                            }
+                            else
+                            {
+                                columns.Append("," + search.FieldName);
+                                filters.Append("OR " + search.FieldName + " like '%" + SValue.Trim() + "%' ");
+                            }
+                        }
                     }
                 }
                 // Search By details View Fields
@@ -205,8 +229,23 @@ namespace SalesForceOAuth.Controllers
                 {
                     foreach (var detail in detailsFields)
                     {
-                        columns.Append("," + detail.FieldName);
-                        filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
+                        if (!columns.ToString().Contains(detail.FieldName))
+                        {
+                            if (detail.FieldType == "datetime")
+                            {
+                                DateTime result;
+                                if (DateTime.TryParse(SValue, out result))
+                                {
+                                    columns.Append("," + detail.FieldName);
+                                    filters.Append("OR " + detail.FieldName + " equal '%" + result + "%' ");
+                                }
+                            }
+                            else
+                            {
+                                columns.Append("," + detail.FieldName);
+                                filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
+                            }
+                        }
                     }
                 }
                 query.Append("SELECT Id, FirstName, LastName, Email, Phone " + columns + ", AccountId, Account.Name From Contact ");

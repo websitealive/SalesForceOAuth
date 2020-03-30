@@ -362,6 +362,7 @@ namespace SalesForceOAuth.Controllers
                 //Below line 1st checks credentials if OK then returns list of custom search fields if any
                 MyAppsDb.GetAPICredentialswithCustomSearchFields(ObjectRef, GroupId, Entity, ref AccessToken, ref ApiVersion, ref InstanceUrl, ref cSearchField, ref cSearchFieldLabels, urlReferrer);
                 // Get the detail fields for searching.
+                List<FieldsModel> searchFields = Repository.GetSFSearchFieldsByEntity(ObjectRef, GroupId, Entity, urlReferrer);
                 List <FieldsModel> detailsFields = Repository.GetSFDetailFieldsByEntity(ObjectRef, GroupId, Entity, urlReferrer);
                 //Below line Get a list of custom entities if any
                 CrmEntity dynamicEntity = Repository.GetEntity(urlReferrer, ObjectRef, GroupId, Entity, "sf");
@@ -373,12 +374,35 @@ namespace SalesForceOAuth.Controllers
                 string[] customSearchFieldArray = cSearchField.Split('|');
                 string[] customSearchLabelArray = cSearchFieldLabels.Split('|');
                 //If custom search fields exist on admin side
-                if (cSearchField.Length > 0)
+                //if (cSearchField.Length > 0)
+                //{
+                //    foreach (string csA in customSearchFieldArray)
+                //    {
+                //        columns.Append("," + csA);
+                //        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                //    }
+                //}
+                if (searchFields.Count > 0)
                 {
-                    foreach (string csA in customSearchFieldArray)
+                    foreach (var search in searchFields)
                     {
-                        columns.Append("," + csA);
-                        filters.Append("OR " + csA + " like '%" + SValue.Trim() + "%' ");
+                        if (!columns.ToString().Contains(search.FieldName))
+                        {
+                            if (search.FieldType == "datetime")
+                            {
+                                DateTime result;
+                                if (DateTime.TryParse(SValue, out result))
+                                {
+                                    columns.Append("," + search.FieldName);
+                                    filters.Append("OR " + search.FieldName + " equal '%" + result + "%' ");
+                                }
+                            }
+                            else
+                            {
+                                columns.Append("," + search.FieldName);
+                                filters.Append("OR " + search.FieldName + " like '%" + SValue.Trim() + "%' ");
+                            }
+                        }
                     }
                 }
                 // Search By details View Fields
@@ -386,8 +410,24 @@ namespace SalesForceOAuth.Controllers
                 {
                     foreach (var detail in detailsFields)
                     {
-                        columns.Append("," + detail.FieldName);
-                        filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
+                        if (!columns.ToString().Contains(detail.FieldName))
+                        {
+                            if (detail.FieldType == "datetime")
+                            {
+                                DateTime result;
+                                if (DateTime.TryParse(SValue, out result))
+                                {
+                                    columns.Append("," + detail.FieldName);
+                                    filters.Append("OR " + detail.FieldName + " equal '%" + result + "%' ");
+                                }
+                            }
+                            else
+                            {
+                                columns.Append("," + detail.FieldName);
+                                filters.Append("OR " + detail.FieldName + " like '%" + SValue.Trim() + "%' ");
+                            }
+                            
+                        }
                     }
                 }
                 if (IslookupSearch)

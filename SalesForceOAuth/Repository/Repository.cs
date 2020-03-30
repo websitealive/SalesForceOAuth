@@ -1792,7 +1792,49 @@ namespace SalesForceOAuth
             }
             return returnFileds;
         }
-
+        public static List<FieldsModel> GetSFSearchFieldsByEntity(string objectRef, int groupId, string entity, string urlReferrer)
+        {
+            List<FieldsModel> returnFileds = new List<FieldsModel>();
+            string connStr = MyAppsDb.GetConnectionStringbyURL(urlReferrer, objectRef);
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * from integration_salesforce_custom_search where objectref = '" + objectRef + "' AND groupid = '" + groupId + "' AND entity_name = '" + entity + "' ";
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    using (MySqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.HasRows)
+                        {
+                            while (rdr.Read())
+                            {
+                                FieldsModel searchFields = new FieldsModel();
+                                searchFields.ID = int.Parse(rdr["id"].ToString().Trim());
+                                searchFields.FieldLabel = rdr["search_label"].ToString().Trim();
+                                searchFields.FieldName = rdr["search_field_name"].ToString().Trim();
+                                searchFields.EntityType = rdr["entity_name"].ToString().Trim();
+                                searchFields.FieldType = rdr["search_field_type"].ToString().Trim();
+                                returnFileds.Add(searchFields);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                    conn.Close();
+                }
+                catch (MySqlException ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    conn.Close();
+                    throw;
+                }
+            }
+            return returnFileds;
+        }
         public static List<FieldsModel> GetSFDetailFieldsByEntity(string objectRef, int groupId, string entity, string urlReferrer)
         {
             List<FieldsModel> returnFileds = new List<FieldsModel>();
@@ -1815,7 +1857,7 @@ namespace SalesForceOAuth
                                 exportFields.FieldLabel = rdr["label"].ToString().Trim();
                                 exportFields.FieldName = rdr["sf_variable"].ToString().Trim();
                                 exportFields.EntityType = rdr["entity_type"].ToString().Trim();
-
+                                exportFields.FieldType = rdr["field_type"].ToString().Trim();
                                 returnFileds.Add(exportFields);
                             }
                         }
@@ -1858,6 +1900,7 @@ namespace SalesForceOAuth
                                 returnFileds.FieldLabel = rdr["label"].ToString().Trim();
                                 returnFileds.FieldName = rdr["sf_variable"].ToString().Trim();
                                 returnFileds.EntityType = rdr["entity_type"].ToString().Trim();
+                                //returnFileds.FieldType = rdr["field_type"].ToString().Trim();
                             }
                         }
                         rdr.Close();
