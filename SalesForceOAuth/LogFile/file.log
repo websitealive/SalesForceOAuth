@@ -1929,3 +1929,18 @@ No such column 'Parent' on entity 'Account'. If you are attempting to use a cust
 20/03/2020 3:02:01 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
 20/03/2020 3:04:38 PM ==> Function: SFAccount-PostAccount : Unhandled exception--Internal exception : , Exception Message: Required fields are missing: [StageName]
 26/03/2020 5:56:28 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Could not find an entity with specified name: Contact
+01/04/2020 3:32:25 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT * From account where Id ='0011n00002IRuVfAAL'
+      ^
+ERROR at Row:1:Column:7
+unexpected token: '*'
+01/04/2020 4:29:18 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id, FirstName, LastName, Email, Phone ,CustomerPriority__c
+                                ^
+ERROR at Row:1:Column:33
+No such column 'Email' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+01/04/2020 4:31:00 PM ==> Function: SFLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: 
+SELECT Id, FirstName, LastName, Email, Phone ,CustomerPriority__c
+                                ^
+ERROR at Row:1:Column:33
+No such column 'Email' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
