@@ -203,6 +203,10 @@ namespace SalesForceOAuth.Controllers
                                 note["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
+                                if (OwnerId != "")
+                                {
+                                    note["ownerid"] = new EntityReference("systemuser", new Guid(OwnerId));
+                                }
                                 newChatId = objser.Create(note);
 
                                 // chats push to contact on in case of lData.ObjectRef == "ellucian" && lData.GroupId == 8
@@ -251,6 +255,14 @@ namespace SalesForceOAuth.Controllers
                                         else if (item.FieldType == "currency")
                                         {
                                             parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
+                                        }
+                                        else if (item.FieldType == "optionSet")
+                                        {
+                                            parentEntity[item.FieldName] = new OptionSetValue(Convert.ToInt32(item.ValueDetail));
+                                        }
+                                        else if (item.FieldType == "wholeNumber")
+                                        {
+                                            parentEntity[item.FieldName] = Convert.ToInt32(item.ValueDetail);
                                         }
                                         else
                                         {

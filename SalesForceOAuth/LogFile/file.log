@@ -1944,3 +1944,10 @@ SELECT Id, FirstName, LastName, Email, Phone ,CustomerPriority__c
                                 ^
 ERROR at Row:1:Column:33
 No such column 'Email' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.
+03/04/2020 3:58:04 PM ==> Function: Dy Export Fields : Your request isn't authorized!--Internal exception : , Exception Message: Token has expired.
+06/04/2020 5:40:57 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 2 is not a valid status code for state code AccountState.Active on account with Id f2074cbd-0278-ea11-81db-0e4fcc581ae4.
+06/04/2020 8:30:44 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Unable to cast object of type 'Microsoft.Xrm.Sdk.Metadata.StatusAttributeMetadata' to type 'Microsoft.Xrm.Sdk.Metadata.PicklistAttributeMetadata'.
+06/04/2020 8:33:52 PM ==> Function: DYLead-GetSearchedLeads : Unhandled exception--Internal exception : , Exception Message: Unable to cast object of type 'Microsoft.Xrm.Sdk.Metadata.StatusAttributeMetadata' to type 'Microsoft.Xrm.Sdk.Metadata.PicklistAttributeMetadata'.
+07/04/2020 3:43:06 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not find an attribute with specified name: statusCode
+07/04/2020 3:44:42 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not find an attribute with specified name: statusCode
+07/04/2020 4:02:03 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 4 is not a valid status code for state code OpportunityState.Open on opportunity with Id 9c84be24-bd78-ea11-81db-0e4fcc581ae4.

@@ -17,8 +17,33 @@ namespace SalesForceOAuth.Controllers
 {
     public class DYExportFieldsController : ApiController
     {
+        //[HttpGet]
+        //public async System.Threading.Tasks.Task<HttpResponseMessage> GetOptionSet(string Token, string ObjectRef, int GroupId, string Entity, string ExportField, string callback)
+        //{
+        //    //check payload if a right jwt token is submitted
+        //    string outputPayload;
+        //    try
+        //    {
+        //        outputPayload = JWT.JsonWebToken.Decode(Token, ConfigurationManager.AppSettings["APISecureKey"], true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONOutput(ex, "Dy Export Fields", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+        //    }
+        //    try
+        //    {
+        //        var optionSet = GetOptionSetItems(Entity.ToLower(), ExportField, GetServices(ObjectRef, GroupId));
+        //        return MyAppsDb.ConvertJSONPOutput(callback, optionSet, HttpStatusCode.OK, false);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetOptionSet", "Message", HttpStatusCode.InternalServerError);
+        //    }
+
+        //}
+
         [HttpGet]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> GetOptionSet(string Token, string ObjectRef, int GroupId, string Entity, string ExportField, string callback)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> GetDropDownOption(string Token, string ObjectRef, int GroupId, string Entity, string ExportField, string DataType, string callback)
         {
             //check payload if a right jwt token is submitted
             string outputPayload;
@@ -32,14 +57,16 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
-                var optionSet = GetOptionSetItems(Entity.ToLower(), ExportField, GetServices(ObjectRef, GroupId));
+                List<OptionSet> optionSet = GetOptionSetItems(Entity.ToLower(), ExportField, DataType, GetServices(ObjectRef, GroupId));
+                
+
                 return MyAppsDb.ConvertJSONPOutput(callback, optionSet, HttpStatusCode.OK, false);
             }
             catch (Exception ex)
             {
                 return MyAppsDb.ConvertJSONPOutput(callback, ex, "Dy GetOptionSet", "Message", HttpStatusCode.InternalServerError);
             }
-            
+
         }
 
         [HttpGet]
@@ -72,7 +99,7 @@ namespace SalesForceOAuth.Controllers
                         {
                             if(fields.FieldType == "dropdown")
                             {
-                                fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, GetServices(ObjectRef, GroupId));
+                                fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, "Option Set", GetServices(ObjectRef, GroupId));
                             }
                         }
                     }
@@ -208,7 +235,56 @@ namespace SalesForceOAuth.Controllers
             return proxyservice; 
         }
 
-        private List<OptionSet> GetOptionSetItems(string entityName, string optionSetAttributeName, IOrganizationService service)
+        private List<OptionSet> GetOptionSetItems(string entityName, string attributeName, string dataType,  IOrganizationService service)
+        {
+            List<OptionSet> optionList2 = new List<OptionSet>();
+
+            // Create the Attribute Request.
+            RetrieveAttributeRequest retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = attributeName,
+                RetrieveAsIfPublished = true,
+            };
+
+            // Get the Response and MetaData. Then convert to Option MetaData Array.
+            RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)service.Execute(retrieveAttributeRequest);
+            OptionMetadata[] optionList;
+            if (dataType == "optionSet")
+            {
+                PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+            } else
+            {
+                StatusAttributeMetadata retrievedPicklistAttributeMetadata = (StatusAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+            }
+
+            // Add each item in OptionMetadata array to the ListItemCollection object.
+            foreach (OptionMetadata o in optionList)
+            {
+                OptionSet os = new OptionSet();
+                if(dataType == "optionSet")
+                {
+                    os.Label = o.Label.LocalizedLabels[0].Label;
+                    os.Value = o.Value.Value.ToString();
+                    optionList2.Add(os);
+                } else
+                {
+                    if (((Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata)o).State == 0)
+                    {
+                        os.Label = o.Label.LocalizedLabels[0].Label;
+                        os.Value = o.Value.Value.ToString();
+                        optionList2.Add(os);
+                    }
+                }
+                
+            }
+
+            return optionList2;
+        }
+
+        private List<OptionSet> GetStatusReasonItems(string entityName, string optionSetAttributeName, IOrganizationService service)
         {
             List<OptionSet> optionList2 = new List<OptionSet>();
             // Create the Attribute Request.
@@ -221,10 +297,9 @@ namespace SalesForceOAuth.Controllers
 
             // Get the Response and MetaData. Then convert to Option MetaData Array.
             RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)service.Execute(retrieveAttributeRequest);
-            PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+            StatusAttributeMetadata retrievedPicklistAttributeMetadata = (StatusAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
             OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
 
-            
             // Add each item in OptionMetadata array to the ListItemCollection object.
             foreach (OptionMetadata o in optionList)
             {

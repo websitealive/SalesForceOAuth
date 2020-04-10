@@ -104,6 +104,14 @@ namespace SalesForceOAuth.Controllers
                                 {
                                     registration[inputField.FieldName] = new Money(Convert.ToDecimal(inputField.Value));
                                 }
+                                if (inputField.FieldType == "optionSet" || inputField.FieldType == "statusReason")
+                                {
+                                    registration[inputField.FieldName] = new OptionSetValue(Convert.ToInt32(inputField.Value));
+                                }
+                                if (inputField.FieldType == "wholeNumber")
+                                {
+                                    registration[inputField.FieldName] = Convert.ToInt32(inputField.Value);
+                                }
                             }
 
                         }
@@ -130,6 +138,18 @@ namespace SalesForceOAuth.Controllers
                                 else if (inputField.FieldType == "currency")
                                 {
                                     registration[inputField.FieldName] = new Money(Convert.ToDecimal(inputField.ValueDetail));
+                                }
+                                //else if (inputField.FieldType == "statusReason")
+                                //{
+                                //    registration[inputField.FieldName] = new OptionSetValue(Convert.ToInt32(inputField.ValueDetail));
+                                //}
+                                else if (inputField.FieldType == "optionSet" || inputField.FieldType == "statusReason")
+                                {
+                                    registration[inputField.FieldName] = new OptionSetValue(Convert.ToInt32(inputField.ValueDetail));
+                                }
+                                else if (inputField.FieldType == "wholeNumber")
+                                {
+                                    registration[inputField.FieldName] = Convert.ToInt32(inputField.ValueDetail);
                                 }
                                 else
                                 {
@@ -484,7 +504,8 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                if(searchField.FieldType != "dropdown")
+                                //if(searchField.FieldType != "dropdown")
+                                if (!(searchField.FieldType == "optionSet" || searchField.FieldType == "statusReason" || searchField.FieldType == "wholeNumber"))
                                 {
                                     condition.AttributeName = searchField.FieldName;
                                     condition.Operator = ConditionOperator.Like;
@@ -574,7 +595,8 @@ namespace SalesForceOAuth.Controllers
                                 }
                                 else
                                 {
-                                    if (detailField.FieldType != "dropdown")
+                                    //if (detailField.FieldType != "dropdown")
+                                    if (!(detailField.FieldType == "optionSet" || detailField.FieldType == "statusReason" || detailField.FieldType == "wholeNumber"))
                                     {
                                         condition1.AttributeName = detailField.FieldName;
                                         condition1.Operator = ConditionOperator.Like;

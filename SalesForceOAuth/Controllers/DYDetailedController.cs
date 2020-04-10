@@ -104,6 +104,10 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.Money)fieldValue).Value.ToString());
                                     }
+                                    //else if (fieldValue.ToString() == "Microsoft.Xrm.Sdk.OptionSetValue")
+                                    //{
+                                    //    retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((Microsoft.Xrm.Sdk.OptionSetValue)fieldValue).Value.ToString());
+                                    //}
                                     else if (fieldValue.ToString() == "datetime")
                                     {
                                         retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = ((System.DateTime)fieldValue).Month.ToString() + "/" + ((System.DateTime)fieldValue).Day.ToString() + "/" + ((System.DateTime)fieldValue).Year.ToString());
@@ -118,10 +122,21 @@ namespace SalesForceOAuth.Controllers
                                         };
                                         // Get the Response and MetaData. Then convert to Option MetaData Array.
                                         RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)proxyservice.Execute(retrieveAttributeRequest);
-                                        PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
-                                        OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
-                                        var value = optionList.Where(x => x.Value.Value.ToString() == ((Microsoft.Xrm.Sdk.OptionSetValue)fieldValue).Value.ToString()).Select(v => v.Label.LocalizedLabels[0].Label).FirstOrDefault();
-                                        
+                                        var value = string.Empty;
+                                        if(item.FieldType == "statusReason")
+                                        {
+                                            StatusAttributeMetadata retrievedPicklistAttributeMetadata = (StatusAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                                            OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+                                            value = optionList.Where(x => x.Value.Value.ToString() == ((Microsoft.Xrm.Sdk.OptionSetValue)fieldValue).Value.ToString()).Select(v => v.Label.LocalizedLabels[0].Label).FirstOrDefault();
+
+                                            
+                                        } else
+                                        {
+                                            PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                                            OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+                                            value = optionList.Where(x => x.Value.Value.ToString() == ((Microsoft.Xrm.Sdk.OptionSetValue)fieldValue).Value.ToString()).Select(v => v.Label.LocalizedLabels[0].Label).FirstOrDefault();
+
+                                        }
                                         retEntityColumn.Where(x => x.FieldLabel == item.FieldLabel).ToList().ForEach(s => s.Value = value);
                                     }
                                     else
