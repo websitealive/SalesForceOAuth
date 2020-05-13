@@ -143,6 +143,14 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
                                     }
+                                    else if (item.FieldType == "optionSet" || item.FieldType == "statusReason")
+                                    {
+                                        parentEntity[item.FieldName] = new OptionSetValue(Convert.ToInt32(item.ValueDetail));
+                                    }
+                                    else if (item.FieldType == "wholeNumber")
+                                    {
+                                        parentEntity[item.FieldName] = Convert.ToInt32(item.ValueDetail);
+                                    }
                                     else
                                     {
                                         parentEntity[item.FieldName] = item.ValueDetail;

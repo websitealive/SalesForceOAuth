@@ -12,6 +12,7 @@ using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using System.ServiceModel.Description;
 using System.ServiceModel;
+using CRM.Notification;
 
 namespace SalesForceOAuth.Controllers
 {
@@ -214,6 +215,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                Slack.TestMessage("Your request isn't authorized! : " + ex.Message);
                 return MyAppsDb.ConvertJSONOutput(ex, "DyLead-PostCredentials", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
@@ -286,6 +288,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                Slack.TestMessage("Dynamics CRM Exception : " + ex.Message);
                 return MyAppsDb.ConvertJSONOutput(ex, "DyLead-PostLead", "Unhandled exception", HttpStatusCode.InternalServerError);
             }
         }

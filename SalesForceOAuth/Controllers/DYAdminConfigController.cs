@@ -1,4 +1,5 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using CRM.Notification;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Tooling.Connector;
@@ -71,6 +72,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
+                Slack.TestMessage("Your request isn't authorized! : " + ex.Message);
                 return MyAppsDb.ConvertJSONOutput(ex, "DYAdminConfig-PostCredentialsOnly", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try

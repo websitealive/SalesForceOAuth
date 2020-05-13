@@ -97,9 +97,9 @@ namespace SalesForceOAuth.Controllers
                     {
                         foreach (var fields in item.CustomFieldsList)
                         {
-                            if(fields.FieldType == "dropdown")
+                            if(fields.FieldType == "optionSet" || fields.FieldType == "statusReason")
                             {
-                                fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, "Option Set", GetServices(ObjectRef, GroupId));
+                                fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, fields.FieldType, GetServices(ObjectRef, GroupId));
                             }
                         }
                     }

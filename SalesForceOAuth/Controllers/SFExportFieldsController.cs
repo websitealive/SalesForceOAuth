@@ -17,6 +17,8 @@ namespace SalesForceOAuth.Controllers
     public class RootObject
     {
         public List<Field> fields { get; set; }
+        //public string message { get; set; }
+        //public string errorCode { get; set; }
     }
     public class Field
     {
@@ -75,6 +77,7 @@ namespace SalesForceOAuth.Controllers
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
             request.Headers.Add("Authorization", "Bearer " + accessToken);
+            // request.Headers.Add("Authorization", "OAuth " + accessToken);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             HttpResponseMessage response = await queryClient.SendAsync(request);

@@ -220,49 +220,41 @@ namespace SalesForceOAuth.Controllers
             // ExpandoObject supports IDictionary so we can extend it like this
             var expandoDict = expando as IDictionary<string, object>;
             if (expandoDict.ContainsKey(propertyName))
-                expandoDict[propertyName] = propertyValue;
+            {
+                if (propertyType == "boolean")
+                {
+                    expandoDict[propertyName] = propertyValue.ToString() == "1" ? true : false;
+                }
+                else if (propertyType == "currency")
+                {
+                    expandoDict[propertyName] = Convert.ToDouble(propertyValue);
+                }
+                else if (propertyType == "datetime")
+                {
+                    expandoDict[propertyName] = Convert.ToDateTime(propertyValue.ToString(), CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    expandoDict[propertyName] = propertyValue;
+                }
+            } 
             else
             {
-                if (propertyType == "textbox")
+                if (propertyType == "boolean")
                 {
-                    //expandoDict.Add(propertyName, propertyValue);
-                }
-                else if (propertyType == "boolean")
+                    expandoDict.Add(propertyName, propertyValue.ToString() == "1" ? true : false);
+                } else if (propertyType == "currency")
                 {
-                    if (propertyValue.Equals("1"))
-                        propertyValue = true;
-                    else
-                        propertyValue = false;
-                }
-                else if (propertyType != null)
+                    expandoDict.Add(propertyName, Convert.ToDouble(propertyValue));
+                } else if (propertyType == "datetime") 
                 {
-                    if (propertyType.Equals("currency"))
-                    {
-                        //propertyValue = new Money(Convert.ToDecimal(propertyValue));
-                        propertyValue = Convert.ToDouble(propertyValue);
-                    }
-                    else if (propertyType.Equals("lookup"))
-                    {
-                        //TODO: Currently we can't differntiate b/w custom & default objects, since default has "Id" appended while custom don't have.
-                        //Solution: find an api which will tell us whether this field is custom or default
-                        if (!propertyName.EndsWith("__c"))
-                        {
-                            //registration[inputField.FieldName] = new EntityReference(inputField.RelatedEntity, new Guid(inputField.Value));
-                            propertyName = propertyName + "Id";
-                        }
-
-
-                    }
-                    else if (propertyType == "datetime")
-                    {
-                        propertyValue = Convert.ToDateTime(propertyValue.ToString(), CultureInfo.InvariantCulture);
-                    }
-                    else if (propertyType == "picklist")
-                    {
-
-                    }
+                    expandoDict.Add(propertyName, Convert.ToDateTime(propertyValue.ToString(), CultureInfo.InvariantCulture));
                 }
-                expandoDict.Add(propertyName, propertyValue);
+                else
+                {
+                    expandoDict.Add(propertyName, propertyValue);
+                }
+                
             }
         }
 
@@ -1366,11 +1358,11 @@ namespace SalesForceOAuth.Controllers
                     string sqlDel = "DELETE FROM integration_dynamics_settings WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
                     MySqlCommand cmd = new MySqlCommand(sqlDel, conn);
 
-                    string sqlDel2 = "DELETE FROM integration_dynamic_entity WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
-                    MySqlCommand cmd2 = new MySqlCommand(sqlDel2, conn);
+                    //string sqlDel2 = "DELETE FROM integration_dynamic_entity WHERE ObjectRef = '" + objectRef + "' AND GroupId = " + groupId.ToString();
+                    //MySqlCommand cmd2 = new MySqlCommand(sqlDel2, conn);
 
                     int rowsDeleted = cmd.ExecuteNonQuery();
-                    cmd2.ExecuteNonQuery();
+                    //cmd2.ExecuteNonQuery();
                     conn.Close();
 
                 }

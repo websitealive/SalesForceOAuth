@@ -197,10 +197,17 @@ namespace SalesForceOAuth.Controllers
                             }
                             else
                             {
-                                DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                                DateTime timeZone = new DateTime();
+                                if (lData.ObjectRef == "c1" && lData.GroupId == 2831)
+                                {
+                                    timeZone = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
+                                } else
+                                {
+                                    timeZone = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
+                                }
                                 
                                 Entity note = new Entity("annotation");
-                                note["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
+                                note["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + timeZone + " CDT";
                                 note["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                 note["objectid"] = new EntityReference(ItemType, new Guid(ItemId));
                                 if (OwnerId != "")
@@ -220,7 +227,7 @@ namespace SalesForceOAuth.Controllers
                                     {
                                         // first get the contat id
                                         Entity contactNote = new Entity("annotation");
-                                        contactNote["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + cstTime + " CDT";
+                                        contactNote["subject"] = "AliveChat ID: " + lData.SessionId + " @ " + timeZone + " CDT";
                                         contactNote["notetext"] = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
                                         contactNote["objectid"] = new EntityReference("contact", ((Microsoft.Xrm.Sdk.EntityReference)contactRec.Attributes["parentcontactid"]).Id);
                                         objser.Create(contactNote);
@@ -256,7 +263,7 @@ namespace SalesForceOAuth.Controllers
                                         {
                                             parentEntity[item.FieldName] = new Money(Convert.ToDecimal(item.ValueDetail));
                                         }
-                                        else if (item.FieldType == "optionSet")
+                                        else if (item.FieldType == "optionSet" || item.FieldType == "statusReason")
                                         {
                                             parentEntity[item.FieldName] = new OptionSetValue(Convert.ToInt32(item.ValueDetail));
                                         }

@@ -95,11 +95,21 @@ namespace SalesForceOAuth.Controllers
                     }
                     foreach (var item in getBackEndFeieldsForActivity)
                     {
+                        bool flag = true;
                         if (item.FieldType == "datetime" && item.ValueDetail == "")
                         {
                             item.ValueDetail = DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString();
+                            flag = true;
                         }
-                        MyAppsDb.AddProperty(lTemp, item.FieldName, item.ValueDetail);
+                        if (item.FieldType == "lookup")
+                        {
+                            item.ValueDetail = item.LookupEntityRecordId;
+                            if (item.FieldName == "WhatId" && (ItemType == "Lead" || ItemType == "Contact")) flag = false; else flag = true;
+                        }
+                        if (flag)
+                        {
+                            MyAppsDb.AddProperty(lTemp, item.FieldName, item.ValueDetail, item.FieldType);
+                        }
                     }
                     //if (ownerId == "" || OwnerEmail == "")
                     //{

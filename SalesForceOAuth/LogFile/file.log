@@ -1951,3 +1951,51 @@ No such column 'Email' on entity 'Account'. If you are attempting to use a custo
 07/04/2020 3:43:06 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not find an attribute with specified name: statusCode
 07/04/2020 3:44:42 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Could not find an attribute with specified name: statusCode
 07/04/2020 4:02:03 PM ==> Function: DyAccount-GetConfigurationStatus : Unhandled exception--Internal exception : , Exception Message: 4 is not a valid status code for state code OpportunityState.Open on opportunity with Id 9c84be24-bd78-ea11-81db-0e4fcc581ae4.
+13/04/2020 4:58:48 PM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Unable to cast object of type 'Microsoft.Xrm.Sdk.Metadata.PicklistAttributeMetadata' to type 'Microsoft.Xrm.Sdk.Metadata.StatusAttributeMetadata'.
+14/04/2020 4:35:28 PM ==> Function: DYEntity-GetSearchedEntities : Unhandled exception--Internal exception : , Exception Message: Could not find entity
+17/04/2020 5:16:31 PM ==> Function: Dy GetOptionSet : Message--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+17/04/2020 5:52:16 PM ==> Function: Dy GetOptionSet : Message--Internal exception : System.TimeoutException: Timeout in IO operation
+   at MySql.Data.MySqlClient.TimedStream.StopTimer()
+   at MySql.Data.MySqlClient.TimedStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at System.IO.BufferedStream.Read(Byte[] array, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.ReadFully(Stream stream, Byte[] buffer, Int32 offset, Int32 count)
+   at MySql.Data.MySqlClient.MySqlStream.LoadPacket()
+   at MySql.Data.MySqlClient.MySqlStream.ReadPacket()
+   at MySql.Data.MySqlClient.NativeDriver.GetResult(Int32& affectedRow, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.GetResult(Int32 statementId, Int32& affectedRows, Int64& insertedId)
+   at MySql.Data.MySqlClient.Driver.NextResult(Int32 statementId, Boolean force)
+   at MySql.Data.MySqlClient.MySqlDataReader.NextResult()
+   at MySql.Data.MySqlClient.MySqlCommand.ExecuteReader(CommandBehavior behavior), Exception Message: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+20/04/2020 1:01:42 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SalesForceOAuth.Controllers.RootObject' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+20/04/2020 1:04:34 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SalesForceOAuth.Controllers.RootObject' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+20/04/2020 1:12:08 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SalesForceOAuth.Controllers.RootObject' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+20/04/2020 9:26:59 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SalesForceOAuth.Controllers.RootObject' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path '', line 1, position 1.
+20/04/2020 9:55:50 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+20/04/2020 9:58:44 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+20/04/2020 10:00:03 AM ==> Function: Dy GetOptionSet : Message--Internal exception : , Exception Message: Object reference not set to an instance of an object.
+12/05/2020 1:55:49 PM ==> Your request isn't authorized!
+12/05/2020 1:57:03 PM ==> Your request isn't authorized!
+12/05/2020 1:58:22 PM ==> Your request isn't authorized!
+12/05/2020 2:10:15 PM ==> Internal Exception: Related To ID: id value of incorrect type: Alive5 DD test
+12/05/2020 2:22:31 PM ==> Internal Exception: field integrity exception: WhoId, WhatId (cannot specify whatID with lead whoID: 1)
+12/05/2020 2:23:22 PM ==> Internal Exception: The value provided for foreign key reference What is not a nested SObject
+12/05/2020 2:26:53 PM ==> Internal Exception: field integrity exception: WhoId, WhatId (cannot specify whatID with lead whoID: 1)

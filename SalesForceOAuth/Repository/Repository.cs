@@ -251,6 +251,7 @@ namespace SalesForceOAuth
                                 exportFields.EntityType = rdr["entityname"].ToString().Trim();
                                 exportFields.ValueType = rdr["valuetype"].ToString().Trim();
                                 exportFields.ValueDetail = rdr["valuedetail"].ToString().Trim();
+                                exportFields.RelatedEntity = rdr["relatedentity"].ToString().Trim();
 
                                 returnFileds.Add(exportFields);
                             }

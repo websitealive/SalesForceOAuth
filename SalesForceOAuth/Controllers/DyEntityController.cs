@@ -48,6 +48,16 @@ namespace SalesForceOAuth.Controllers
             {
                 var entityList = Repository.GetEntityList(urlReferrer, ObjectRef, GroupId, "dy");
                 var entityFields = Repository.GetDYFormExportFields(ObjectRef, GroupId, urlReferrer);
+                foreach (var item in entityFields)
+                {
+                    foreach (var fields in item.CustomFieldsList)
+                    {
+                        if (fields.FieldType == "optionSet" || fields.FieldType == "statusReason")
+                        {
+                            fields.OptionSetList = GetOptionSetItems(item.Entity, fields.FieldName, fields.FieldType, GetServices(ObjectRef, GroupId));
+                        }
+                    }
+                }
                 foreach (var entity in entityList)
                 {
                     foreach (var fields in entityFields)
@@ -858,7 +868,7 @@ namespace SalesForceOAuth.Controllers
             }
             catch (Exception ex)
             {
-                return MyAppsDb.ConvertJSONPOutput(callback, ex, "DYAccounts-GetSearchedAccounts", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
+                return MyAppsDb.ConvertJSONPOutput(callback, ex, "IsEntityRecordExist", "Your request isn't authorized!", HttpStatusCode.InternalServerError);
             }
             try
             {
@@ -893,9 +903,14 @@ namespace SalesForceOAuth.Controllers
                     {
                         filterOwnRcd.AttributeName = "accountnumber";
                     }
-                    else
+                    else if(Entity == "contact" || Entity == "lead")
                     {
                         filterOwnRcd.AttributeName = "emailaddress1";
+                    }
+                    else
+                    {
+                        // dynamics Added entity
+                        filterOwnRcd.AttributeName = RetrieveEntityInfo.PrimaryNameAttribute;
                     }
                     filterOwnRcd.Operator = ConditionOperator.Like;
                     filterOwnRcd.Values.Add("%" + SValue.Trim() + "%");
@@ -1277,5 +1292,102 @@ namespace SalesForceOAuth.Controllers
         }
 
         #endregion
+        // Below two function re also available in controllerDYExportFields. In future will creata a single place for them
+        private IOrganizationService GetServices(string ObjectRef, int GroupId)
+        {
+            string ApplicationURL = "", userName = "", password = "", authType = "";
+            int output = MyAppsDb.GetDynamicsCredentials(ObjectRef, GroupId, ref ApplicationURL, ref userName, ref password, ref authType, Request.RequestUri.Authority.ToString());
+            Uri organizationUri, homeRealmUri = null;
+            ClientCredentials credentials = new ClientCredentials();
+            ClientCredentials deviceCredentials = new ClientCredentials();
+            credentials.UserName.UserName = userName;
+            credentials.UserName.Password = password;
+            deviceCredentials.UserName.UserName = ConfigurationManager.AppSettings["dusername"];
+            deviceCredentials.UserName.Password = ConfigurationManager.AppSettings["duserid"];
+            organizationUri = new Uri(ApplicationURL + "/XRMServices/2011/Organization.svc");
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            OrganizationServiceProxy proxyservice = new OrganizationServiceProxy(organizationUri, homeRealmUri, credentials, deviceCredentials);
+            return proxyservice;
+        }
+
+        private List<OptionSet> GetOptionSetItems(string entityName, string attributeName, string dataType, IOrganizationService service)
+        {
+            List<OptionSet> optionList2 = new List<OptionSet>();
+
+            // Create the Attribute Request.
+            RetrieveAttributeRequest retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = attributeName,
+                RetrieveAsIfPublished = true,
+            };
+
+            // Get the Response and MetaData. Then convert to Option MetaData Array.
+            RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)service.Execute(retrieveAttributeRequest);
+            OptionMetadata[] optionList;
+            if (dataType == "optionSet")
+            {
+                PicklistAttributeMetadata retrievedPicklistAttributeMetadata = (PicklistAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+            }
+            else
+            {
+                StatusAttributeMetadata retrievedPicklistAttributeMetadata = (StatusAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+                optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+            }
+
+            // Add each item in OptionMetadata array to the ListItemCollection object.
+            foreach (OptionMetadata o in optionList)
+            {
+                OptionSet os = new OptionSet();
+                if (dataType == "optionSet")
+                {
+                    os.Label = o.Label.LocalizedLabels[0].Label;
+                    os.Value = o.Value.Value.ToString();
+                    optionList2.Add(os);
+                }
+                else
+                {
+                    if (((Microsoft.Xrm.Sdk.Metadata.StatusOptionMetadata)o).State == 0)
+                    {
+                        os.Label = o.Label.LocalizedLabels[0].Label;
+                        os.Value = o.Value.Value.ToString();
+                        optionList2.Add(os);
+                    }
+                }
+
+            }
+
+            return optionList2;
+        }
+
+        private List<OptionSet> GetStatusReasonItems(string entityName, string optionSetAttributeName, IOrganizationService service)
+        {
+            List<OptionSet> optionList2 = new List<OptionSet>();
+            // Create the Attribute Request.
+            RetrieveAttributeRequest retrieveAttributeRequest = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = optionSetAttributeName,
+                RetrieveAsIfPublished = true
+            };
+
+            // Get the Response and MetaData. Then convert to Option MetaData Array.
+            RetrieveAttributeResponse retrieveAttributeResponse = (RetrieveAttributeResponse)service.Execute(retrieveAttributeRequest);
+            StatusAttributeMetadata retrievedPicklistAttributeMetadata = (StatusAttributeMetadata)retrieveAttributeResponse.AttributeMetadata;
+            OptionMetadata[] optionList = retrievedPicklistAttributeMetadata.OptionSet.Options.ToArray();
+
+            // Add each item in OptionMetadata array to the ListItemCollection object.
+            foreach (OptionMetadata o in optionList)
+            {
+                OptionSet os = new OptionSet();
+                os.Label = o.Label.LocalizedLabels[0].Label;
+                os.Value = o.Value.Value.ToString();
+                optionList2.Add(os);
+            }
+
+            return optionList2;
+        }
     }
 }
