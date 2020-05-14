@@ -11,6 +11,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 
 namespace SalesForceOAuth.Controllers
@@ -71,6 +72,7 @@ namespace SalesForceOAuth.Controllers
                     {
                         ownerId = c.Id;
                     }
+                    
                     DateTime cstTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"));
                     SuccessResponse sR;
                     dynamic lTemp = new ExpandoObject();
@@ -93,41 +95,49 @@ namespace SalesForceOAuth.Controllers
                                 MyAppsDb.AddProperty(lTemp, c.field, c.value);
                         }
                     }
+                    // Only For Contact
+                    if (lData.ObjectRef == "c1" && lData.GroupId == 23038)
+                    {
+                        if (ItemType == "Contact")
+                        {
+                            string accountId = null;
+                            StringBuilder query = new StringBuilder();
+                            StringBuilder columns = new StringBuilder();
+                            columns.Append("Id, AccountId, Account.Name ");
+                            query.Append("SELECT " + columns + " From " + ItemType);
+                            query.Append(" where Id ='" + ItemId + "'");
+                            QueryResult<dynamic> result = await client.QueryAsync<dynamic>(query.ToString()).ConfigureAwait(false);
+                            foreach (dynamic c in result.Records)
+                            {
+                                accountId = (c.AccountId != null ? c.AccountId : null);
+                            }
+                            if (accountId != null)
+                            {
+                                MyAppsDb.AddProperty(lTemp, "WhatId", accountId);
+                            }
+                            MyAppsDb.AddProperty(lTemp, "WhoId", ItemId);
+                        }
+                    }
+                    //if (ItemType == "Account")
+                    //{
+                    //    MyAppsDb.AddProperty(lTemp, "WhatId", ItemId);
+                    //}
+                    //
                     foreach (var item in getBackEndFeieldsForActivity)
                     {
-                        bool flag = true;
-                        if (item.FieldType == "datetime" && item.ValueDetail == "")
+                        if (!(item.FieldName == "WhatId" || item.FieldName == "WhoId"))
                         {
-                            item.ValueDetail = DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString();
-                            flag = true;
-                        }
-                        if (item.FieldType == "lookup")
-                        {
-                            item.ValueDetail = item.LookupEntityRecordId;
-                            if (item.FieldName == "WhatId" && (ItemType == "Lead" || ItemType == "Contact")) flag = false; else flag = true;
-                        }
-                        if (flag)
-                        {
+                            if (item.FieldType == "datetime" && item.ValueDetail == "")
+                            {
+                                item.ValueDetail = DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString();
+                            }
+                            if (item.FieldType == "lookup")
+                            {
+                                item.ValueDetail = item.LookupEntityRecordId;
+                            }
                             MyAppsDb.AddProperty(lTemp, item.FieldName, item.ValueDetail, item.FieldType);
                         }
                     }
-                    //if (ownerId == "" || OwnerEmail == "")
-                    //{
-                    //    TaskLogACall lTemp = new TaskLogACall();
-                    //    lTemp.Subject = lData.Subject; lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'");
-                    //    lTemp.Status = "Completed";
-                    //    if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
-                    //    sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
-                    //}
-                    //else
-                    //{
-                    //    TaskLogACallOW lTemp = new TaskLogACallOW();
-                    //    lTemp.Subject = lData.Subject; lTemp.Description = lData.Message.Replace("|", "\r\n").Replace("&#39;", "'"); lTemp.Status = "Completed";
-                    //    lTemp.OwnerId = ownerId;
-                    //    if (ItemType == "Lead" || ItemType == "Contact") lTemp.WhoId = ItemId; else lTemp.WhatId = ItemId;
-
-                    //}
-
                     sR = await client.CreateAsync("Task", lTemp).ConfigureAwait(false);
                     if (sR.Success == true)
                     {

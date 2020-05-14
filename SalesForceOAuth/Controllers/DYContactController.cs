@@ -39,26 +39,13 @@ namespace SalesForceOAuth.Controllers
                 return MyAppsDb.ConvertJSONOutput(ex, "DyContact-PostContact", "Your request isn't authorized!", HttpStatusCode.OK);
             }
             try
-            {
-                //Connect to SDK 
-                //Test system
-                //string ApplicationURL = "https://alive5.crm11.dynamics.com", userName = "alive5@alive5.onmicrosoft.com",
-                //password = "Passw0rd1", authType = "Office365";
-                //string ApplicationURL = "https://websitealive.crmgate.pk/websitealive", userName = "naveed@crmgate.local",
-                //    password = "@Abc.123", authType = "IFD";
+            {;
                 //Live system
                 string ApplicationURL = "", userName = "", password = "", authType = "";
                 string urlReferrer = Request.RequestUri.Authority.ToString();
                 int output = MyAppsDb.GetDynamicsCredentials(lData.ObjectRef, lData.GroupId, ref ApplicationURL, ref userName, ref password, ref authType, urlReferrer);
 
-                //string connectionString = string.Format("url={0};username={1};password={2};authtype={3};", ApplicationURL, userName, password, authType);
-                //connectionString = "url=https://msdynamics.websitealive.com/MSDynamics;username=wsa\\administrator;password=bX9bTkYv)Td;Domain=wsa;authtype=IFD;RequireNewInstance=true;"; 
-
-                //connectionString += "RequireNewInstance=true;";
-
-
                 //new code start
-
                 Uri organizationUri;
                 Uri homeRealmUri;
                 ClientCredentials credentials = new ClientCredentials();

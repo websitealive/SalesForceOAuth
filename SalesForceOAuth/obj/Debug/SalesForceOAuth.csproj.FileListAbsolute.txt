@@ -468,6 +468,7 @@ D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CoreC
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.csproj.CopyComplete
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.dll
 D:\DotNet\SalesForceOAuth\SalesForceOAuth\obj\Debug\SalesForceOAuth.pdb
+F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\ApplicationInsights.config
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\csc.exe
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
@@ -569,7 +570,6 @@ F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.WebPages.Deployment.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\System.Web.WebPages.Razor.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\WebApiContrib.Formatting.Jsonp.pdb
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Antlr3.Runtime.pdb
-F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\EntityFramework.SqlServer.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AspNet.Identity.Core.xml
 F:\DotNet\SalesForceOAuth\SalesForceOAuth\bin\Microsoft.AspNet.Identity.Owin.xml

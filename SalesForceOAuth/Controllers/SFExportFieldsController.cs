@@ -54,6 +54,12 @@ namespace SalesForceOAuth.Controllers
             }
             try
             {
+                string urlReferrer = Request.RequestUri.Authority.ToString();
+                HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode("1"), urlReferrer);
+                if (msg.StatusCode != HttpStatusCode.OK)
+                {
+                    return MyAppsDb.ConvertJSONPOutput(callback, "Saleforce Token Expires. Please Reconnect Saleforce Account!", msg.StatusCode, false);
+                }
                 string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                 MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, Request.RequestUri.Authority.ToString());
                 List<OptionSet> optionList2 = await GetPicklistFieldItems(InstanceUrl, AccessToken, Entity, ExportField);
@@ -121,6 +127,11 @@ namespace SalesForceOAuth.Controllers
                 }
                 else
                 {
+                    HttpResponseMessage msg = await Web_API_Helper_Code.Salesforce.GetAccessToken(ObjectRef, GroupId, System.Web.HttpUtility.UrlDecode("1"), urlReferrer);
+                    if (msg.StatusCode != HttpStatusCode.OK)
+                    { 
+                        return MyAppsDb.ConvertJSONPOutput(callback, "Saleforce Token Expires. Please Reconnect Saleforce Account!", msg.StatusCode, false);
+                    }
                     string InstanceUrl = "", AccessToken = "", ApiVersion = "";
                     MyAppsDb.GetAPICredentials(ObjectRef, GroupId, ref AccessToken, ref ApiVersion, ref InstanceUrl, Request.RequestUri.Authority.ToString());
                     List<CustomFields> FieldsList = Repository.GetSFFormExportFields(ObjectRef, GroupId, urlReferrer);
